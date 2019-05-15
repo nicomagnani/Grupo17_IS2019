@@ -7,17 +7,42 @@ public class Propiedad  {
 	 * 
 	 */
 	private long id;
-	public long getId() {
-	return id;
-}
-public void setId(long id) {
-	this.id = id;
-}
-public static long getSerialversionuid() {
-	return serialVersionUID;
-}
 	private static final long serialVersionUID = 1L;
-public String getTitulo() {
+	
+	public long getId() {
+		return id;
+	}
+	
+	public void setId(long id) {
+		this.id = id;
+	}
+	
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
+	private  String titulo,pais,provincia,localidad,domicilio,descripcion;
+	//falta foto de tipo image
+	private int montoBase;
+
+ 	public Propiedad(String titulo, String pais, String provincia, String localidad, String domicilio, String descripcion,
+		int montoBase) {
+ 		super();
+ 		this.titulo = titulo;
+ 		this.pais = pais;
+ 		this.provincia = provincia;
+ 		this.localidad = localidad;
+ 		this.domicilio = domicilio;
+ 		this.descripcion = descripcion;
+ 		this.montoBase = montoBase;
+ 	}
+
+	public Propiedad() {
+	
+	}	
+	
+	
+	public String getTitulo() {
 		return titulo;
 	}
 	public void setTitulo(String titulo) {
@@ -59,21 +84,5 @@ public String getTitulo() {
 	public void setMontoBase(int montoBase) {
 		this.montoBase = montoBase;
 	}
-private  String titulo,pais,provincia,localidad,domicilio,descripcion;
-//falta foto de tipo image
- private int montoBase;
-public Propiedad(String titulo, String pais, String provincia, String localidad, String domicilio, String descripcion,
-		int montoBase) {
-	super();
-	this.titulo = titulo;
-	this.pais = pais;
-	this.provincia = provincia;
-	this.localidad = localidad;
-	this.domicilio = domicilio;
-	this.descripcion = descripcion;
-	this.montoBase = montoBase;
-}
-public Propiedad() {
-	
-}
+
 }
