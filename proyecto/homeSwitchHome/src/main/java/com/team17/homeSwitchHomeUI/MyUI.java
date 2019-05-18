@@ -35,7 +35,7 @@ import com.vaadin.ui.themes.ValoTheme;
 public class MyUI extends UI {
 
     @Override
-    protected void init(VaadinRequest vaadinRequest) { //UI principal
+    protected void init(VaadinRequest vaadinRequest) { //UI principal.
     	
     	Image img = new Image("logo.png");
     	Label title = new Label("Home Switch Home");

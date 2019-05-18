@@ -7,7 +7,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 
 @Theme("hometheme")
-public class IniciarSesionView extends Composite implements View {  //necesita composite y view para funcionar correctamente
+public class IniciarSesionView extends Composite implements View {  //.necesita composite y view para funcionar correctamente
 
 	public IniciarSesionView() {
 		Label texto1 = new Label("primer texto");
