@@ -72,12 +72,12 @@ public class MyUI extends UI {
         setContent(mainLayout);
 
         Navigator navigator = new Navigator(this, viewContainer);		//Lista de views, agregar
-        navigator.addView("", ResidenciasView.class);
-        navigator.addView("residencias", ResidenciasView.class);
-        navigator.addView("subastas", SubastasView.class);
-        navigator.addView("buscarFecha", BuscarFechaView.class);
-        navigator.addView("buscarLugar", BuscarLugarView.class);
-        navigator.addView("iniciarSesion", IniciarSesionView.class);
+        navigator.addView("", new ResidenciasView());
+        navigator.addView("residencias", new ResidenciasView());
+        navigator.addView("subastas", new SubastasView ("asd")); //pasaje de parametros en views
+        navigator.addView("buscarFecha", new BuscarFechaView());
+        navigator.addView("buscarLugar", new BuscarLugarView());
+        navigator.addView("iniciarSesion", new IniciarSesionView());
     }
 
     @WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)

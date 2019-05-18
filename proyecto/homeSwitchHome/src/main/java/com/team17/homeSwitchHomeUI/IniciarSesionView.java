@@ -5,15 +5,29 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Composite;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
 
 @Theme("hometheme")
 public class IniciarSesionView extends Composite implements View {  //.necesita composite y view para funcionar correctamente
 
 	public IniciarSesionView() {
-		Label texto1 = new Label("primer texto");
-		Label texto2 = new Label("segundo texto");
-		Button boton = new Button("boton");
-		HorizontalLayout mainLayout = new HorizontalLayout(texto1,texto2,boton);
+
+		TextField textoEmail = new TextField("Email:");
+		TextField textoContraseña = new TextField("Contraseña:");
+		
+		Button login = new Button("Iniciar Sesión");
+		login.addClickListener(e -> {
+            /*if (sistema.validarUsuario(textoEmail.getValue(), textoContraseña.getValue())) {
+            	cambiarAdminUI();
+            }*/
+        });
+		
+		VerticalLayout mainLayout = new VerticalLayout(textoEmail, textoContraseña, login);
         setCompositionRoot(mainLayout);
     }
+
+	private void cambiarAdminUI() {
+		AdminUI adminUI = AdminUI new(sistema);	
+	}
 }

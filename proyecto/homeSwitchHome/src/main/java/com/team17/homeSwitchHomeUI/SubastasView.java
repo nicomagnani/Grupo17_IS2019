@@ -9,4 +9,8 @@ public class SubastasView extends Composite implements View {  //.necesita compo
 	public SubastasView() {
         setCompositionRoot(new Label("TODO: subastasView"));
     }
+	
+	public SubastasView(String str) {
+        setCompositionRoot(new Label("TODO: subastasView " + str));
+    }
 }
