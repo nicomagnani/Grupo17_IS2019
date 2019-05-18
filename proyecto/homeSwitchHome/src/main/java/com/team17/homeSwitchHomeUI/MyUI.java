@@ -37,7 +37,11 @@ public class MyUI extends UI {
     @Override
     protected void init(VaadinRequest vaadinRequest) { //UI principal.
     	
-    	Image img = new Image("logo.png");
+    	Image img = new Image();
+    	img.setSource(new ThemeResource("logo.png"));
+    	img.setWidth(250, Unit.PIXELS);
+    	img.setHeight(159, Unit.PIXELS);
+    	
     	Label title = new Label("Home Switch Home");
         title.addStyleName(ValoTheme.MENU_TITLE);
 
