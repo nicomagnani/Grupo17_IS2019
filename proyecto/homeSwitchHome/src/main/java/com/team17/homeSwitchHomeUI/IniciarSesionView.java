@@ -8,26 +8,33 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
+import homeSwitchHome.HomeSwitchHome;
+
 @Theme("hometheme")
 public class IniciarSesionView extends Composite implements View {  //.necesita composite y view para funcionar correctamente
 
-	public IniciarSesionView() {
-
+	public IniciarSesionView(HomeSwitchHome sistema) {
+		
 		TextField textoEmail = new TextField("Email:");
 		TextField textoContraseña = new TextField("Contraseña:");
 		
 		Button login = new Button("Iniciar Sesión");
 		login.addClickListener(e -> {
-            /*if (sistema.validarUsuario(textoEmail.getValue(), textoContraseña.getValue())) {
-            	cambiarAdminUI();
-            }*/
+			int result = sistema.iniciarSesion(textoEmail.getValue(), textoContraseña.getValue()); 
+            if (result == sistema.LOGIN_SUCCESS) {
+            	cambiarAdminUI(sistema);
+            }else if (result == sistema.WRONG_USERNAME){
+            	//TODO
+            } else if (result == sistema.WRONG_PASSWORD) {
+            	//TODO
+            }
         });
 		
 		VerticalLayout mainLayout = new VerticalLayout(textoEmail, textoContraseña, login);
         setCompositionRoot(mainLayout);
     }
 
-	private void cambiarAdminUI() {
+	private void cambiarAdminUI(HomeSwitchHome sistema) {
 		AdminUI adminUI = AdminUI new(sistema);	
 	}
 }

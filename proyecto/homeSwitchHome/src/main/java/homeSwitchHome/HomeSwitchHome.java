@@ -6,14 +6,22 @@ import java.util.List;
 
 public class HomeSwitchHome {
 
+	public HomeSwitchHome() {
+		
+	}
 
 	private List<Usuario> usuarios = new ArrayList<Usuario>();
 	private List<Reserva> reservas = new ArrayList<Reserva>();
 	private List<Propiedad> propiedades = new ArrayList<Propiedad>();
 	
-	public void iniciarSesion(String usuario, String contraseña)
+	public int LOGIN_SUCCESS = 1;
+	public int WRONG_USERNAME = 2;
+	public int WRONG_PASSWORD = 3;
+	
+	
+	public int iniciarSesion(String usuario, String contraseña)
 	{
-		
+		return LOGIN_SUCCESS; //TODO
 	}
 	
 	public void cerrarSesion(Usuario Usuario) 
@@ -31,20 +39,20 @@ public class HomeSwitchHome {
 		
 	}
 	
-	public ? expandirResidenciaAdmin() //TODO
+	/*public ? expandirResidenciaAdmin() //TODO
 	{
 		
-	}
+	}*/
 	
 	public List<Propiedad> mostrarResidencias() //Creo que esta repetido con mostrarResidenciasDisponibles
 	{
 		
 	}
 	
-	public ? expandirResidencia() //TODO
+	/*public ? expandirResidencia() //TODO
 	{
 				
-	}
+	}*/
 	
 	public void agregarResidencia() //TODO
 	{

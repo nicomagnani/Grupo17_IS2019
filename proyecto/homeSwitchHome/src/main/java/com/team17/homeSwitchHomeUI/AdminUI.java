@@ -14,10 +14,16 @@ import homeSwitchHome.HomeSwitchHome;
 
 public class AdminUI extends UI{
 	
-	public void init(HomeSwitchHome unSistema) { //UI principal admin.
+	/*HomeSwitchHome sistema;
+	
+	public AdminUI(HomeSwitchHome unSistema) { 
     	
-    	HomeSwitchHome sistema = new HomeSwitchHome();
-    	
+    	 sistema = unSistema;
+    } */
+
+	@Override
+	protected void init(VaadinRequest request) { //UI principal admin.
+
     	Image img = new Image("logo.png");
     	Label title = new Label("Home Switch Home");
         title.addStyleName(ValoTheme.MENU_TITLE);
@@ -49,6 +55,7 @@ public class AdminUI extends UI{
         navigatorAdmin.addView("subastasAdmin", new SubastasAdminView());
         navigatorAdmin.addView("reservasAdmin", new ReservasAdminView());
         navigatorAdmin.addView("cerrarSesion", new CerrarSesionView());
-    }
+		
+	}
 
 }
