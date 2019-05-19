@@ -10,7 +10,7 @@ import com.vaadin.ui.themes.ValoTheme;
 public class ContactarView extends Composite implements View {  //.necesita composite y view para funcionar correctamente
 
 	public ContactarView() {
-		Label titulo = new Label("Comunicarse vía correo electrónico:");
+		Label titulo = new Label("Comunicarse vía correo electrónico");
 		titulo.addStyleName(ValoTheme.MENU_TITLE);
         
 		String mail = "<a href=\"mailto:soporte@homeswitchhome.com\">Contacto</a>";
