@@ -55,14 +55,18 @@ public class MyUI extends UI {
         buscarFechaButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
         
         Button buscarLugarButton = new Button("Búsqueda por lugar", e -> getNavigator().navigateTo("buscarLugar"));
-        residenciasButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
+        buscarLugarButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
                 
         Button iniciarSesionButton = new Button("Iniciar Sesión", e -> getNavigator().navigateTo("iniciarSesion")); 
         iniciarSesionButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
         
-        //TODO: link "contactenos"
+        Button contactarButton = new Button("Contactarse", e -> getNavigator().navigateTo("contactar")); 
+        contactarButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
         
-        CssLayout menu = new CssLayout(img, title, residenciasButton, subastasButton, buscarFechaButton, buscarLugarButton, iniciarSesionButton);		//Lista de botones (y componentes) para views
+        Button verFaqButton = new Button("Ayuda", e -> getNavigator().navigateTo("verFaq")); 
+        verFaqButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
+        
+        CssLayout menu = new CssLayout(img, title, residenciasButton, subastasButton, buscarFechaButton, buscarLugarButton, iniciarSesionButton, contactarButton, verFaqButton);		//Lista de botones (y componentes) para views
         menu.addStyleName(ValoTheme.MENU_ROOT);
          
         CssLayout viewContainer = new CssLayout();
@@ -77,7 +81,9 @@ public class MyUI extends UI {
         navigator.addView("subastas", new SubastasView ("asd")); //pasaje de parametros en views
         navigator.addView("buscarFecha", new BuscarFechaView());
         navigator.addView("buscarLugar", new BuscarLugarView());
-        navigator.addView("iniciarSesion", new IniciarSesionView());
+        navigator.addView("iniciarSesion", new IniciarSesionView());		
+        navigator.addView("contactar", new ContactarView());    	
+        navigator.addView("verFaq", new VerFaqView());
     }
 
     @WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
