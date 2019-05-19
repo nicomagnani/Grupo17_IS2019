@@ -24,7 +24,9 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+
 import homeSwitchHome.HomeSwitchHome;
+
 
 /**
  * This UI is the application entry point. A UI may either represent a browser window 
@@ -39,8 +41,10 @@ public class MyUI extends UI {
     @Override
     protected void init(VaadinRequest vaadinRequest) { //UI principal.
     	
+
     	HomeSwitchHome sistema = new HomeSwitchHome();
     	
+
     	Image img = new Image();
     	img.setSource(new ThemeResource("logo.png"));
     	img.setWidth(250, Unit.PIXELS);
@@ -85,7 +89,11 @@ public class MyUI extends UI {
         navigator.addView("subastas", new SubastasView ("asd")); //pasaje de parametros en views
         navigator.addView("buscarFecha", new BuscarFechaView());
         navigator.addView("buscarLugar", new BuscarLugarView());
+
+        navigator.addView("iniciarSesion", new IniciarSesionView());		
+
         navigator.addView("iniciarSesion", new IniciarSesionView(sistema));		
+
         navigator.addView("contactar", new ContactarView());    	
         navigator.addView("verFaq", new VerFaqView());
     }

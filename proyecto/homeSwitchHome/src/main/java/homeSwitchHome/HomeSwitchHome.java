@@ -5,8 +5,12 @@ import java.util.Date;
 import java.util.List;
 
 public class HomeSwitchHome {
+<<<<<<< HEAD
+public HomeSwitchHome() {
+=======
 
 	public HomeSwitchHome() {
+>>>>>>> branch 'master' of https://github.com/nicomagnani/Grupo17_IS2019.git
 		
 	}
 
@@ -39,20 +43,38 @@ public class HomeSwitchHome {
 		
 	}
 	
+<<<<<<< HEAD
+	//public ? expandirResidenciaAdmin() //TODO
+	//{
+=======
 	/*public ? expandirResidenciaAdmin() //TODO
 	{
+>>>>>>> branch 'master' of https://github.com/nicomagnani/Grupo17_IS2019.git
 		
+<<<<<<< HEAD
+//	}
+=======
 	}*/
+>>>>>>> branch 'master' of https://github.com/nicomagnani/Grupo17_IS2019.git
 	
 	public List<Propiedad> mostrarResidencias() //Creo que esta repetido con mostrarResidenciasDisponibles
 	{
 		
 	}
 	
+<<<<<<< HEAD
+	//public ? expandirResidencia() //TODO
+	//{
+=======
 	/*public ? expandirResidencia() //TODO
 	{
+>>>>>>> branch 'master' of https://github.com/nicomagnani/Grupo17_IS2019.git
 				
+<<<<<<< HEAD
+	//}
+=======
 	}*/
+>>>>>>> branch 'master' of https://github.com/nicomagnani/Grupo17_IS2019.git
 	
 	public void agregarResidencia() //TODO
 	{
