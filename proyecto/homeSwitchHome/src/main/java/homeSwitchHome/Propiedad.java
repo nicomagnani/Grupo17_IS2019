@@ -3,7 +3,7 @@ package homeSwitchHome;
 import java.awt.Image;
 
 public class Propiedad {
-<<<<<<< HEAD
+
 	public Propiedad() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -17,21 +17,19 @@ public class Propiedad {
 		this.provincia = provincia;
 		this.localidad = localidad;
 		this.domicilio = domicilio;
-		this.descripción = descripción;
+		this.descripcion = descripción;
 		this.montoBase = montoBase;
 		this.fotos = fotos;
 	}
 
-	private String titulo,pais,provincia,localidad,domicilio,descripción;
-=======
+
 	private String titulo,pais,provincia,localidad,domicilio,descripcion;
->>>>>>> branch 'master' of https://github.com/nicomagnani/Grupo17_IS2019.git
+
 	private float montoBase;
 	private Image[] fotos = new Image[5];
+
 	
-<<<<<<< HEAD
-	
-=======
+
 	public Propiedad(String titulo, String pais, String provincia, String localidad, String domicilio,
 			String descripcion, int montoBase, Image[] fotos) {
 	 		super();
@@ -44,7 +42,7 @@ public class Propiedad {
 	 		this.montoBase = montoBase;
 	 		this.fotos = fotos;
 	}
->>>>>>> branch 'master' of https://github.com/nicomagnani/Grupo17_IS2019.git
+
 	
 	public void reservarSemana(int unaSemana)
 	{
@@ -96,21 +94,22 @@ public class Propiedad {
 		this.domicilio = domicilio;
 	}
 
-<<<<<<< HEAD
+
 	public String getDescripción() {
-		return descripción;
+		return descripcion;
 	}
 
 	public void setDescripción(String descripción) {
-		this.descripción = descripción;
-=======
+		this.descripcion = descripción;
+	}
+
 	public String getDescripcion() {
 		return descripcion;
 	}
 
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
->>>>>>> branch 'master' of https://github.com/nicomagnani/Grupo17_IS2019.git
+
 	}
 
 	public float getMontoBase() {

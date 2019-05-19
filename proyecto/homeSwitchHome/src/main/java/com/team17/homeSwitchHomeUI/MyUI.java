@@ -2,6 +2,7 @@ package com.team17.homeSwitchHomeUI;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 
 import javax.servlet.annotation.WebServlet;
 
@@ -84,13 +85,23 @@ public class MyUI extends UI {
         setContent(mainLayout);
 
         Navigator navigator = new Navigator(this, viewContainer);		//Lista de views, agregar
-        navigator.addView("", new ResidenciasView());
-        navigator.addView("residencias", new ResidenciasView());
+        try {
+			navigator.addView("", new ResidenciasView());
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+        try {
+			navigator.addView("residencias", new ResidenciasView());
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
         navigator.addView("subastas", new SubastasView ("asd")); //pasaje de parametros en views
         navigator.addView("buscarFecha", new BuscarFechaView());
         navigator.addView("buscarLugar", new BuscarLugarView());
 
-        navigator.addView("iniciarSesion", new IniciarSesionView());		
+        		
 
         navigator.addView("iniciarSesion", new IniciarSesionView(sistema));		
 

@@ -20,6 +20,7 @@ public class Usuario {
 	
 	public List<Propiedad> verResidencias()
 	{
+		return null;
 		//TODO
 	}
 	

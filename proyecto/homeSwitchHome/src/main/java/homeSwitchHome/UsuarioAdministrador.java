@@ -1,5 +1,7 @@
 package homeSwitchHome;
 
+import java.awt.List;
+
 public class UsuarioAdministrador extends Usuario {
 
 	public UsuarioAdministrador() {

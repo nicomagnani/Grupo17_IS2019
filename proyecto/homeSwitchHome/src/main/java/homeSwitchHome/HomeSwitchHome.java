@@ -5,15 +5,11 @@ import java.util.Date;
 import java.util.List;
 
 public class HomeSwitchHome {
-<<<<<<< HEAD
+
 public HomeSwitchHome() {
-=======
 
-	public HomeSwitchHome() {
->>>>>>> branch 'master' of https://github.com/nicomagnani/Grupo17_IS2019.git
-		
-	}
 
+}
 	private List<Usuario> usuarios = new ArrayList<Usuario>();
 	private List<Reserva> reservas = new ArrayList<Reserva>();
 	private List<Propiedad> propiedades = new ArrayList<Propiedad>();
@@ -42,39 +38,12 @@ public HomeSwitchHome() {
 	{
 		
 	}
-	
-<<<<<<< HEAD
-	//public ? expandirResidenciaAdmin() //TODO
-	//{
-=======
-	/*public ? expandirResidenciaAdmin() //TODO
-	{
->>>>>>> branch 'master' of https://github.com/nicomagnani/Grupo17_IS2019.git
-		
-<<<<<<< HEAD
-//	}
-=======
-	}*/
->>>>>>> branch 'master' of https://github.com/nicomagnani/Grupo17_IS2019.git
+
 	
 	public List<Propiedad> mostrarResidencias() //Creo que esta repetido con mostrarResidenciasDisponibles
 	{
 		
 	}
-	
-<<<<<<< HEAD
-	//public ? expandirResidencia() //TODO
-	//{
-=======
-	/*public ? expandirResidencia() //TODO
-	{
->>>>>>> branch 'master' of https://github.com/nicomagnani/Grupo17_IS2019.git
-				
-<<<<<<< HEAD
-	//}
-=======
-	}*/
->>>>>>> branch 'master' of https://github.com/nicomagnani/Grupo17_IS2019.git
 	
 	public void agregarResidencia() //TODO
 	{
@@ -93,16 +62,19 @@ public HomeSwitchHome() {
 	
 	public List<Propiedad> buscarResidencias()
 	{
+		return propiedades;
 		
 	}
 	
 	public List<Propiedad> buscarResidenciasFechas(Date fechaInicio, Date fechaFin)
 	{
+		return propiedades;
 		
 	}
 	
 	public List<Propiedad> buscarResidenciasLugar(String localidad)
 	{
+		return propiedades;
 		
 	}
 	
@@ -123,6 +95,7 @@ public HomeSwitchHome() {
 	
 	public List<Reserva> mostrarReservasAdmin() //Tambien puede estar repetido
 	{
+		return reservas;
 		
 	}
 }
