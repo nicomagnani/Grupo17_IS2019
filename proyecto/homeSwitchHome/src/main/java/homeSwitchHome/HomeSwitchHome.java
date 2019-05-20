@@ -2,7 +2,10 @@ package homeSwitchHome;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+
+import com.team17.homeSwitchHomeUI.ConnectionBD;
 
 public class HomeSwitchHome {
 
@@ -10,18 +13,41 @@ public HomeSwitchHome() {
 
 
 }
-	private List<Usuario> usuarios = new ArrayList<Usuario>();
-	private List<Reserva> reservas = new ArrayList<Reserva>();
-	private List<Propiedad> propiedades = new ArrayList<Propiedad>();
+	private ConnectionBD conexion = new ConnectionBD();
+	private ArrayList<Usuario> usuarios;
+	private ArrayList<UsuarioAdministrador> administradores;
+	private ArrayList<Reserva> reservas;
+	private ArrayList<Propiedad> propiedades;
 	
-	public int LOGIN_SUCCESS = 1;
-	public int WRONG_USERNAME = 2;
-	public int WRONG_PASSWORD = 3;
-	
+	public static final int LOGIN_SUCCESS = 1;
+	public static final int WRONG_PASSWORD = 2;
+	public static final int WRONG_USERNAME = 3;
+	public static final int INVALID_EMAIL = 4;
 	
 	public int iniciarSesion(String usuario, String contraseña)
 	{
-		return LOGIN_SUCCESS; //TODO
+		if (!verificarMail(usuario)) {		//falta implementar verificador de email
+			return INVALID_EMAIL;
+			break;
+		}
+		administradores = conexion.listaAdministradores();		//falta implementar listaAdministradores en ConnectionBD
+		Iterator<UsuarioAdministrador> iterator = administradores.iterator();
+		UsuarioAdministrador admin;
+		while(iterator.hasNext()){
+			admin = iterator.next();
+			if(usuario.equals(admin.getMail())&&contraseña.equals(admin.getContraseña())) {
+				return LOGIN_SUCCESS;
+				break;
+			}else if(usuario.equals(admin.getMail())){
+				return WRONG_PASSWORD;
+				break;
+			}	
+		}
+		return WRONG_USERNAME; //TODO
+		}
+	
+	public static boolean verificarMail(String email) {		//TODO
+		   return true;
 	}
 	
 	public void cerrarSesion(Usuario Usuario) 

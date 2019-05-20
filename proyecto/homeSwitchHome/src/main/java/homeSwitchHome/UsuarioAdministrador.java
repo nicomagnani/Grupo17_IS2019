@@ -11,6 +11,10 @@ public class UsuarioAdministrador extends Usuario {
 	
 	private String contraseña;
 	
+	public String getContraseña() {
+		return contraseña;
+	}
+	
 	private Propiedad agregarResidencia(); //TODO
 	
 	private void modificarResidencia(); //TODO

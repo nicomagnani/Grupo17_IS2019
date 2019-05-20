@@ -13,6 +13,10 @@ public class Usuario {
 	private String mail;
 	private List<Reserva> reservas = new ArrayList<Reserva>();
 	
+	public String getMail() {
+		return mail;
+	}
+	
 	public void realizarReserva(Propiedad unaPropiedad, int unaSemana)
 	{
 		
