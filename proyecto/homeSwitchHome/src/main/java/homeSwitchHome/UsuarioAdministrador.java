@@ -10,7 +10,7 @@ public class UsuarioAdministrador extends Usuario {
 	}
 	
 	private String contraseña;
-	
+	private String mail;
 	public String getContraseña() {
 		return contraseña;
 	}
@@ -22,5 +22,17 @@ public class UsuarioAdministrador extends Usuario {
 	private List<Reserva> verReservas()
 	{
 		
+	}
+
+	public String getMail() {
+		return mail;
+	}
+
+	public void setMail(String mail) {
+		this.mail = mail;
+	}
+
+	public void setContraseña(String contraseña) {
+		this.contraseña = contraseña;
 	}
 }

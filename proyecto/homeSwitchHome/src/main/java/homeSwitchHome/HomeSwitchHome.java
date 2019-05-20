@@ -1,5 +1,6 @@
 package homeSwitchHome;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -24,13 +25,13 @@ public HomeSwitchHome() {
 	public static final int WRONG_USERNAME = 3;
 	public static final int INVALID_EMAIL = 4;
 	
-	public int iniciarSesion(String usuario, String contraseña)
+	public int iniciarSesion(String usuario, String contraseña) throws SQLException
 	{
 		if (!verificarMail(usuario)) {		//falta implementar verificador de email
 			return INVALID_EMAIL;
 			break;
 		}
-		administradores = conexion.listaAdministradores();		//falta implementar listaAdministradores en ConnectionBD
+		administradores = conexion.listaUsuarios();		//falta implementar listaAdministradores en ConnectionBD
 		Iterator<UsuarioAdministrador> iterator = administradores.iterator();
 		UsuarioAdministrador admin;
 		while(iterator.hasNext()){
