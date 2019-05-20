@@ -17,7 +17,7 @@ import homeSwitchHome.UsuarioAdministrador;
 @Theme("hometheme")
 public class IniciarSesionView extends Composite implements View {  //.necesita composite y view para funcionar correctamente
 	
-	public IniciarSesionView(HomeSwitchHome sistema) {
+	public IniciarSesionView(HomeSwitchHome sistema,Navigator navigator, MyUI interfaz) {
 		
 		TextField textoEmail = new TextField("Email:");
 		TextField textoContraseña = new TextField("Contraseña:");
@@ -36,7 +36,7 @@ public class IniciarSesionView extends Composite implements View {  //.necesita 
 				if(usuarios.get(i).getMail().equals(textoEmail.getValue())){
 					if(usuarios.get(i).getContraseña().equals(textoContraseña.getValue())) {
 						System.out.print("valido");
-						this.iniciarSesion();
+						this.iniciarSesion(interfaz);
 					}else {
 						System.out.print("contra");
 						Notification.show("contraseña incorrecta");
@@ -53,7 +53,7 @@ public class IniciarSesionView extends Composite implements View {  //.necesita 
 	
     }
 
-	private void iniciarSesion() {
-		//ui AdminUI falta
+	private void iniciarSesion(MyUI interfaz) {
+		interfaz.cambiarAdmin();
 	}
 }
