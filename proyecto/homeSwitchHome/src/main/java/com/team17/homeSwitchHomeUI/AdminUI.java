@@ -37,10 +37,13 @@ public class AdminUI extends UI{
         Button reservasButton = new Button("Resrvas", e -> getNavigator().navigateTo("buscarFechaAdmin"));
         reservasButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
         
+        Button agregarResidenciaButton = new Button("Resrvas", e -> getNavigator().navigateTo("agregarResidencia"));
+        agregarResidenciaButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
+        
         Button cerrarSesionButton = new Button("Cerrar Sesión", e -> getNavigator().navigateTo("cerrarSesion"));
         cerrarSesionButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
         
-        CssLayout menu = new CssLayout(img, title, residenciasButton, subastasButton, reservasButton, cerrarSesionButton);		//Lista de botones (y componentes) para views
+        CssLayout menu = new CssLayout(img, title, residenciasButton, subastasButton, reservasButton, agregarResidenciaButton, cerrarSesionButton);		//Lista de botones (y componentes) para views
         menu.addStyleName(ValoTheme.MENU_ROOT);
          
         CssLayout viewContainer = new CssLayout();
@@ -50,11 +53,12 @@ public class AdminUI extends UI{
         setContent(mainLayout);
 
         Navigator navigatorAdmin = new Navigator(this, viewContainer);		//Lista de views, agregar
-        navigatorAdmin.addView("", new ResidenciasAdminView());
-        navigatorAdmin.addView("residenciasAdmin", new ResidenciasAdminView());
-        navigatorAdmin.addView("subastasAdmin", new SubastasAdminView());
-        navigatorAdmin.addView("reservasAdmin", new ReservasAdminView());
-        navigatorAdmin.addView("cerrarSesion", new CerrarSesionView());
+//        navigatorAdmin.addView("", new ResidenciasAdminView());
+//        navigatorAdmin.addView("residenciasAdmin", new ResidenciasAdminView());
+//        navigatorAdmin.addView("subastasAdmin", new SubastasAdminView());        
+//        navigatorAdmin.addView("reservasAdmin", new ReservasAdminView());
+        navigatorAdmin.addView("agregarResidencia", new AgregarResidenciaView());
+//        navigatorAdmin.addView("cerrarSesion", new CerrarSesionView());
 		
 	}
 
