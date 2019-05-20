@@ -25,27 +25,7 @@ public HomeSwitchHome() {
 	public static final int WRONG_USERNAME = 3;
 	public static final int INVALID_EMAIL = 4;
 	
-	public int iniciarSesion(String usuario, String contraseña) throws SQLException
-	{
-		if (!verificarMail(usuario)) {		//falta implementar verificador de email
-			return INVALID_EMAIL;
-			break;
-		}
-		administradores = conexion.listaUsuarios();		//falta implementar listaAdministradores en ConnectionBD
-		Iterator<UsuarioAdministrador> iterator = administradores.iterator();
-		UsuarioAdministrador admin;
-		while(iterator.hasNext()){
-			admin = iterator.next();
-			if(usuario.equals(admin.getMail())&&contraseña.equals(admin.getContraseña())) {
-				return LOGIN_SUCCESS;
-				break;
-			}else if(usuario.equals(admin.getMail())){
-				return WRONG_PASSWORD;
-				break;
-			}	
-		}
-		return WRONG_USERNAME; //TODO
-		}
+	
 	
 	public static boolean verificarMail(String email) {		//TODO
 		   return true;
@@ -58,17 +38,20 @@ public HomeSwitchHome() {
 	
 	public List<Propiedad> mostrarResidenciasDisponibles(int unaSemana)
 	{
+		return propiedades;
 		
 	}
 	
 	public List<Propiedad> mostrarResidenciasAdmin()
 	{
+		return propiedades;
 		
 	}
 
 	
 	public List<Propiedad> mostrarResidencias() //Creo que esta repetido con mostrarResidenciasDisponibles
 	{
+		return propiedades;
 		
 	}
 	

@@ -34,6 +34,13 @@ public class ResidenciasView extends Composite implements View {  //.necesita co
 			
 			 Grid<Propiedad> grid = new Grid<>(Propiedad.class);
 			 grid.setItems(propiedades);
+			 
+			 for(int i=0;i<propiedades.size();i++) {
+				 Button login = new Button("editar");
+					login.addClickListener(e -> {
+					 });
+					
+			 }
 		
 		  if(propiedades.size()==0) {
 			  grid.setColumns("no hay residencias ");

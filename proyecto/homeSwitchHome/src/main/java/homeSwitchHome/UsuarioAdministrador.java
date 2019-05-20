@@ -15,12 +15,16 @@ public class UsuarioAdministrador extends Usuario {
 		return contraseña;
 	}
 	
-	private Propiedad agregarResidencia(); //TODO
+	private Propiedad agregarResidencia() {
+		return null;
+	} //TODO
 	
-	private void modificarResidencia(); //TODO
+	private void modificarResidencia() {
+	} //TODO
 	
-	private List<Reserva> verReservas()
+	private List verReservas()
 	{
+		return null;
 		
 	}
 
