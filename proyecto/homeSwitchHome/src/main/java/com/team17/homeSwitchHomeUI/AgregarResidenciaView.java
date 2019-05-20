@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import com.vaadin.navigator.View;
+import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.AbstractTextField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -30,9 +31,44 @@ public class AgregarResidenciaView extends Composite implements View {  //.neces
 	Button aceptarButton = new Button("Aceptar");
 	Label resultado1 = new Label();
 	Label resultado2 = new Label();
+	boolean cumple1 = false;
+	boolean cumple2 = false;
+	boolean cumple3 = false;
+	boolean cumple4 = false;
+	boolean cumple5 = false;
+	boolean cumple6 = false;
+	boolean cumpleTodo = false;
 	
 	public AgregarResidenciaView() {
-		//formulario.setMargin(true) controla margenes/formato
+		
+		cumple1 = cumple2 = cumple3 = cumple4 = cumple5 = cumple6 = false;
+		
+		titulo.addValueChangeListener(e1 -> esVacio1(titulo.getValue()));
+		titulo.setValueChangeMode(ValueChangeMode.EAGER);
+		
+		descripcion.addValueChangeListener(e2 -> esVacio2(descripcion.getValue()));
+		descripcion.setValueChangeMode(ValueChangeMode.EAGER);
+		
+		pais.addValueChangeListener(e3 -> esVacio3(pais.getValue()));
+		pais.setValueChangeMode(ValueChangeMode.EAGER);
+		
+		provincia.addValueChangeListener(e4 -> esVacio4(provincia.getValue()));
+		provincia.setValueChangeMode(ValueChangeMode.EAGER);
+		
+		localidad.addValueChangeListener(e5 -> esVacio5(localidad.getValue()));
+		localidad.setValueChangeMode(ValueChangeMode.EAGER);
+		
+		domicilio.addValueChangeListener(e6 -> esVacio6(domicilio.getValue()));
+		domicilio.setValueChangeMode(ValueChangeMode.EAGER);
+		
+		aceptarButton.addClickListener(e7 -> {
+			try {
+				aceptar();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		});	
 		
 		formulario.addComponent(titulo);
 		formulario.addComponent(descripcion);
@@ -45,22 +81,55 @@ public class AgregarResidenciaView extends Composite implements View {  //.neces
 		formulario.addComponent(resultado1);
 		formulario.addComponent(resultado2);
 		
-		aceptarButton.addClickListener(e -> aceptar());		
+			
 		
 		VerticalLayout mainLayout = new VerticalLayout(formulario);
 		
 		setCompositionRoot(mainLayout);
     }
 	
-	private void aceptar() {
-		boolean cumple = true;
+	private void esVacio1(String st) {
+		if (st == "")
+			cumple1 = false;
+		else cumple1 = true;
+	}
+
+	private void esVacio2(String st) {
+		if (st == "")
+			cumple2 = false;
+		else cumple2 = true;
+	}
+	
+	private void esVacio3(String st) {
+		if (st == "")
+			cumple3 = false;
+		else cumple3 = true;
+	}
+	
+	private void esVacio4(String st) {
+		if (st == "")
+			cumple4 = false;
+		else cumple4 = true;
+	}
+	
+	private void esVacio5(String st) {
+		if (st == "")
+			cumple5 = false;
+		else cumple5 = true;
+	}
+	
+	private void esVacio6(String st) {
+		if (st == "")
+			cumple6 = false;
+		else cumple6 = true;
+	}
+	
+	private void aceptar() throws SQLException {
+		cumpleTodo = true;
 		
-		//chequeo si hay algún campo vacío
-		if ((titulo.getValue() == "") || (descripcion.getValue() == "") || (pais.getValue() == "") || 
-				(provincia.getValue() == "") || (localidad.getValue() == "") || 
-				(domicilio.getValue() == "")) {
+		if ((!cumple1) || (!cumple2) || (!cumple3) || (!cumple4) || (!cumple5) || (!cumple6)) {
 			resultado1.setValue("Error: Deben completarse todos los campos.");
-			cumple = false;
+			cumpleTodo = false;
 		}
 		
 		//TODO: chequear si se subieron max 5 imagenes
@@ -70,23 +139,9 @@ public class AgregarResidenciaView extends Composite implements View {  //.neces
 		//}
 		
 		//si cumple todos los requisitos, cargo la residencia y borro el formulario
-		if (cumple) {
-			try {
-				Class.forName("com.mysql.jdbc.Driver");
-			} catch (ClassNotFoundException e) {
-				System.out.println("Error al registrar el driver de MySQL: " + e);
-				e.printStackTrace();
-			}
-			
-			try {
-				Connection con = DriverManager.getConnection("jdbc:mysql://localhost/homeswitchhome","root","");
-			Statement s = con.createStatement();
-			s.executeUpdate("INSERT INTO propiedades (titulo,descripcion,pais,localidad,domicilio) VALUES ('"+titulo.getValue()+"','"+descripcion.getValue()+"','"+pais.getValue()+"','"+provincia.getValue()+"','"+localidad.getValue()+"','"+domicilio.getValue()+"')");
-			} catch (SQLException e1) {
-				System.out.println("Error: " + e1);
-				e1.printStackTrace();
-			}
-			
+		if (cumpleTodo) {
+			ConnectionBD con = new ConnectionBD();
+			con.agregarResidencia(titulo.getValue(), descripcion.getValue(), pais.getValue(), provincia.getValue(), localidad.getValue(), domicilio.getValue());
 			resultado1.setValue("Éxito.");
 			for ( Component comp : formulario ) {
 			    if (comp instanceof AbstractTextField)

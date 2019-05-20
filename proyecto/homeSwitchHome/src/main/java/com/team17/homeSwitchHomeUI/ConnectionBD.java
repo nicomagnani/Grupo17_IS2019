@@ -68,7 +68,7 @@ public class ConnectionBD {
 			while (rs.next())
 		      {
 				UsuarioAdministrador usuario = new UsuarioAdministrador();
-				usuario.setMail(rs.getString("mail"));
+  				usuario.setMail(rs.getString("mail"));
 				usuario.setContraseña(rs.getString("contraseña"));
 				usuarios.add(usuario);
 		     }
@@ -98,6 +98,14 @@ public class ConnectionBD {
 			pstmt.executeUpdate();
 			
 		}
+
+
+		public void agregarResidencia(String titulo, String descripcion, String pais,
+				String provincia, String localidad, String domicilio) throws SQLException {
+					stmt = (Statement) con.createStatement();
+					stmt.executeUpdate("INSERT INTO propiedad (titulo,descripcion,pais,provincia,localidad,domicilio) VALUES ('"+titulo+"','"+descripcion+"','"+pais+
+					"','"+provincia+"','"+localidad+"','"+domicilio+"')");
+				}
 	
 		
 		
