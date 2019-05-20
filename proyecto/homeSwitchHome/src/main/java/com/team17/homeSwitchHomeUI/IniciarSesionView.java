@@ -54,6 +54,6 @@ public class IniciarSesionView extends Composite implements View {  //.necesita 
     }
 
 	private void iniciarSesion() {
-		//ui AdminUI
+		//ui AdminUI falta
 	}
 }

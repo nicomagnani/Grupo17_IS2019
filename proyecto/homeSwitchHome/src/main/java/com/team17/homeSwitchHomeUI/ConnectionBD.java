@@ -60,6 +60,7 @@ public class ConnectionBD {
 			return propiedades;
     
 		}
+		//metodo que devuelve los usuarios admin de la bd
 		public ArrayList<UsuarioAdministrador> listaUsuarios() throws SQLException{
                ArrayList<UsuarioAdministrador> usuarios= new ArrayList<UsuarioAdministrador>();
 			
