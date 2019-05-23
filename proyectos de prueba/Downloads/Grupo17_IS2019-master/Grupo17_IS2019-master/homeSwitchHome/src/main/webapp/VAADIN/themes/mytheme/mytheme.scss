@@ -1,0 +1,10 @@
+$v-font-size: 30px;
+$v-background-color:
+	hsl(342, 100%, 50%)
+	
+@import "../valo/valo.scss";
+
+@mixin mytheme {
+  @include valo;
+
+}
