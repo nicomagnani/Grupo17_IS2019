@@ -7,7 +7,12 @@ import java.sql.Statement;
 
 import org.vaadin.ui.NumberField;
 
+import com.google.gwt.user.client.ui.Image;
 import com.vaadin.data.Binder;
+import com.vaadin.data.ValidationException;
+import com.vaadin.data.converter.StringToBigDecimalConverter;
+import com.vaadin.data.converter.StringToFloatConverter;
+import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.navigator.View;
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.AbstractTextField;
@@ -25,43 +30,34 @@ import homeSwitchHome.Propiedad;
 
 public class AgregarResidenciaView extends Composite implements View {  //.necesita composite y view para funcionar correctamente
 	
-	FormLayout formulario = new FormLayout();
-	TextField titulo = new TextField("Título");
-	TextArea descripcion = new TextArea("Descripción");
-	TextField pais = new TextField("País");
-	TextField provincia = new TextField("Provincia");
-	TextField localidad = new TextField("Localidad");
-	TextField domicilio = new TextField("Domicilio");
-	NumberField monto = new NumberField("Monto base");
-	//TODO: añadir campo para cargar imagenes		
-	Button aceptarButton = new Button("Aceptar");
-	Label resultado1 = new Label();
-	Label resultado2 = new Label();
-	
-	
-	boolean[] cumple = {false,false,false,false,false,false,false,false}; //el ultimo elemento es true cuando se completen todos los campos
+	private FormLayout formulario = new FormLayout();
+	private TextField titulo = new TextField("Título");
+	private TextArea descripcion = new TextArea("Descripción");
+	private TextField pais = new TextField("País");
+	private TextField provincia = new TextField("Provincia");
+	private TextField localidad = new TextField("Localidad");
+	private TextField domicilio = new TextField("Domicilio");
+	private NumberField monto = new NumberField("Monto base");
+	private Image[] fotos = new Image[5];
+	private Button aceptarButton = new Button("Aceptar");
+	private Label resultado1 = new Label();
+	private Label resultado2 = new Label();
+	private Binder<Propiedad> binder = new Binder<>(Propiedad.class);
+	private Propiedad propiedad = new Propiedad();
 	
 	public AgregarResidenciaView() {
-		titulo.addValueChangeListener(e1 -> esVacio(titulo.getValue(),0));
-		titulo.setValueChangeMode(ValueChangeMode.EAGER);
 		
-		descripcion.addValueChangeListener(e2 -> esVacio(descripcion.getValue(),1));
-		descripcion.setValueChangeMode(ValueChangeMode.EAGER);
+		//el binder asocia escrito en el formulario a los campos de un objeto Propiedad 
+		binder.readBean(propiedad);
 		
-		pais.addValueChangeListener(e3 -> esVacio(pais.getValue(),2));
-		pais.setValueChangeMode(ValueChangeMode.EAGER);
-		
-		provincia.addValueChangeListener(e4 -> esVacio(provincia.getValue(),3));
-		provincia.setValueChangeMode(ValueChangeMode.EAGER);
-		
-		localidad.addValueChangeListener(e5 -> esVacio(localidad.getValue(),4));
-		localidad.setValueChangeMode(ValueChangeMode.EAGER);
-		
-		domicilio.addValueChangeListener(e6 -> esVacio(domicilio.getValue(),5));
-		domicilio.setValueChangeMode(ValueChangeMode.EAGER);		
-
-		monto.addValueChangeListener(e7 -> esVacio(monto.getValue(),6));
-		monto.setValueChangeMode(ValueChangeMode.EAGER);
+		binder.bind(titulo, Propiedad::getTitulo, Propiedad::setTitulo);
+		binder.bind(descripcion, Propiedad::getDescripcion, Propiedad::setDescripcion);
+		binder.bind(pais, Propiedad::getPais, Propiedad::setPais);
+		binder.bind(provincia, Propiedad::getProvincia, Propiedad::setProvincia);
+		binder.bind(localidad, Propiedad::getLocalidad, Propiedad::setLocalidad);
+		binder.bind(domicilio, Propiedad::getDomicilio, Propiedad::setDomicilio);
+		binder.forField(monto).withConverter(new StringToFloatConverter("")).
+		bind(Propiedad::getMontoBase, Propiedad::setMontoBase);		
 		
 		aceptarButton.addClickListener(e -> {
 			try {
@@ -78,8 +74,10 @@ public class AgregarResidenciaView extends Composite implements View {  //.neces
 		formulario.addComponent(provincia);
 		formulario.addComponent(localidad);
 		formulario.addComponent(domicilio);
-		formulario.addComponent(monto);		
-		//formulario.addComponent(campo donde se cargan imagenes);
+		formulario.addComponent(monto);
+				
+		//formulario.addComponent(componente donde se cargan imagenes);
+		
 		formulario.addComponent(aceptarButton);
 		formulario.addComponent(resultado1);
 		formulario.addComponent(resultado2);
@@ -89,28 +87,44 @@ public class AgregarResidenciaView extends Composite implements View {  //.neces
 		setCompositionRoot(mainLayout);
     }
 	
-	private void esVacio(String st, int i) {
-		if (st == null)
-			cumple[i] = false;
-		else cumple[i] = true;
+	private boolean esVacio(String st) {
+		return (st == "");
 	}
 	
-	private void aceptar() throws SQLException {
-		cumple[7] = true;
+	private void aceptar() throws SQLException {		
+		boolean montoVacio = false, cumple = true;
 		
-		if ((!cumple[0]) || (!cumple[1]) || (!cumple[1]) || (!cumple[3]) || (!cumple[4]) || (!cumple[5]) || (!cumple[6])) {
-			resultado1.setValue("Error: Deben completarse todos los campos.");
-			cumple[7] = false;
+		//si "monto base" está vacio, le asigna un valor (0) asi no tira error al hacer writeBean(propiedad)
+		if (monto.getValue() == "") {
+			monto.setValue("0");
+			montoVacio = true;
 		}
 		
-		//TODO: chequear si se subieron max 5 imagenes
-		//if () {
-		//	resultado2.setValue("Error: Deben subirse a lo sumo 5 fotos o URLs.");
-		//	noCumple = false;
-		//}
+		try {
+	        binder.writeBean(propiedad);
+	      } catch (ValidationException e) {
+	    	  e.printStackTrace();
+	      }
+		
+		resultado1.setValue(Boolean.toString(esVacio(propiedad.getTitulo()))+" "+(Boolean.toString(esVacio(propiedad.getDescripcion())))+" "+ 
+		(Boolean.toString(esVacio(propiedad.getPais())))+" "+(Boolean.toString(esVacio(propiedad.getProvincia())))+" "+
+		(Boolean.toString(esVacio(propiedad.getLocalidad())))+" "+(Boolean.toString(esVacio(propiedad.getDomicilio())))+" "+(Boolean.toString(montoVacio)));
+		
+		if ((esVacio(propiedad.getTitulo())) || (esVacio(propiedad.getDescripcion())) || 
+		(esVacio(propiedad.getPais())) || (esVacio(propiedad.getProvincia())) || 
+		(esVacio(propiedad.getLocalidad())) || (esVacio(propiedad.getDomicilio())) || (montoVacio)) {
+			resultado1.setValue("Error: Deben completarse todos los campos.");
+			cumple = false;
+		}
+		
+//		TODO: chequear si se subieron max 5 imagenes / o se puede chequear una a una mientras se suben 
+//		if (true) {
+//			resultado2.setValue("Error: Deben subirse a lo sumo 5 fotos o URLs.");
+//			cumple = false;
+//		}
 		
 		//si cumple todos los requisitos, cargo la residencia y borro el formulario
-		if (cumple[7] = true) {
+		if (cumple) {
 			ConnectionBD con = new ConnectionBD();
 			con.agregarResidencia(titulo.getValue(), descripcion.getValue(), pais.getValue(), provincia.getValue(), localidad.getValue(),
 					domicilio.getValue(),Integer.parseInt(monto.getValue()));
