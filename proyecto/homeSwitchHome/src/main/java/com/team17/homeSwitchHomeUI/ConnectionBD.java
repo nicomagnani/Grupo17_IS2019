@@ -102,10 +102,10 @@ public class ConnectionBD {
 
 
 		public void agregarResidencia(String titulo, String descripcion, String pais,
-				String provincia, String localidad, String domicilio) throws SQLException {
+				String provincia, String localidad, String domicilio, int monto) throws SQLException {
 					stmt = (Statement) con.createStatement();
-					stmt.executeUpdate("INSERT INTO propiedad (titulo,descripcion,pais,provincia,localidad,domicilio) VALUES ('"+titulo+"','"+descripcion+"','"+pais+
-					"','"+provincia+"','"+localidad+"','"+domicilio+"')");
+					stmt.executeUpdate("INSERT INTO propiedad (titulo,descripcion,pais,provincia,localidad,domicilio,monto) VALUES ('"+titulo+"','"+descripcion+"','"+pais+
+					"','"+provincia+"','"+localidad+"','"+domicilio+"','"+monto+"')");
 				}
 	
 		

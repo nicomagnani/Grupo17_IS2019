@@ -4,6 +4,11 @@ import java.awt.Image;
 
 public class Propiedad {
 
+	private String titulo,pais,provincia,localidad,domicilio,descripcion;
+
+	private float montoBase;
+	private Image[] fotos = new Image[5];
+		
 	public Propiedad() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -20,29 +25,20 @@ public class Propiedad {
 		this.descripcion = descripción;
 		this.montoBase = montoBase;
 		this.fotos = fotos;
-	}
-
-
-	private String titulo,pais,provincia,localidad,domicilio,descripcion;
-
-	private float montoBase;
-	private Image[] fotos = new Image[5];
-
-	
+	}	
 
 	public Propiedad(String titulo, String pais, String provincia, String localidad, String domicilio,
 			String descripcion, int montoBase, Image[] fotos) {
-	 		super();
-	 		this.titulo = titulo;
-	 		this.pais = pais;
-	 		this.provincia = provincia;
-	 		this.localidad = localidad;
-	 		this.domicilio = domicilio;
-	 		this.descripcion = descripcion;
-	 		this.montoBase = montoBase;
-	 		this.fotos = fotos;
+	 	super();
+	 	this.titulo = titulo;
+	 	this.pais = pais;
+	 	this.provincia = provincia;
+	 	this.localidad = localidad;
+	 	this.domicilio = domicilio;
+	 	this.descripcion = descripcion;
+	 	this.montoBase = montoBase;
+	 	this.fotos = fotos;
 	}
-
 	
 	public void reservarSemana(int unaSemana)
 	{

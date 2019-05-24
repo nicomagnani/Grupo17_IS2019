@@ -83,12 +83,7 @@ public class MyUI extends UI {
         setContent(mainLayout);
 
         Navigator navigator = new Navigator(this, viewContainer);		//Lista de views, agregar
-        try {
-			navigator.addView("", new ResidenciasView());
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+       
         try {
 			navigator.addView("residencias", new ResidenciasView());
 		} catch (SQLException e1) {
@@ -115,13 +110,16 @@ public class MyUI extends UI {
         Button subastasButton = new Button("Subastas", e -> getNavigator().navigateTo("subastasAdmin"));
         subastasButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
         
-        Button reservasButton = new Button("Resrvas", e -> getNavigator().navigateTo("buscarFechaAdmin"));
+        Button reservasButton = new Button("Reservas", e -> getNavigator().navigateTo("buscarFechaAdmin"));
         reservasButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
+        
+        Button agregarResidenciaButton = new Button("Agregar residencia", e -> getNavigator().navigateTo("agregarResidencia"));
+        agregarResidenciaButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
         
         Button cerrarSesionButton = new Button("Cerrar Sesión", e -> getNavigator().navigateTo("cerrarSesion"));
         cerrarSesionButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
         
-        CssLayout menu = new CssLayout(img, title, residenciasButton, subastasButton, reservasButton, cerrarSesionButton);		//Lista de botones (y componentes) para views
+        CssLayout menu = new CssLayout(img, title, residenciasButton, subastasButton, reservasButton, agregarResidenciaButton, cerrarSesionButton);		//Lista de botones (y componentes) para views
         menu.addStyleName(ValoTheme.MENU_ROOT);
          
         CssLayout viewContainer = new CssLayout();
@@ -131,10 +129,10 @@ public class MyUI extends UI {
         setContent(mainLayout);
         
         Navigator navigator = new Navigator(this, viewContainer);
-        navigator.addView("", new ResidenciasAdminView());
         navigator.addView("residenciasAdmin", new ResidenciasAdminView());
         navigator.addView("subastasAdmin", new SubastasAdminView());
         navigator.addView("reservasAdmin", new ReservasAdminView());
+        navigator.addView("agregarResidencia", new AgregarResidenciaView());
         navigator.addView("cerrarSesion", new CerrarSesionView());
     }
 
