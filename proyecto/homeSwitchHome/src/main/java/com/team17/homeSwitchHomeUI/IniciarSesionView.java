@@ -3,6 +3,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import com.vaadin.annotations.Theme;
+import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Composite;
