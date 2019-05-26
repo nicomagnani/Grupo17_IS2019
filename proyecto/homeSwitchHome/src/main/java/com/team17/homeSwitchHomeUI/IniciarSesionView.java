@@ -12,6 +12,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
 
 import homeSwitchHome.HomeSwitchHome;
 import homeSwitchHome.UsuarioAdministrador;
@@ -19,6 +20,9 @@ import homeSwitchHome.UsuarioAdministrador;
 public class IniciarSesionView extends Composite implements View {  //.necesita composite y view para funcionar correctamente
 	
 	public IniciarSesionView(HomeSwitchHome sistema,Navigator navigator, MyUI interfaz) {
+		
+		Label cabecera = new Label("Iniciar Sesión (admin)");
+		cabecera.addStyleName(ValoTheme.MENU_TITLE);
 		
 		TextField textoEmail = new TextField("Email:");
 		TextField textoContraseña = new TextField("Contraseña:");
@@ -49,7 +53,7 @@ public class IniciarSesionView extends Composite implements View {  //.necesita 
 			}
 			
         });
-		VerticalLayout mainLayout = new VerticalLayout(textoEmail, textoContraseña, login);
+		VerticalLayout mainLayout = new VerticalLayout(cabecera, textoEmail, textoContraseña, login);
         setCompositionRoot(mainLayout);
 	
     }

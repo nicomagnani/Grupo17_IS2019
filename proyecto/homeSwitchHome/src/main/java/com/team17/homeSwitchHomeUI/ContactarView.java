@@ -10,14 +10,14 @@ import com.vaadin.ui.themes.ValoTheme;
 public class ContactarView extends Composite implements View {  //.necesita composite y view para funcionar correctamente
 
 	public ContactarView() {
-		Label titulo = new Label("Comunicarse vía correo electrónico");
-		titulo.addStyleName(ValoTheme.MENU_TITLE);
+		Label cabecera = new Label("Comunicarse vía correo electrónico");
+		cabecera.addStyleName(ValoTheme.MENU_TITLE);
         
 		String mail = "<a href=\"mailto:soporte@homeswitchhome.com\">Contacto</a>";
 		Label texto1 = new Label("Soporte de la empresa: " + mail);
 		texto1.setContentMode(com.vaadin.shared.ui.ContentMode.HTML);
 		
-		VerticalLayout mainLayout = new VerticalLayout(titulo,texto1);
+		VerticalLayout mainLayout = new VerticalLayout(cabecera,texto1);
 		
 		setCompositionRoot(mainLayout);
     }

@@ -9,8 +9,8 @@ import com.vaadin.ui.themes.ValoTheme;
 public class VerFaqView extends Composite implements View {  //.necesita composite y view para funcionar correctamente
 
 	public VerFaqView() {
-		Label titulo = new Label("Sección de Ayuda");
-		titulo.addStyleName(ValoTheme.MENU_TITLE);        
+		Label cabecera = new Label("Sección de Ayuda");
+		cabecera.addStyleName(ValoTheme.MENU_TITLE);
 		
 		Label texto1 = new Label("<h3><span style=\"text-decoration: underline;\"><strong>Preguntas y Respuestas Frecuentes (FAQ)</strong></span></h3>" );
 		texto1.setContentMode(com.vaadin.shared.ui.ContentMode.HTML);
@@ -34,7 +34,7 @@ public class VerFaqView extends Composite implements View {  //.necesita composi
 				codInicio + preg4 + codMitad + rta4 + codFin);
 		texto2.setContentMode(com.vaadin.shared.ui.ContentMode.HTML);
 		
-		VerticalLayout mainLayout = new VerticalLayout(titulo,texto1,texto2);
+		VerticalLayout mainLayout = new VerticalLayout(cabecera,texto1,texto2);
 		
 		setCompositionRoot(mainLayout);
     }
