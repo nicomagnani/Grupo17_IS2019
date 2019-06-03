@@ -21,9 +21,4 @@ public class SubastasView extends Composite implements View {  //.necesita compo
 		
         setCompositionRoot((Component) textField);
     }
-	
-	public SubastasView(String str) {
-		
-
-    }
 }
