@@ -50,6 +50,10 @@ public class MyUI extends UI {
 	Button iniciarSesionButton;
 	Button contactarButton;
 	Button verFaqButton;
+	Button registrarseButton;
+	Button reservasButton;
+	Button agregarResidenciaButton;
+	Button cerrarSesionButton;
 	
 	CssLayout menu;
 	CssLayout viewContainer;
@@ -58,15 +62,16 @@ public class MyUI extends UI {
 
     @Override
     protected void init(VaadinRequest vaadinRequest) { //UI principal.
-    	this.vistaUsuario();
+    	this.vistaVisitante();
     }
     
     public void vistaVisitante() {
         
     	this.mostrarLogo();
-        //this.botonesUsuario();
+        this.botonesVisitante();
         this.mostrarLayout();
-        //this.navigatorUsuario();
+        this.navigatorVisitante();
+        //this.mostrar5Residencias TODO
     }
    
     public void vistaUsuario() {
@@ -106,7 +111,7 @@ public class MyUI extends UI {
     }
     
     private void botonesUsuario() {
-    	residenciasButton = new Button("Residencias", e -> getNavigator().navigateTo("residencias")); //boton para navegar a una view
+    	residenciasButton = new Button("Residencias", e -> getNavigator().navigateTo("residencias"));
         residenciasButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
         
         subastasButton = new Button("Subastas", e -> getNavigator().navigateTo("subastas"));
@@ -127,7 +132,7 @@ public class MyUI extends UI {
         verFaqButton = new Button("Ayuda", e -> getNavigator().navigateTo("verFaq")); 
         verFaqButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
         
-        menu = new CssLayout(img, title, residenciasButton, subastasButton, buscarFechaButton, buscarLugarButton, iniciarSesionButton, contactarButton, verFaqButton);		//Lista de botones (y componentes) para views
+        menu = new CssLayout(img, title, residenciasButton, subastasButton, buscarFechaButton, buscarLugarButton, iniciarSesionButton, contactarButton, verFaqButton);
         menu.addStyleName(ValoTheme.MENU_ROOT);
     }
     
@@ -151,23 +156,24 @@ public class MyUI extends UI {
     
     private void botonesAdmin() {
     	
-    	Button residenciasButton = new Button("Residencias", e -> getNavigator().navigateTo("residenciasAdmin")); //boton para navegar a una view
+    	residenciasButton = new Button("Residencias", e -> getNavigator().navigateTo("residenciasAdmin")); //boton para navegar a una view
         residenciasButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
         
-        Button subastasButton = new Button("Subastas", e -> getNavigator().navigateTo("subastasAdmin"));
+        subastasButton = new Button("Subastas", e -> getNavigator().navigateTo("subastasAdmin"));
         subastasButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
         
-        Button reservasButton = new Button("Reservas", e -> getNavigator().navigateTo("buscarFechaAdmin"));
+        reservasButton = new Button("Reservas", e -> getNavigator().navigateTo("buscarFechaAdmin"));
         reservasButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
         
-        Button agregarResidenciaButton = new Button("Agregar residencia", e -> getNavigator().navigateTo("agregarResidencia"));
+        agregarResidenciaButton = new Button("Agregar residencia", e -> getNavigator().navigateTo("agregarResidencia"));
         agregarResidenciaButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
         
-        Button cerrarSesionButton = new Button("Cerrar SesiÃ³n", e -> getNavigator().navigateTo("cerrarSesion"));
+        cerrarSesionButton = new Button("Cerrar SesiÃ³n", e -> getNavigator().navigateTo("cerrarSesion"));
         cerrarSesionButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
         
-        CssLayout menu = new CssLayout(img, title, residenciasButton, subastasButton, reservasButton, agregarResidenciaButton, cerrarSesionButton);		//Lista de botones (y componentes) para views
+        menu = new CssLayout(img, title, residenciasButton, subastasButton, reservasButton, agregarResidenciaButton, cerrarSesionButton);
         menu.addStyleName(ValoTheme.MENU_ROOT);
+    	
     }
     
     public void navigatorAdmin() {	//TODO
@@ -179,6 +185,32 @@ public class MyUI extends UI {
         navigator.addView("agregarResidencia", new AgregarResidenciaView());
         navigator.addView("cerrarSesion", new CerrarSesionView());*/
     }
+    
+    private void botonesVisitante() {
+    	
+    	iniciarSesionButton = new Button("Iniciar SesiÃ³n", e -> getNavigator().navigateTo("iniciarSesion")); 
+        iniciarSesionButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
+        
+        registrarseButton = new Button("Registrarse", e -> getNavigator().navigateTo("registrar")); 
+        registrarseButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
+        
+        contactarButton = new Button("Contactarse", e -> getNavigator().navigateTo("contactar"));
+        contactarButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
+        
+        verFaqButton = new Button("Ayuda", e -> getNavigator().navigateTo("verFaq"));
+        verFaqButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
+        
+        menu = new CssLayout(img, title, iniciarSesionButton, registrarseButton, contactarButton, verFaqButton);
+        menu.addStyleName(ValoTheme.MENU_ROOT);
+    }
+    
+    private void navigatorVisitante() {
+    	navigator = new Navigator(this, viewContainer);
+        navigator.addView("iniciarSesion", new IniciarSesionView(sistema,navigator,this));
+        //navigator.addView("registrar", new RegistrarView());	TODO	
+        navigator.addView("contactar", new ContactarView());    	
+        navigator.addView("verFaq", new VerFaqView());
+    }  
 
     @WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
     @VaadinServletConfiguration(ui = MyUI.class, productionMode = false)
