@@ -5,13 +5,13 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Composite;
 import com.vaadin.ui.Label;
 
-public class SubastasAdminView extends Composite implements View {
-	
-	public SubastasAdminView() {
+public class ResidenciasVisitanteView extends Composite implements View {
+		
+	public ResidenciasVisitanteView() {
 		Label label = new Label();
-		label.setValue("Test Test Test Test Test");
+		label.setValue("123 proban234567");
 			
 		setCompositionRoot((Component) label);
-    }
+	}
 
 }

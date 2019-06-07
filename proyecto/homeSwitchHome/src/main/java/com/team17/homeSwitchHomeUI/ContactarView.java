@@ -2,7 +2,6 @@ package com.team17.homeSwitchHomeUI;
 
 import com.vaadin.navigator.View;
 import com.vaadin.ui.Composite;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;

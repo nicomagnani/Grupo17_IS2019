@@ -1,20 +1,14 @@
 package com.team17.homeSwitchHomeUI;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import org.vaadin.ui.NumberField;
 
 import com.google.gwt.user.client.ui.Image;
 import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationException;
-import com.vaadin.data.converter.StringToBigDecimalConverter;
 import com.vaadin.data.converter.StringToFloatConverter;
-import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.navigator.View;
-import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.AbstractTextField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;

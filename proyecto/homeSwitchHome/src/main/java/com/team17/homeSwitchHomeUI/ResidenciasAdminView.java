@@ -1,18 +1,17 @@
 package com.team17.homeSwitchHomeUI;
 
-import java.awt.TextField;
-
 import com.vaadin.navigator.View;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Composite;
+import com.vaadin.ui.Label;
 
 public class ResidenciasAdminView extends Composite implements View {
 		
 	public ResidenciasAdminView() {
-		TextField textField = new TextField();
-		textField.setText("Text field label");
+		Label label = new Label();
+		label.setValue("Test Test Test Test Test");
 			
-		setCompositionRoot((Component) textField);
+		setCompositionRoot((Component) label);
 	}
 
 }
