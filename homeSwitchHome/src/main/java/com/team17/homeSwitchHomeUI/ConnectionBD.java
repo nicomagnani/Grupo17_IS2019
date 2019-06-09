@@ -1,7 +1,6 @@
 package com.team17.homeSwitchHomeUI;
 
-import java.awt.List;
-import java.io.File;
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -11,11 +10,16 @@ import java.util.ArrayList;
 
 import com.mysql.jdbc.PreparedStatement;
 import com.mysql.jdbc.Statement;
+
 import  homeSwitchHome.Propiedad;
 import homeSwitchHome.UsuarioAdministrador;
+
 public class ConnectionBD {
 	Statement stmt;
+	PreparedStatement ps;	
 	Connection con;
+	
+	
 		public ConnectionBD() {
 			
 		
@@ -29,7 +33,7 @@ public class ConnectionBD {
 		try {
 			
 			con = DriverManager.getConnection("jdbc:mysql://localhost/homeswitchhome","root","");
-			 stmt= (Statement) con.createStatement();
+			stmt = (Statement) con.createStatement();
 			
 		} catch (SQLException e1) {
 			// TODO Auto-generated catch block
@@ -101,14 +105,36 @@ public class ConnectionBD {
 		}
 
 
-		public void agregarResidencia(String titulo, String descripcion, String pais,
-				String provincia, String localidad, String domicilio, int monto) throws SQLException {
-					stmt = (Statement) con.createStatement();
-					stmt.executeUpdate("INSERT INTO propiedad (titulo,descripcion,pais,provincia,localidad,domicilio,monto) VALUES ('"+titulo+"','"+descripcion+"','"+pais+
-					"','"+provincia+"','"+localidad+"','"+domicilio+"','"+monto+"')");
-				}
-	
-		
+		public void agregarResidencia(Propiedad p) throws SQLException {
+			byte[][] fotos = p.getFotos();			
+			ByteArrayInputStream bais;
+			int col = 8, x = 0, y = 1;
+			
+			String query = "INSERT INTO propiedad (titulo,descripcion,pais,provincia,localidad,domicilio,monto,foto1,foto2,foto3,foto4,foto5)"
+					+" VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+						ps = (PreparedStatement) con.prepareStatement(query);
+			
+			ps.setString(1,p.getTitulo());			
+			ps.setString(2,p.getDescripcion());
+			ps.setString(3,p.getPais());
+			ps.setString(4,p.getProvincia());
+			ps.setString(5,p.getLocalidad());
+			ps.setString(6,p.getDomicilio());
+			ps.setFloat(7,p.getMontoBase());
+			
+			for (byte[] foto : fotos) {
+				if (foto != null) {
+					bais = new ByteArrayInputStream(foto);
+					ps.setBinaryStream(col, bais);
+				} else
+					ps.setNull(col, java.sql.Types.BLOB);
+				col++; //incrementa fuera del if-else para asegurar que se guarde en la pos correcta
+			}
+			
+			ps.executeUpdate();
+			ps.close();
+			con.close();
+		}
 		
 }
 

@@ -1,13 +1,11 @@
 package homeSwitchHome;
 
-import java.awt.Image;
-
 public class Propiedad {
 
 	private String titulo,pais,provincia,localidad,domicilio,descripcion;
 
 	private float montoBase;
-	private Image[] fotos = new Image[5];
+	private byte[][] fotos = new byte[5][];
 		
 	public Propiedad() {
 		super();
@@ -15,7 +13,7 @@ public class Propiedad {
 	}
 
 	public Propiedad(String titulo, String pais, String provincia, String localidad, String domicilio,
-			String descripción, float montoBase, Image[] fotos) {
+			String descripción, float montoBase, byte[][] fotos) {
 		super();
 		this.titulo = titulo;
 		this.pais = pais;
@@ -28,7 +26,7 @@ public class Propiedad {
 	}	
 
 	public Propiedad(String titulo, String pais, String provincia, String localidad, String domicilio,
-			String descripcion, int montoBase, Image[] fotos) {
+			String descripcion, int montoBase, byte[][] fotos) {
 	 	super();
 	 	this.titulo = titulo;
 	 	this.pais = pais;
@@ -116,11 +114,11 @@ public class Propiedad {
 		this.montoBase = montoBase;
 	}
 
-	public Image[] getFotos() {
+	public byte[][] getFotos() {
 		return fotos;
 	}
 
-	public void setFotos(Image[] fotos) {
+	public void setFotos(byte[][] fotos) {
 		this.fotos = fotos;
 	}
 	

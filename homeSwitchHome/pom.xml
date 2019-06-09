@@ -76,6 +76,11 @@
   			<artifactId>numberfield</artifactId>
 			<version>0.2.0</version>
 		</dependency>
+		<dependency>
+   			<groupId>org.vaadin.addon</groupId>
+   			<artifactId>easyuploads</artifactId>
+   			<version>9.0.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
