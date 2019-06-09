@@ -1,0 +1,12 @@
+@import "addons.scss";
+@import "hometheme.scss";
+
+/* This file prefixes all rules with the theme name to avoid causing conflicts with other themes. */
+/* The actual styles should be defined in hometheme.scss */
+.hometheme {
+  @include addons;
+  @include hometheme;
+  .backColorGrey{
+           background-color:#0C0C0C;
+      }
+}
