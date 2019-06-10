@@ -62,12 +62,12 @@ public class ConnectionBD {
 		
 		
 		//metodo que devuelve los usuarios comunes+premium de la bd
-		public ArrayList<Usuario> listaUsuarios() throws SQLException {
-               
-			ArrayList<Usuario> usuarios = new ArrayList<Usuario>();
+		public ArrayList<Usuario> listaUsuarios() throws SQLException {               
 			
 			String query = "SELECT * FROM usuarios";
-			ResultSet rs = ps.executeQuery(query);
+			ResultSet rs = stmt.executeQuery(query);
+			
+			ArrayList<Usuario> usuarios = new ArrayList<Usuario>();
 			Usuario usuario;
 			Tarjeta tarjeta = new Tarjeta();
 			
@@ -101,13 +101,16 @@ public class ConnectionBD {
 		//metodo que devuelve los admins de la bd
 		public ArrayList<UsuarioAdministrador> listaAdmins() throws SQLException {
                
-			ArrayList<UsuarioAdministrador> admins = new ArrayList<UsuarioAdministrador>();
 			
 			String query = "SELECT * FROM administradores";
 			ResultSet rs = stmt.executeQuery(query);
+			
+			ArrayList<UsuarioAdministrador> admins = new ArrayList<UsuarioAdministrador>();
+			UsuarioAdministrador admin = new UsuarioAdministrador();
+			
 			while (rs.next())
 		      {
-				UsuarioAdministrador admin = new UsuarioAdministrador();
+				
   				admin.setMail(rs.getString("mail"));
 				admin.setContraseña(rs.getString("contraseña"));
 				admins.add(admin);

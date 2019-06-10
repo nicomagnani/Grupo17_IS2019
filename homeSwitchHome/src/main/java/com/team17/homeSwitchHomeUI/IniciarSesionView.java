@@ -4,12 +4,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import com.vaadin.annotations.Theme;
+import com.vaadin.data.Binder;
+import com.vaadin.data.ValidationException;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Composite;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -18,6 +19,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import homeSwitchHome.HomeSwitchHome;
 import homeSwitchHome.Usuario;
 import homeSwitchHome.UsuarioAdministrador;
+import homeSwitchHome.UsuarioComun;
 
 
 @Theme("hometheme")
@@ -28,19 +30,17 @@ public class IniciarSesionView extends Composite implements View {  //.necesita 
 	PasswordField textoContraseña = new PasswordField("Contraseña:");
 	Button login = new Button("Iniciar Sesión");
 	Label msj = new Label();
-	
-	String vacio = textoEmail.getEmptyValue();
-	
-	
+		
 	public IniciarSesionView(HomeSwitchHome sistema,Navigator navigator, MyUI interfaz) {		
 		
 		cabecera.addStyleName(ValoTheme.MENU_TITLE);
-				
-		login.addClickListener(e -> {			
+						
+		login.addClickListener(e -> {
 			
 			//si los campos no estan vacios
-			if ((textoEmail.getValue() != vacio) && (textoContraseña.getValue() != vacio)) {			
-				ConnectionBD conectar = new ConnectionBD();				
+			if ( (!textoEmail.isEmpty()) && (!textoContraseña.isEmpty()) ) {
+								
+				ConnectionBD conectar = new ConnectionBD();
 				
 				//me conecto a la tabla usuarios
 				ArrayList<Usuario> usuarios = new ArrayList<Usuario>();
@@ -57,10 +57,10 @@ public class IniciarSesionView extends Composite implements View {  //.necesita 
 					if ( (usuario.getMail().equals(textoEmail.getValue())) && 
 							(usuario.getContraseña().equals(textoContraseña.getValue())) ) {
 						msj.setValue("Éxito. Iniciando sesión de usuario...");
-						this.iniciarSesion(interfaz);
+						this.iniciarSesionUsuario(interfaz);
 						ok = true;
-						break;
 					}
+					break;
 				}
 				
 				//si no encuentra en la tabla usuarios, busca en la tabla admins
@@ -76,14 +76,14 @@ public class IniciarSesionView extends Composite implements View {  //.necesita 
 						if ( (admin.getMail().equals(textoEmail.getValue())) && 
 								(admin.getContraseña().equals(textoContraseña.getValue())) ) {
 							msj.setValue("Éxito. Iniciando sesión de administrador...");
-							this.iniciarSesion(interfaz);
+							this.iniciarSesionAdmin(interfaz);
 							ok = true;
-							break;
 						}
+						break;
 					}
 					
 					////si no encuentra en ninguna tabla, muestra error
-					Notification.show("Error: Email y/o contraseña inválidos");
+					msj.setValue("Error: Email y/o contraseña inválidos");
 				}
 			} else
 				msj.setValue("Error: Al menos un campo se encuentra vacío.");
@@ -96,10 +96,12 @@ public class IniciarSesionView extends Composite implements View {  //.necesita 
         setCompositionRoot(mainLayout);	
     }
 	
-	
-	
 
-	private void iniciarSesion(MyUI interfaz) {
-//		interfaz.navigatorAdmin();
+	private void iniciarSesionUsuario(MyUI interfaz) {
+		interfaz.vistaUsuario();
+	}
+	
+	private void iniciarSesionAdmin(MyUI interfaz) {
+		interfaz.vistaAdmin();
 	}
 }

@@ -252,7 +252,9 @@ public class AgregarResidenciaView extends Composite implements View {  //.neces
 			}
 		}
 		propiedad.setFotos(fotos);
-		resultado1.setValue(titulo.getValue()+" "+descripcion.getValue()+" "+pais.getValue()+" "+provincia.getValue()+" "+localidad.getValue()+" "+domicilio.getValue()+" "+monto.getValue()+cumple);
+		
+//		resultado1.setValue(titulo.getValue()+" "+descripcion.getValue()+" "+pais.getValue()+" "+provincia.getValue()+" "+localidad.getValue()+" "+domicilio.getValue()+" "+monto.getValue()+cumple);
+		resultado1.setValue("Agregando residencia...");
 		
 		//si cumple todos los requisitos, cargo la residencia y borro el formulario
 		if (cumple) {
