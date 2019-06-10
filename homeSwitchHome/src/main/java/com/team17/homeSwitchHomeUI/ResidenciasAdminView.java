@@ -1,17 +1,73 @@
 package com.team17.homeSwitchHomeUI;
 
+import java.sql.SQLException;
+import java.util.Iterator;
+
 import com.vaadin.navigator.View;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Composite;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
+
+import homeSwitchHome.Propiedad;
 
 public class ResidenciasAdminView extends Composite implements View {
+	
+	VerticalLayout mainLayout;
 		
 	public ResidenciasAdminView() {
-		Label label = new Label();
-		label.setValue("Test Test Test Test Test");
-			
-		setCompositionRoot((Component) label);
+		
+		mainLayout = new VerticalLayout();
+		this.cargarResidencias();
+        mainLayout.setSizeFull();
+        setCompositionRoot((Component) mainLayout);
 	}
 
+	private void cargarResidencias() {
+		
+		ConnectionBD conexion = new ConnectionBD(); 
+		Iterator<Propiedad> ite = null;
+		try {
+			ite = conexion.listaPropiedades().iterator();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if (ite != null) {
+			while (ite.hasNext()) {
+			this.añadirResidencia((Propiedad) ite.next());
+		}
+		}
+		
+	}
+	
+	//falta visualizar imagenes y añadir estilos.
+	private void añadirResidencia(Propiedad unaResidencia) {
+		
+    	Button modificar = new Button("Modificar", e -> this.modificar(unaResidencia));
+    	Button eliminar = new Button("Eliminar", e -> this.eliminar(unaResidencia));
+    	HorizontalLayout botones = new HorizontalLayout(modificar,eliminar);
+    	
+		Label titulo = new Label(unaResidencia.getTitulo());
+		Label ubicacion = new Label("ubicacion: "+ unaResidencia.getPais() + "," +
+				unaResidencia.getProvincia() + "," + unaResidencia.getLocalidad() +
+				"," + unaResidencia.getDomicilio());
+		Label descripcion = new Label (unaResidencia.getDescripcion());
+		//String monto = String.valueOf(unaResidencia.getMontoBase());.-
+		Label montoBase = new Label ("monto base:" + String.valueOf(unaResidencia.getMontoBase()));
+		
+		VerticalLayout residenciaLayout = new VerticalLayout(titulo,ubicacion,descripcion,montoBase,botones);
+		mainLayout.addComponent(residenciaLayout);
+		
+	}
+	
+	private void modificar(Propiedad unaResidencia) {
+		//TODO
+	}
+	
+	private void eliminar(Propiedad unaResidencia) {
+		//TODO
+	}
 }
