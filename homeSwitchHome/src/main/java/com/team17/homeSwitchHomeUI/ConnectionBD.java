@@ -136,5 +136,15 @@ public class ConnectionBD {
 			con.close();
 		}
 		
+		public void AgregarUsuario(String mail, String contraseña, int tarjeta) throws SQLException {
+			PreparedStatement pstmt = (PreparedStatement) con.prepareStatement("INSERT INTO administradores (mail,contraseña,numTarjeta)"
+			        + "VALUES (?,?,?)" );
+			pstmt.setString(1, mail );
+		    pstmt.setString(2,contraseña);
+		    pstmt.setInt(3,tarjeta);
+		    pstmt.executeUpdate();
+			
+		}
+		
 }
 
