@@ -9,12 +9,6 @@ public class UsuarioAdministrador extends Usuario {
 		// TODO Auto-generated constructor stub
 	}
 	
-	private String contraseña;
-	private String mail;
-	public String getContraseña() {
-		return contraseña;
-	}
-	
 	private Propiedad agregarResidencia() {
 		return null;
 	} //TODO
@@ -28,15 +22,5 @@ public class UsuarioAdministrador extends Usuario {
 		
 	}
 
-	public String getMail() {
-		return mail;
-	}
 
-	public void setMail(String mail) {
-		this.mail = mail;
-	}
-
-	public void setContraseña(String contraseña) {
-		this.contraseña = contraseña;
-	}
 }

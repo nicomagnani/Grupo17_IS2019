@@ -11,45 +11,41 @@ import java.util.ArrayList;
 import com.mysql.jdbc.PreparedStatement;
 import com.mysql.jdbc.Statement;
 
-import  homeSwitchHome.Propiedad;
+import homeSwitchHome.Propiedad;
+import homeSwitchHome.Usuario;
+import homeSwitchHome.UsuarioComun;
+import homeSwitchHome.UsuarioPremium;
 import homeSwitchHome.UsuarioAdministrador;
 
 public class ConnectionBD {
 	Statement stmt;
 	PreparedStatement ps;	
 	Connection con;
-	
-	
-		public ConnectionBD() {
-			
 		
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.out.print("error1");
-		}
-		try {
+		public ConnectionBD() {	
 			
-			con = DriverManager.getConnection("jdbc:mysql://localhost/homeswitchhome","root","");
-			stmt = (Statement) con.createStatement();
+			try {
+				Class.forName("com.mysql.jdbc.Driver");
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+			try {				
+				con = DriverManager.getConnection("jdbc:mysql://localhost/homeswitchhome","root","");
+				stmt = (Statement) con.createStatement();				
+			} catch (SQLException e1) {
+				e1.printStackTrace();			
+			}
 			
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		
-		}
 		}
 		
 		
-		public ArrayList<Propiedad> listaPropiedades() throws SQLException{
-			ArrayList<Propiedad> propiedades= new ArrayList<Propiedad>();
+		public ArrayList<Propiedad> listaPropiedades() throws SQLException {
+			
+			ArrayList<Propiedad> propiedades = new ArrayList<Propiedad>();
 			
 			String query = "SELECT * FROM propiedad";
 			ResultSet rs = stmt.executeQuery(query);
-			while (rs.next())
-		      {
+			while (rs.next()) {
 				Propiedad propiedad = new Propiedad();
 				propiedad.setTitulo(rs.getString("titulo"));
 				propiedad.setPais(rs.getString("pais"));
@@ -58,15 +54,38 @@ public class ConnectionBD {
 				propiedad.setDomicilio(rs.getString("domicilio"));
 				propiedad.setDescripción(rs.getString("descripcion"));
 				propiedad.setMontoBase(rs.getInt("monto"));
-				propiedades.add(propiedad);
-						
+				propiedades.add(propiedad);						
 		      }
-			return propiedades;
-    
+			return propiedades;   
 		}
-		//metodo que devuelve los usuarios admin de la bd
-		public ArrayList<UsuarioAdministrador> listaUsuarios() throws SQLException{
-               ArrayList<UsuarioAdministrador> usuarios= new ArrayList<UsuarioAdministrador>();
+		
+		
+		//metodo que devuelve los usuarios comunes+premium de la bd
+		public ArrayList<Usuario> listaUsuarios() throws SQLException {
+               
+			ArrayList<Usuario> usuarios = new ArrayList<Usuario>();
+			
+			String query = "SELECT * FROM usuarios";
+			ResultSet rs = stmt.executeQuery(query);
+			
+//			while (rs.next()) {
+//				if (!rs.getBoolean("premium")) {						
+//					UsuarioComun usuario = new UsuarioComun();
+//				} else {
+//					UsuarioPremium usuario = new UsuarioPremium(); }
+//  				usuario.setMail(rs.getString("mail"));
+//				usuario.setContraseña(rs.getString("contraseña"));
+//				usuarios.add(usuario);
+//			}
+			
+			return usuarios;
+		}		
+		
+		
+		//metodo que devuelve los admins de la bd
+		public ArrayList<UsuarioAdministrador> listaAdmins() throws SQLException {
+               
+			ArrayList<UsuarioAdministrador> usuarios = new ArrayList<UsuarioAdministrador>();
 			
 			String query = "SELECT * FROM administradores";
 			ResultSet rs = stmt.executeQuery(query);
@@ -135,6 +154,7 @@ public class ConnectionBD {
 			ps.close();
 			con.close();
 		}
+		
 		
 		public void AgregarUsuario(String mail, String contraseña, int tarjeta) throws SQLException {
 			PreparedStatement pstmt = (PreparedStatement) con.prepareStatement("INSERT INTO administradores (mail,contraseña,numTarjeta)"
