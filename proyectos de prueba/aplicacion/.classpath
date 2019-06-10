@@ -50,11 +50,5 @@
 	<classpathentry kind="lib" path="lib/stax-ex-1.8.jar"/>
 	<classpathentry kind="lib" path="lib/txw2-2.3.1.jar"/>
 	<classpathentry kind="lib" path="lib/mysql-connector-java-8.0.16.jar"/>
-	<classpathentry excluding="**" kind="src" output="target/classes" path="target/generated-resources/gwt">
-		<attributes>
-			<attribute name="maven.pomderived" value="true"/>
-		</attributes>
-	</classpathentry>
-
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
