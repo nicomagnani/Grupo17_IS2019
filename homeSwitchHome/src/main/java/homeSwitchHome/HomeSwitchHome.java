@@ -1,9 +1,7 @@
 package homeSwitchHome;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import com.team17.homeSwitchHomeUI.ConnectionBD;
