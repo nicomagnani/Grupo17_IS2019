@@ -2,6 +2,8 @@ package com.team17.homeSwitchHomeUI;
 
 
 
+import java.sql.SQLException;
+
 import javax.servlet.annotation.WebServlet;
 
 import com.vaadin.annotations.Theme;
@@ -79,7 +81,7 @@ public class MyUI extends UI {
     	this.mostrarLogo();
         this.botonesAdmin();
         this.mostrarLayout();
-        this.navigatorAdmin();	//TODO
+        this.navigatorAdmin();
     }
     
     private void mostrarLogo() {
@@ -115,16 +117,16 @@ public class MyUI extends UI {
         buscarLugarButton = new Button("Búsqueda por lugar", e -> getNavigator().navigateTo("buscarLugar"));
         buscarLugarButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
                 
-        iniciarSesionButton = new Button("Iniciar Sesión", e -> getNavigator().navigateTo("iniciarSesion")); 
-        iniciarSesionButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
-        
         contactarButton = new Button("Contactarse", e -> getNavigator().navigateTo("contactar")); 
         contactarButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
         
         verFaqButton = new Button("Ayuda", e -> getNavigator().navigateTo("verFaq")); 
         verFaqButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
         
-        menu = new CssLayout(img, title, residenciasButton, subastasButton, buscarFechaButton, buscarLugarButton, iniciarSesionButton, contactarButton, verFaqButton);
+        cerrarSesionButton = new Button("Cerrar Sesión", e -> vistaVisitante());
+        cerrarSesionButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
+        
+        menu = new CssLayout(img, title, residenciasButton, subastasButton, buscarFechaButton, buscarLugarButton, contactarButton, verFaqButton, cerrarSesionButton);
         menu.addStyleName(ValoTheme.MENU_ROOT);
     }
     
@@ -132,16 +134,15 @@ public class MyUI extends UI {
     	
     	navigator = new Navigator(this, viewContainer);
         
-        /*try {
+        try {
 			navigator.addView("residencias", new ResidenciasView());
 		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		}*/
-        //navigator.addView("subastas", new SubastasView());
+		}
+        
+    	navigator.addView("subastas", new SubastasView());
         navigator.addView("buscarFecha", new BuscarFechaView());
         navigator.addView("buscarLugar", new BuscarLugarView());
-        navigator.addView("iniciarSesion", new IniciarSesionView(sistema,navigator,this));		
         navigator.addView("contactar", new ContactarView());    	
         navigator.addView("verFaq", new VerFaqView());
     }
@@ -160,7 +161,7 @@ public class MyUI extends UI {
         agregarResidenciaButton = new Button("Agregar residencia", e -> getNavigator().navigateTo("agregarResidencia"));
         agregarResidenciaButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
         
-        cerrarSesionButton = new Button("Cerrar Sesión", e -> getNavigator().navigateTo("cerrarSesion"));
+        cerrarSesionButton = new Button("Cerrar Sesión", e -> vistaVisitante());
         cerrarSesionButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
         
         menu = new CssLayout(img, title, residenciasButton, subastasButton, reservasButton, agregarResidenciaButton, cerrarSesionButton);
@@ -168,7 +169,7 @@ public class MyUI extends UI {
     	
     }
     
-    public void navigatorAdmin() {	//TODO
+    public void navigatorAdmin() {
         
     	navigator = new Navigator(this, viewContainer);
     	
@@ -176,7 +177,6 @@ public class MyUI extends UI {
         navigator.addView("subastasAdmin", new SubastasAdminView());
         navigator.addView("reservasAdmin", new ReservasAdminView());
         navigator.addView("agregarResidencia", new AgregarResidenciaView());
-        navigator.addView("cerrarSesion", new CerrarSesionView());
     }
     
     private void botonesVisitante() {
@@ -202,7 +202,7 @@ public class MyUI extends UI {
     	
     	navigator.addView("residenciasVisitante", new ResidenciasVisitanteView());
         navigator.addView("iniciarSesion", new IniciarSesionView(sistema,navigator,this));
-        navigator.addView("registrar", new RegistrarView());	 //TODO
+        navigator.addView("registrar", new RegistrarView());
         navigator.addView("contactar", new ContactarView());    	
         navigator.addView("verFaq", new VerFaqView());
         navigator.navigateTo("residenciasVisitante"); //navega a la lista reducida de residencias - podria ser un botón
