@@ -56,7 +56,7 @@ public class MyUI extends UI {
 
     @Override
     protected void init(VaadinRequest vaadinRequest) { //UI principal.
-    	this.vistaAdmin();
+    	this.vistaVisitante();
     }
     
     public void vistaVisitante() {
@@ -202,7 +202,7 @@ public class MyUI extends UI {
     	
     	navigator.addView("residenciasVisitante", new ResidenciasVisitanteView());
         navigator.addView("iniciarSesion", new IniciarSesionView(sistema,navigator,this));
-        navigator.addView("registrar", new RegistrarView());
+        navigator.addView("registrar", new RegistrarView(this));
         navigator.addView("contactar", new ContactarView());    	
         navigator.addView("verFaq", new VerFaqView());
         navigator.navigateTo("residenciasVisitante"); //navega a la lista reducida de residencias - podria ser un botón

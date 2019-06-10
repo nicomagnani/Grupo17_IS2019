@@ -14,9 +14,9 @@ import com.mysql.jdbc.Statement;
 import homeSwitchHome.Propiedad;
 import homeSwitchHome.Tarjeta;
 import homeSwitchHome.Usuario;
+import homeSwitchHome.UsuarioAdministrador;
 import homeSwitchHome.UsuarioComun;
 import homeSwitchHome.UsuarioPremium;
-import homeSwitchHome.UsuarioAdministrador;
 
 public class ConnectionBD {
 	Statement stmt;
@@ -81,13 +81,13 @@ public class ConnectionBD {
 				usuario.setContraseña(rs.getString("contraseña"));
 				usuario.setNombre(rs.getString("nombre"));
 				usuario.setApellido(rs.getString("apellido"));
-				usuario.setfNac(rs.getDate("f_nac"));
-				usuario.setCreditos(rs.getInt("creditos"));
+				usuario.setfNac((rs.getDate("f_nac").toLocalDate()));
+				usuario.setCreditos(rs.getShort("creditos"));
 				
 				tarjeta.setNumero(rs.getLong("nro_tarj"));
 				tarjeta.setMarca(rs.getString("marca_tarj"));
 				tarjeta.setTitular(rs.getString("titu_tarj"));
-				tarjeta.setfVenc(rs.getDate("venc_tarj"));
+				tarjeta.setfVenc(rs.getDate("venc_tarj").toLocalDate());
 				tarjeta.setCodigo(rs.getShort("cod_tarj"));
 				usuario.setTarjeta(tarjeta);				
 				
@@ -150,7 +150,8 @@ public class ConnectionBD {
 			
 			String query = "INSERT INTO propiedad (titulo,descripcion,pais,provincia,localidad,domicilio,monto,foto1,foto2,foto3,foto4,foto5)"
 					+" VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
-						ps = (PreparedStatement) con.prepareStatement(query);
+			
+			ps = (PreparedStatement) con.prepareStatement(query);
 			
 			ps.setString(1,p.getTitulo());			
 			ps.setString(2,p.getDescripcion());
@@ -175,13 +176,36 @@ public class ConnectionBD {
 		}
 		
 		
-		public void AgregarUsuario(String mail, String contraseña, int tarjeta) throws SQLException {
-			PreparedStatement pstmt = (PreparedStatement) con.prepareStatement("INSERT INTO administradores (mail,contraseña,numTarjeta)"
-			        + "VALUES (?,?,?)" );
-			pstmt.setString(1, mail );
-		    pstmt.setString(2,contraseña);
-		    pstmt.setInt(3,tarjeta);
-		    pstmt.executeUpdate();
+		public void AgregarUsuario(UsuarioComun uc) throws SQLException {
+			Tarjeta tarjeta = uc.getTarjeta();
+			
+			String query = "INSERT INTO usuarios (mail, contraseña, nombre, apellido, f_nac, creditos,"
+					+ " nro_tarj, marca_tarj, titu_tarj, venc_tarj, cod_tarj, premium)"
+					+" VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+			
+			ps = (PreparedStatement) con.prepareStatement(query);
+			
+			ps.setString(1, uc.getMail());
+			ps.setString(2, uc.getContraseña());
+			ps.setString(3, uc.getNombre());
+			ps.setString(4, uc.getApellido());
+			ps.setDate(5, java.sql.Date.valueOf(uc.getfNac()));
+			ps.setShort(6, uc.getCreditos());
+			ps.setLong(6, tarjeta.getNumero());
+			ps.setString(7, tarjeta.getMarca());
+			ps.setString(8, tarjeta.getTitular());
+			ps.setDate(9, java.sql.Date.valueOf(tarjeta.getfVenc()));
+			ps.setShort(10, tarjeta.getCodigo());
+			
+		    ps.executeUpdate();
+			ps.close();
+			con.close();
+			
+		}
+
+
+		public void agregarUsuario(UsuarioComun uc) {
+			// TODO Auto-generated method stub
 			
 		}
 		

@@ -1,13 +1,25 @@
 package homeSwitchHome;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class Tarjeta {	
 	private long numero;
 	private String marca;
 	private String titular;
-	private Date fVenc;
+	private LocalDate fVenc;
 	private short codigo;
+	
+	public Tarjeta() {
+		
+	}
+	
+	public Tarjeta(long numero, String marca, String titular, LocalDate fVenc, short codigo) {
+		this.numero = numero;
+		this.marca = marca;
+		this.titular = titular;
+		this.fVenc = fVenc;
+		this.codigo = codigo;		
+	}
 	
 	public long getNumero() {
 		return numero;
@@ -27,10 +39,10 @@ public class Tarjeta {
 	public void setTitular(String titular) {
 		this.titular = titular;
 	}
-	public Date getfVenc() {
+	public LocalDate getfVenc() {
 		return fVenc;
 	}
-	public void setfVenc(Date fVenc) {
+	public void setfVenc(LocalDate fVenc) {
 		this.fVenc = fVenc;
 	}
 	public short getCodigo() {

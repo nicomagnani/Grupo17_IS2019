@@ -1,7 +1,7 @@
 package homeSwitchHome;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public abstract class Usuario {
@@ -11,14 +11,24 @@ public abstract class Usuario {
 	private String nombre;
 	private String apellido;
 	private Tarjeta tarjeta;
-	private Date fNac;
-	private int creditos = 2;
+	private LocalDate fNac;
+	private short creditos = 2;
 	
 	private List<Reserva> reservas = new ArrayList<Reserva>();
 	
 	
 	public Usuario() {	//crearUsuario(), tal vez lo borremos
 		super();
+	}
+		
+	public Usuario(String mail, String contraseña, String nombre, String apellido,
+			Tarjeta tarjeta, LocalDate fNac) {
+		this.mail = mail;
+		this.contraseña = contraseña;
+		this.nombre = nombre;
+		this.apellido = apellido;
+		this.tarjeta = tarjeta;
+		this.fNac = fNac;
 	}
 	
 	//comienzo de getters y setters
@@ -61,19 +71,19 @@ public abstract class Usuario {
 		this.tarjeta = tarjeta;
 	}
 
-	public Date getfNac() {
+	public LocalDate getfNac() {
 		return fNac;
 	}
 
-	public void setfNac(Date fNac) {
+	public void setfNac(LocalDate fNac) {
 		this.fNac = fNac;
 	}
 
-	public int getCreditos() {
+	public short getCreditos() {
 		return creditos;
 	}
 
-	public void setCreditos(int creditos) {
+	public void setCreditos(short creditos) {
 		this.creditos = creditos;
 	}
 	//fin de getters y setters

@@ -4,8 +4,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import com.vaadin.annotations.Theme;
-import com.vaadin.data.Binder;
-import com.vaadin.data.ValidationException;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.ui.Button;
@@ -19,7 +17,6 @@ import com.vaadin.ui.themes.ValoTheme;
 import homeSwitchHome.HomeSwitchHome;
 import homeSwitchHome.Usuario;
 import homeSwitchHome.UsuarioAdministrador;
-import homeSwitchHome.UsuarioComun;
 
 
 @Theme("hometheme")
