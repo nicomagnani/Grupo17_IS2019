@@ -12,6 +12,7 @@ import com.mysql.jdbc.PreparedStatement;
 import com.mysql.jdbc.Statement;
 
 import homeSwitchHome.Propiedad;
+import homeSwitchHome.Tarjeta;
 import homeSwitchHome.Usuario;
 import homeSwitchHome.UsuarioComun;
 import homeSwitchHome.UsuarioPremium;
@@ -66,17 +67,32 @@ public class ConnectionBD {
 			ArrayList<Usuario> usuarios = new ArrayList<Usuario>();
 			
 			String query = "SELECT * FROM usuarios";
-			ResultSet rs = stmt.executeQuery(query);
+			ResultSet rs = ps.executeQuery(query);
+			Usuario usuario;
+			Tarjeta tarjeta = new Tarjeta();
 			
-//			while (rs.next()) {
-//				if (!rs.getBoolean("premium")) {						
-//					UsuarioComun usuario = new UsuarioComun();
-//				} else {
-//					UsuarioPremium usuario = new UsuarioPremium(); }
-//  				usuario.setMail(rs.getString("mail"));
-//				usuario.setContraseña(rs.getString("contraseña"));
-//				usuarios.add(usuario);
-//			}
+			while (rs.next()) {
+				if (!rs.getBoolean("premium")) {						
+					usuario = new UsuarioComun();
+				} else {
+					usuario = new UsuarioPremium();
+				}
+  				usuario.setMail(rs.getString("mail"));
+				usuario.setContraseña(rs.getString("contraseña"));
+				usuario.setNombre(rs.getString("nombre"));
+				usuario.setApellido(rs.getString("apellido"));
+				usuario.setfNac(rs.getDate("f_nac"));
+				usuario.setCreditos(rs.getInt("creditos"));
+				
+				tarjeta.setNumero(rs.getLong("nro_tarj"));
+				tarjeta.setMarca(rs.getString("marca_tarj"));
+				tarjeta.setTitular(rs.getString("titu_tarj"));
+				tarjeta.setfVenc(rs.getDate("venc_tarj"));
+				tarjeta.setCodigo(rs.getShort("cod_tarj"));
+				usuario.setTarjeta(tarjeta);				
+				
+				usuarios.add(usuario);
+			}
 			
 			return usuarios;
 		}		
@@ -85,18 +101,18 @@ public class ConnectionBD {
 		//metodo que devuelve los admins de la bd
 		public ArrayList<UsuarioAdministrador> listaAdmins() throws SQLException {
                
-			ArrayList<UsuarioAdministrador> usuarios = new ArrayList<UsuarioAdministrador>();
+			ArrayList<UsuarioAdministrador> admins = new ArrayList<UsuarioAdministrador>();
 			
 			String query = "SELECT * FROM administradores";
 			ResultSet rs = stmt.executeQuery(query);
 			while (rs.next())
 		      {
-				UsuarioAdministrador usuario = new UsuarioAdministrador();
-  				usuario.setMail(rs.getString("mail"));
-				usuario.setContraseña(rs.getString("contraseña"));
-				usuarios.add(usuario);
+				UsuarioAdministrador admin = new UsuarioAdministrador();
+  				admin.setMail(rs.getString("mail"));
+				admin.setContraseña(rs.getString("contraseña"));
+				admins.add(admin);
 		     }
-		return usuarios;
+		return admins;
 		}
 		
 		

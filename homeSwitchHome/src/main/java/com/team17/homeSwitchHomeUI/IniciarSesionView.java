@@ -1,4 +1,5 @@
 package com.team17.homeSwitchHomeUI;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -9,54 +10,94 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Composite;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import homeSwitchHome.HomeSwitchHome;
+import homeSwitchHome.Usuario;
 import homeSwitchHome.UsuarioAdministrador;
+
 
 @Theme("hometheme")
 public class IniciarSesionView extends Composite implements View {  //.necesita composite y view para funcionar correctamente
 	
-	public IniciarSesionView(HomeSwitchHome sistema,Navigator navigator, MyUI interfaz) {
+	Label cabecera = new Label("Iniciar Sesión");
+	TextField textoEmail = new TextField("Email:");
+	PasswordField textoContraseña = new PasswordField("Contraseña:");
+	Button login = new Button("Iniciar Sesión");
+	Label msj = new Label();
+	
+	String vacio = textoEmail.getEmptyValue();
+	
+	
+	public IniciarSesionView(HomeSwitchHome sistema,Navigator navigator, MyUI interfaz) {		
 		
-		Label cabecera = new Label("Iniciar Sesión");
 		cabecera.addStyleName(ValoTheme.MENU_TITLE);
-		
-		TextField textoEmail = new TextField("Email:");
-		TextField textoContraseña = new TextField("Contraseña:");
-		
-		Button login = new Button("Iniciar Sesión");
-		login.addClickListener(e -> {
-			ConnectionBD conectar = new ConnectionBD();
-			ArrayList<UsuarioAdministrador> usuarios= new ArrayList<UsuarioAdministrador>();
-			try {
-				usuarios= conectar.listaUsuarios();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			for (int i=0;i< usuarios.size();i++) {
-				if(usuarios.get(i).getMail().equals(textoEmail.getValue())){
-					if(usuarios.get(i).getContraseña().equals(textoContraseña.getValue())) {
-						System.out.print("valido");
-						this.iniciarSesion(interfaz);
-					}else {
-						System.out.print("contra");
-						Notification.show("contraseña incorrecta");
-					}
-				}else {
-					Notification.show("mail invalido");
+				
+		login.addClickListener(e -> {			
+			
+			//si los campos no estan vacios
+			if ((textoEmail.getValue() != vacio) && (textoContraseña.getValue() != vacio)) {			
+				ConnectionBD conectar = new ConnectionBD();				
+				
+				//me conecto a la tabla usuarios
+				ArrayList<Usuario> usuarios = new ArrayList<Usuario>();
+				try {
+					usuarios = conectar.listaUsuarios();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
 				}
 				
-			}
+				boolean ok = false;
+				
+				//busco en la tabla usuarios
+				for (Usuario usuario : usuarios) {
+					if ( (usuario.getMail().equals(textoEmail.getValue())) && 
+							(usuario.getContraseña().equals(textoContraseña.getValue())) ) {
+						msj.setValue("Éxito. Iniciando sesión de usuario...");
+						this.iniciarSesion(interfaz);
+						ok = true;
+						break;
+					}
+				}
+				
+				//si no encuentra en la tabla usuarios, busca en la tabla admins
+				if (!ok) {
+					ArrayList<UsuarioAdministrador> admins = new ArrayList<UsuarioAdministrador>();
+					try {
+						admins = conectar.listaAdmins();
+					} catch (SQLException e1) {
+						e1.printStackTrace();
+					}
+					
+					for (UsuarioAdministrador admin : admins) {
+						if ( (admin.getMail().equals(textoEmail.getValue())) && 
+								(admin.getContraseña().equals(textoContraseña.getValue())) ) {
+							msj.setValue("Éxito. Iniciando sesión de administrador...");
+							this.iniciarSesion(interfaz);
+							ok = true;
+							break;
+						}
+					}
+					
+					////si no encuentra en ninguna tabla, muestra error
+					Notification.show("Error: Email y/o contraseña inválidos");
+				}
+			} else
+				msj.setValue("Error: Al menos un campo se encuentra vacío.");
 			
         });
-		VerticalLayout mainLayout = new VerticalLayout(cabecera, textoEmail, textoContraseña, login);
-        setCompositionRoot(mainLayout);
-	
+		
+		
+		VerticalLayout mainLayout = new VerticalLayout(cabecera, textoEmail, textoContraseña, login, msj);
+		
+        setCompositionRoot(mainLayout);	
     }
+	
+	
+	
 
 	private void iniciarSesion(MyUI interfaz) {
 //		interfaz.navigatorAdmin();
