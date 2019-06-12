@@ -53,7 +53,7 @@ public class MyUI extends UI {
 
     @Override
     protected void init(VaadinRequest vaadinRequest) { //UI principal.
-    	this.vistaAdmin();
+    	this.vistaVisitante();
     }
     
     public void vistaVisitante() {

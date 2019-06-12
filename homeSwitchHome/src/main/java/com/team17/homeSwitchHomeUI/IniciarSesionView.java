@@ -50,14 +50,13 @@ public class IniciarSesionView extends Composite implements View {  //.necesita 
 				boolean ok = false;
 				
 				//busco en la tabla usuarios
-				for (Usuario usuario : usuarios) {
-					if ( (usuario.getMail().equals(textoEmail.getValue())) && 
-							(usuario.getContraseña().equals(textoContraseña.getValue())) ) {
+				for (int i = 0; ( (i < usuarios.size()) && !ok ); i++) {
+					if ( (usuarios.get(i).getMail().equals(textoEmail.getValue())) && 
+							(usuarios.get(i).getContraseña().equals(textoContraseña.getValue())) ) {
 						msj.setValue("Éxito. Iniciando sesión de usuario...");
-						this.iniciarSesionUsuario(usuario.getMail(), interfaz);
+						this.iniciarSesionUsuario(usuarios.get(i).getMail(), interfaz);
 						ok = true;
 					}
-					break;
 				}
 				
 				//si no encuentra en la tabla usuarios, busca en la tabla admins
@@ -69,14 +68,13 @@ public class IniciarSesionView extends Composite implements View {  //.necesita 
 						e1.printStackTrace();
 					}
 					
-					for (UsuarioAdministrador admin : admins) {
-						if ( (admin.getMail().equals(textoEmail.getValue())) && 
-								(admin.getContraseña().equals(textoContraseña.getValue())) ) {
-							msj.setValue("Éxito. Iniciando sesión de administrador...");
-							this.iniciarSesionAdmin(admin.getMail(),interfaz);
+					for (int i = 0; ( (i < admins.size()) && !ok ); i++) {
+						if ( (admins.get(i).getMail().equals(textoEmail.getValue())) && 
+								(admins.get(i).getContraseña().equals(textoContraseña.getValue())) ) {
+							msj.setValue("Éxito. Iniciando sesión de usuario...");
+							this.iniciarSesionUsuario(admins.get(i).getMail(), interfaz);
 							ok = true;
 						}
-						break;
 					}
 					
 					////si no encuentra en ninguna tabla, muestra error
