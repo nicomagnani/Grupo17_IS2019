@@ -4,26 +4,29 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.team17.homeSwitchHomeUI.ConnectionBD;
 
-public class HomeSwitchHome {
+public final class HomeSwitchHome {
 
-public HomeSwitchHome() {
-
-
-}
-	private ConnectionBD conexion = new ConnectionBD();
-	private ArrayList<Usuario> usuarios;
-	private ArrayList<UsuarioAdministrador> administradores;
-	private ArrayList<Reserva> reservas;
-	private ArrayList<Propiedad> propiedades;
+	private static String usuarioActual;
 	
-	public static final int LOGIN_SUCCESS = 1;
-	public static final int WRONG_PASSWORD = 2;
-	public static final int WRONG_USERNAME = 3;
-	public static final int INVALID_EMAIL = 4;
+	private static ArrayList<Usuario> usuarios;
+	private static ArrayList<UsuarioAdministrador> administradores;
+	private static ArrayList<Reserva> reservas;
+	private static ArrayList<Propiedad> propiedades;
+
 	
+	public HomeSwitchHome() {
+
+	}
+
 	
+	public static String getUsuarioActual() {
+		return usuarioActual;
+	}
+
+	public static void setUsuarioActual(String usuarioActual) {
+		HomeSwitchHome.usuarioActual = usuarioActual;
+	}
 	
 	public static boolean verificarMail(String email) {		//TODO
 		   return true;

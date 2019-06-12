@@ -4,63 +4,79 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
-
-import org.vaadin.textfieldformatter.CreditCardFieldFormatter;
-import org.vaadin.ui.NumberField;
+import java.util.Objects;
 
 import com.vaadin.navigator.View;
+import com.vaadin.server.Page;
+import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.shared.ui.datefield.DateResolution;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Composite;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
+import com.vaadin.ui.RadioButtonGroup;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import homeSwitchHome.HomeSwitchHome;
 import homeSwitchHome.Tarjeta;
 import homeSwitchHome.Usuario;
 import homeSwitchHome.UsuarioAdministrador;
 import homeSwitchHome.UsuarioComun;
 
+
 public class RegistrarView extends Composite implements View {
 	
 	Label cabecera = new Label("Registrar usuario");
+	Label labelParte1 = new Label("<span style=\"text-align: left; font-weight: bold; text-decoration: underline; font-size: 120%;\">Datos generales</span>", ContentMode.HTML);
 	TextField textoEmail = new TextField("Email:");
+	
 	PasswordField textoContraseña1 = new PasswordField("Contraseña:");
 	PasswordField textoContraseña2 = new PasswordField("Repetir contraseña:");
+	
 	TextField textoNombre = new TextField("Nombre:");
 	TextField textoApellido = new TextField("Apellido:");
 	DateField fechaNac = new DateField("Fecha de nacimiento",LocalDate.now()); 
 	
-	Label labelTarjeta = new Label("Datos de tarjeta"); // TODO darle algún estilo para que sirva de cabecera
+	Label labelParte2 = new Label("<span style=\"text-align: left; font-weight: bold; text-decoration: underline; font-size: 120%;\">Datos de tarjeta</span>", ContentMode.HTML);
 	TextField campoNroTarj = new TextField("Número de tarjeta:");
-	CreditCardFieldFormatter formatter = new CreditCardFieldFormatter();
-	TextField textoMarcaTarj = new TextField("Marca:");
+	RadioButtonGroup<String> campoMarcaTarj = new RadioButtonGroup<>("Marca:");
 	TextField textoTitTarj = new TextField("Titular de tarjeta:");
-	DateField fechaVencTarj = new DateField("Fecha de vencimiento:"); //TODO: mostrar solo año+mes
-	NumberField nroSegTarj = new NumberField("Código de seguridad:");
+	DateField fechaVencTarj = new DateField("Fecha de vencimiento:");
+	PasswordField nroSegTarj = new PasswordField("Código de seguridad:");
 	
 	Button botonAceptar = new Button("Registrarse");
-	Label labelMsj = new Label();
+	Notification notification = new Notification("asd");	
 	
 	
 	public RegistrarView(MyUI interfaz) {
 		
 		cabecera.addStyleName(ValoTheme.MENU_TITLE);
+				
+		fechaNac.setValue(LocalDate.parse("2000-01-01"));
+	
+		campoNroTarj.setMaxLength(16);
 		
-		formatter.addCreditCardChangedListener(e -> {
-			// Any custom behavior based on the event
-			e.getCreditCardType();
-		});
-		formatter.extend(campoNroTarj);
+		fechaVencTarj.setResolution(DateResolution.MONTH);
 		
-		botonAceptar.addClickListener(e -> aceptar(interfaz));
+		fechaVencTarj.setValue(LocalDate.parse("2020-01-01"));
+		fechaVencTarj.setRangeStart(LocalDate.now());
+		
+		campoMarcaTarj.addStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
+		campoMarcaTarj.setItems("VISA", "MasterCard"); //agregar m
+		
+		botonAceptar.addClickListener( e -> aceptar(interfaz) );
+		
 		
 		FormLayout layout1 = new FormLayout(textoEmail, textoContraseña1, textoContraseña2, textoNombre, textoApellido, fechaNac);
-		FormLayout layout2 = new FormLayout(campoNroTarj, textoMarcaTarj,textoTitTarj,fechaVencTarj, nroSegTarj);
-		VerticalLayout mainLayout = new VerticalLayout(cabecera, layout1, labelTarjeta, layout2, botonAceptar, labelMsj);
+		FormLayout layout2 = new FormLayout(campoNroTarj, campoMarcaTarj,textoTitTarj,fechaVencTarj, nroSegTarj);
+		VerticalLayout mainLayout = new VerticalLayout(cabecera, labelParte1, layout1, labelParte2, layout2, botonAceptar);
+		mainLayout.setComponentAlignment(labelParte2, Alignment.BOTTOM_LEFT);
 		
 		setCompositionRoot(mainLayout);
 	}
@@ -73,7 +89,7 @@ public class RegistrarView extends Composite implements View {
 			if (esMayorDeEdad()) {
 			
 				if (contraseñasCoinciden()) {
-					
+										
 					ConnectionBD conectar = new ConnectionBD();
 					ArrayList<Usuario> usuarios = new ArrayList<Usuario>();
 					
@@ -87,10 +103,10 @@ public class RegistrarView extends Composite implements View {
 					boolean existe = false;
 					
 					//busco en la tabla usuarios
-					for (Usuario usuario : usuarios) {
-						if ( usuario.getMail().equals(textoEmail.getValue()) )
+					for (int i = 0; ( (i < usuarios.size()) && !existe ); i++) {
+						if ( usuarios.get(i).getMail().equals(textoEmail.getValue()) )
 							existe = true;
-						break;
+							
 					}
 					
 					//si no encuentra en la tabla usuarios, busca en la tabla admins
@@ -103,40 +119,62 @@ public class RegistrarView extends Composite implements View {
 							e1.printStackTrace();
 						}
 						
-						for (UsuarioAdministrador admin : admins) {
-							if ( admin.getMail().equals(textoEmail.getValue()) )
+						for (int i = 0; ( (i < admins.size()) && !existe ); i++) {
+							if ( admins.get(i).getMail().equals(textoEmail.getValue()) )
 								existe = true;
-							break;
+								
 						}
+						
 						if (!existe) {				
 							
 							Tarjeta tarjeta = new Tarjeta( Long.parseLong(campoNroTarj.getValue()),
-									textoMarcaTarj.getValue(), textoTitTarj.getValue(), fechaVencTarj.getValue(),
+									campoMarcaTarj.getValue(), textoTitTarj.getValue(), fechaVencTarj.getValue(),
 									Short.parseShort(nroSegTarj.getValue()) );
-							UsuarioComun uc = new UsuarioComun(); //TODO cargar usuario con datos de los campos 
-							labelMsj.setValue("Éxito. Registrando usuario...");
-							ConnectionBD con = new ConnectionBD();
-							con.agregarUsuario(uc);
-							iniciarSesionUsuario(interfaz);
+							
+							UsuarioComun usuario = new UsuarioComun(textoEmail.getValue(), textoContraseña1.getValue(),
+									textoNombre.getValue(), textoApellido.getValue(), tarjeta, fechaNac.getValue());
+							
+							mostrarNotificacion("Éxito. Registrando usuario...", Notification.Type.HUMANIZED_MESSAGE);
+							
+							ConnectionBD con = new ConnectionBD();							
+							try {
+								con.agregarUsuario(usuario);
+							} catch (SQLException e) {
+								e.printStackTrace();
+							}
+							
+							iniciarSesionUsuario(usuario.getMail(), interfaz);
 						}
 					}
 					
-					// el ultimo mensaje solo se muestra cuando existe un usuario o admin registrado,
-					// por eso no hace chequeo
-					labelMsj.setValue("Error: El email ya se encuentra registrado.");				
-					
-				} else labelMsj.setValue("Error: Las contraseñas ingresadas no coinciden.");
-			} else labelMsj.setValue("Error: Debe ser mayor de 18 años para registrar una cuenta.");
-		} else labelMsj.setValue("Error: Al menos un campo se encuentra vacío.");
+					if (existe) {
+						mostrarNotificacion("Error: El email ya se encuentra registrado.", Notification.Type.ERROR_MESSAGE);
+					}					
+				} else {
+					mostrarNotificacion("Error: Las contraseñas ingresadas no coinciden.", Notification.Type.ERROR_MESSAGE);
+				}
+			} else {
+				mostrarNotificacion("Error: Debe ser mayor de 18 años para registrar una cuenta.", Notification.Type.ERROR_MESSAGE);
+			}
+		} else {
+			mostrarNotificacion("Error: Al menos un campo se encuentra vacío.", Notification.Type.ERROR_MESSAGE);
+		}
 			
 	}
 
-
+    
+    private void mostrarNotificacion(String st, Notification.Type tipo) {
+    	notification = new Notification(st, tipo);
+    	notification.setDelayMsec(5000);
+		notification.show(Page.getCurrent());
+    }
+    
+    
 	private boolean hayCamposVacios() {
 		
-    	return ( (textoEmail.isEmpty()) && (!textoContraseña1.isEmpty()) && (!textoContraseña2.isEmpty()) && (!textoNombre.isEmpty()) && 
-    			(!textoApellido.isEmpty()) && (!fechaNac.isEmpty()) && (!campoNroTarj.isEmpty()) && (!textoMarcaTarj.isEmpty()) && 
-    			(!textoTitTarj.isEmpty()) && (!fechaVencTarj.isEmpty()) && (!nroSegTarj.isEmpty()) );
+    	return ( (textoEmail.isEmpty()) || (textoContraseña1.isEmpty()) || (textoContraseña2.isEmpty()) || (textoNombre.isEmpty()) || 
+    			(textoApellido.isEmpty()) || (fechaNac.isEmpty()) || (campoNroTarj.isEmpty()) || (campoMarcaTarj.isEmpty()) || 
+    			(textoTitTarj.isEmpty()) || (fechaVencTarj.isEmpty()) || (nroSegTarj.isEmpty()) );
 	}
 	
 	
@@ -147,7 +185,7 @@ public class RegistrarView extends Composite implements View {
 	}
 	
 	
-    public static int calcularEdad(LocalDate birthDate, LocalDate currentDate) {
+    private static int calcularEdad(LocalDate birthDate, LocalDate currentDate) {
     	
     	if ((birthDate != null) && (currentDate != null)) {
     		return Period.between(birthDate, currentDate).getYears();
@@ -156,15 +194,15 @@ public class RegistrarView extends Composite implements View {
     }
     
     
-	private boolean contraseñasCoinciden() {	
-		
-		return ( textoContraseña1.getValue() == textoContraseña2.getValue() );
+	private boolean contraseñasCoinciden() {
+		return Objects.equals(textoContraseña1.getValue(),
+				textoContraseña2.getValue());
 	}
 
 
-	private void iniciarSesionUsuario(MyUI interfaz) {
-		
-		interfaz.vistaUsuario();		
+	private void iniciarSesionUsuario(String usuarioActual, MyUI interfaz) {
+		HomeSwitchHome.setUsuarioActual(usuarioActual);
+		interfaz.vistaUsuario();
 	}
 
 }

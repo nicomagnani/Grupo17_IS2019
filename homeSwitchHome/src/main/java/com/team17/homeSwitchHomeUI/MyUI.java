@@ -20,8 +20,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
-import homeSwitchHome.HomeSwitchHome;
-
 
 /**
  * This UI is the application entry point. A UI may either represent a browser window 
@@ -33,7 +31,6 @@ import homeSwitchHome.HomeSwitchHome;
 @Theme("hometheme")
 public class MyUI extends UI {
 	
-	HomeSwitchHome sistema;
 	Image img;
 	Label title;
 	
@@ -56,7 +53,7 @@ public class MyUI extends UI {
 
     @Override
     protected void init(VaadinRequest vaadinRequest) { //UI principal.
-    	this.vistaVisitante();
+    	this.vistaAdmin();
     }
     
     public void vistaVisitante() {
@@ -84,9 +81,7 @@ public class MyUI extends UI {
         this.navigatorAdmin();
     }
     
-    private void mostrarLogo() {
-    	sistema = new HomeSwitchHome();
-    	
+    private void mostrarLogo() {    	
     	img = new Image();
     	img.setSource(new ThemeResource("logo.png"));
     	img.setWidth(250, Unit.PIXELS);
@@ -201,7 +196,7 @@ public class MyUI extends UI {
     	navigator = new Navigator(this, viewContainer);
     	
     	navigator.addView("residenciasVisitante", new ResidenciasVisitanteView());
-        navigator.addView("iniciarSesion", new IniciarSesionView(sistema,navigator,this));
+        navigator.addView("iniciarSesion", new IniciarSesionView(this));
         navigator.addView("registrar", new RegistrarView(this));
         navigator.addView("contactar", new ContactarView());    	
         navigator.addView("verFaq", new VerFaqView());

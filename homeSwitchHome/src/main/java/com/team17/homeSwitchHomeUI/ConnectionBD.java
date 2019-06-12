@@ -176,11 +176,11 @@ public class ConnectionBD {
 		}
 		
 		
-		public void AgregarUsuario(UsuarioComun uc) throws SQLException {
+		public void agregarUsuario(UsuarioComun uc) throws SQLException {
 			Tarjeta tarjeta = uc.getTarjeta();
 			
 			String query = "INSERT INTO usuarios (mail, contraseña, nombre, apellido, f_nac, creditos,"
-					+ " nro_tarj, marca_tarj, titu_tarj, venc_tarj, cod_tarj, premium)"
+					+ " nro_tarj, marca_tarj, titu_tarj, venc_tarj, cod_tarj)"
 					+" VALUES (?,?,?,?,?,?,?,?,?,?,?)";
 			
 			ps = (PreparedStatement) con.prepareStatement(query);
@@ -191,21 +191,15 @@ public class ConnectionBD {
 			ps.setString(4, uc.getApellido());
 			ps.setDate(5, java.sql.Date.valueOf(uc.getfNac()));
 			ps.setShort(6, uc.getCreditos());
-			ps.setLong(6, tarjeta.getNumero());
-			ps.setString(7, tarjeta.getMarca());
-			ps.setString(8, tarjeta.getTitular());
-			ps.setDate(9, java.sql.Date.valueOf(tarjeta.getfVenc()));
-			ps.setShort(10, tarjeta.getCodigo());
+			ps.setLong(7, tarjeta.getNumero());
+			ps.setString(8, tarjeta.getMarca());
+			ps.setString(9, tarjeta.getTitular());
+			ps.setDate(10, java.sql.Date.valueOf(tarjeta.getfVenc()));
+			ps.setShort(11, tarjeta.getCodigo());
 			
 		    ps.executeUpdate();
 			ps.close();
 			con.close();
-			
-		}
-
-
-		public void agregarUsuario(UsuarioComun uc) {
-			// TODO Auto-generated method stub
 			
 		}
 		

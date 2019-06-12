@@ -28,7 +28,7 @@ public class IniciarSesionView extends Composite implements View {  //.necesita 
 	Button login = new Button("Iniciar Sesión");
 	Label msj = new Label();
 		
-	public IniciarSesionView(HomeSwitchHome sistema,Navigator navigator, MyUI interfaz) {		
+	public IniciarSesionView(MyUI interfaz) {		
 		
 		cabecera.addStyleName(ValoTheme.MENU_TITLE);
 						
@@ -54,7 +54,7 @@ public class IniciarSesionView extends Composite implements View {  //.necesita 
 					if ( (usuario.getMail().equals(textoEmail.getValue())) && 
 							(usuario.getContraseña().equals(textoContraseña.getValue())) ) {
 						msj.setValue("Éxito. Iniciando sesión de usuario...");
-						this.iniciarSesionUsuario(interfaz);
+						this.iniciarSesionUsuario(usuario.getMail(), interfaz);
 						ok = true;
 					}
 					break;
@@ -73,7 +73,7 @@ public class IniciarSesionView extends Composite implements View {  //.necesita 
 						if ( (admin.getMail().equals(textoEmail.getValue())) && 
 								(admin.getContraseña().equals(textoContraseña.getValue())) ) {
 							msj.setValue("Éxito. Iniciando sesión de administrador...");
-							this.iniciarSesionAdmin(interfaz);
+							this.iniciarSesionAdmin(admin.getMail(),interfaz);
 							ok = true;
 						}
 						break;
@@ -94,11 +94,13 @@ public class IniciarSesionView extends Composite implements View {  //.necesita 
     }
 	
 
-	private void iniciarSesionUsuario(MyUI interfaz) {
+	private void iniciarSesionUsuario(String usuarioActual, MyUI interfaz) {
+		HomeSwitchHome.setUsuarioActual(usuarioActual);
 		interfaz.vistaUsuario();
 	}
 	
-	private void iniciarSesionAdmin(MyUI interfaz) {
+	private void iniciarSesionAdmin(String usuarioActual, MyUI interfaz) {
+		HomeSwitchHome.setUsuarioActual(usuarioActual);
 		interfaz.vistaAdmin();
 	}
 }
