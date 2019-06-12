@@ -119,28 +119,29 @@ public class ConnectionBD {
 		}
 		
 		
-		public void AgregarDatos(String titulo, String pais) throws SQLException {
-
-			
-			PreparedStatement pstmt = (PreparedStatement) con.prepareStatement("INSERT INTO propiedad (titulo,pais,provincia,localidad,domicilio,descripcion,monto,imagen)"
-			        + "VALUES (?,?,?,?,?,?,?,?)" );
-			
-			FileInputStream fis = null;
-			 PreparedStatement ps = null;
-			 con.setAutoCommit(false);
-				//File file = new File(ruta);
-			//	fis = new FileInputStream(file);
-			pstmt.setString(1, titulo );
-		    pstmt.setString(2,pais);
-		    pstmt.setString(3,"provincia");
-		    pstmt.setString(4,"loc");
-		    pstmt.setString(5,"dom");
-		    pstmt.setString(6,"desc");
-		    pstmt.setInt(7, 100);
-		  
-			pstmt.executeUpdate();
-			
-		}
+		//metodo obsoleto, usar agregarResidencia
+//		public void AgregarDatos(String titulo, String pais) throws SQLException {
+//
+//			
+//			PreparedStatement pstmt = (PreparedStatement) con.prepareStatement("INSERT INTO propiedad (titulo,pais,provincia,localidad,domicilio,descripcion,monto,imagen)"
+//			        + "VALUES (?,?,?,?,?,?,?,?)" );
+//			
+//			FileInputStream fis = null;
+//			 PreparedStatement ps = null;
+//			 con.setAutoCommit(false);
+//				//File file = new File(ruta);
+//			//	fis = new FileInputStream(file);
+//			pstmt.setString(1, titulo );
+//		    pstmt.setString(2,pais);
+//		    pstmt.setString(3,"provincia");
+//		    pstmt.setString(4,"loc");
+//		    pstmt.setString(5,"dom");
+//		    pstmt.setString(6,"desc");
+//		    pstmt.setInt(7, 100);
+//		  
+//			pstmt.executeUpdate();
+//			
+//		}
 
 
 		public void agregarResidencia(Propiedad p) throws SQLException {

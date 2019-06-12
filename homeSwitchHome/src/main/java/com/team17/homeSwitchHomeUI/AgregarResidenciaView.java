@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import org.vaadin.easyuploads.UploadField;
 import org.vaadin.ui.NumberField;
@@ -14,6 +15,7 @@ import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationException;
 import com.vaadin.data.converter.StringToFloatConverter;
 import com.vaadin.navigator.View;
+import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.AbstractTextField;
 import com.vaadin.ui.Button;
@@ -23,6 +25,8 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.RadioButtonGroup;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
@@ -31,9 +35,9 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import homeSwitchHome.Propiedad;
 
-public class AgregarResidenciaView extends Composite implements View {  //.necesita composite y view para funcionar correctamente
-	
-	private FormLayout formulario = new FormLayout();
+public class AgregarResidenciaView extends Composite implements View {  //.necesita composite y view para funcionar correctamente	
+
+	FormLayout formulario = new FormLayout();
 	private TextField titulo = new TextField("Título");
 	private TextArea descripcion = new TextArea("Descripción");
 	private TextField pais = new TextField("País");
@@ -42,17 +46,18 @@ public class AgregarResidenciaView extends Composite implements View {  //.neces
 	private TextField domicilio = new TextField("Domicilio");
 	private NumberField monto = new NumberField("Monto base");
 	private Button aceptarButton = new Button("Aceptar");
-	private Label resultado1 = new Label();
+	private Notification resultado1 = new Notification(" ");
 	private Label resultado2 = new Label();
 	private Binder<Propiedad> binder = new Binder<>(Propiedad.class);
 	private Propiedad propiedad = new Propiedad();
 	
-	private RadioButtonGroup<String> single = new RadioButtonGroup<>("Seleccionar tipo de carga de imágenes");
+	private Label labelTipoCarga = new Label("Seleccionar tipo de carga de imágenes");
+	private RadioButtonGroup<String> single = new RadioButtonGroup<>();
 	
 	private UploadField uploadField = new UploadField();
 	
 	private TextField url = new TextField();
-	private Button buttonAgregar = new Button("Agregar foto");
+	private Button buttonAgregarFoto = new Button("Agregar foto");
 	private Button buttonMostrarFotosFinales = new Button("Ver fotos agregadas");
 	private Label labelMsg = new Label();
 	private Image imageFinal1 = new Image("Foto 1");
@@ -65,6 +70,7 @@ public class AgregarResidenciaView extends Composite implements View {  //.neces
 	private byte[][] fotos = new byte[5][]; // las 5 fotos
 	private byte[] preFoto;
 	private int tot = 0;
+	
 	
 	public AgregarResidenciaView() {
 		
@@ -98,13 +104,15 @@ public class AgregarResidenciaView extends Composite implements View {  //.neces
 		});
 		
 		//configuro el componente para subir imagenes locales
-		uploadField.setCaption("Añadir imagen desde dispositivo local:");
 		uploadField.setAcceptFilter("image/*");
 		uploadField.setClearButtonVisible(false);
 		uploadField.setDisplayUpload(true);
+		uploadField.setVisible(false);
+
+		url.setVisible(false);
 		
 		//configuro el boton que carga una imagen
-		buttonAgregar.addClickListener(e -> {
+		buttonAgregarFoto.addClickListener(e -> {
 			if (tot < 5) {
 				if (op == "Local") {				
 					if (!uploadField.isEmpty()) {
@@ -164,29 +172,34 @@ public class AgregarResidenciaView extends Composite implements View {  //.neces
 		formulario.addComponent(localidad);
 		formulario.addComponent(domicilio);
 		formulario.addComponent(monto);
+		formulario.addComponent(labelTipoCarga);
+		formulario.addComponent(single);
+		formulario.addComponent(uploadField);
+		formulario.addComponent(url);
+		formulario.addComponent(labelMsg);
 		
-		//form2 contiene los componentes para cargar imagenes
-		FormLayout form2 = new FormLayout();
-		form2.addComponent(single);
-		
-		VerticalLayout cargarFotoLayout = new VerticalLayout(uploadField,url);
-		VerticalLayout agregarFotoLayout = new VerticalLayout(labelMsg,buttonAgregar);
-		HorizontalLayout cargaryAgregarFotoLayout = new HorizontalLayout(cargarFotoLayout,agregarFotoLayout);
-		form2.addComponent(cargaryAgregarFotoLayout);
+		imageFinal1.setWidth(100, Unit.PIXELS);
+		imageFinal2.setWidth(100, Unit.PIXELS);
+		imageFinal3.setWidth(100, Unit.PIXELS);
+		imageFinal4.setWidth(100, Unit.PIXELS);
+		imageFinal5.setWidth(100, Unit.PIXELS);
 		
 		HorizontalLayout verFotosLayout = new HorizontalLayout(imageFinal1, imageFinal2, imageFinal3, imageFinal4, imageFinal5);
-		form2.addComponent(buttonMostrarFotosFinales);
-		form2.addComponent(verFotosLayout);
+		verFotosLayout.setWidth("400");
+		verFotosLayout.addStyleName("scrollable");
 		
-		formulario.addComponent(form2);
+		formulario.addComponent(buttonAgregarFoto);
+		formulario.addComponent(buttonMostrarFotosFinales);
+		formulario.addComponent(verFotosLayout);
+				
+		Panel panel = new Panel(formulario);
+		VerticalLayout main = new VerticalLayout(cabecera, panel, aceptarButton, resultado2);
+
+		panel.setHeight("700");
+		panel.setWidth("500");
+		panel.addStyleName("scrollable");
 		
-		formulario.addComponent(aceptarButton);
-		formulario.addComponent(resultado1);
-		formulario.addComponent(resultado2);
-		
-		VerticalLayout mainLayout = new VerticalLayout(cabecera, formulario);
-		
-		setCompositionRoot(mainLayout);
+		setCompositionRoot(main);
     }
 	
 	//carga imagen desde url
@@ -206,7 +219,6 @@ public class AgregarResidenciaView extends Composite implements View {  //.neces
 		  if (is != null)
 			  is.close();
 		
-		  url.setCaption("Lectura completa");
 		  preFoto = baos.toByteArray();		  
 		}
 		
@@ -224,6 +236,7 @@ public class AgregarResidenciaView extends Composite implements View {  //.neces
 	    resource.setCacheTime(0);
 	}
 	
+	
 	//muestra las fotos cargadas
 	private void showFinal(byte[] foto, Image image) {
 	    StreamResource resource = new StreamResource(
@@ -236,44 +249,66 @@ public class AgregarResidenciaView extends Composite implements View {  //.neces
 	    image.setSource(resource);
 	}	
 	
+	
 	//chequea requisitos finales y sube la residencia a la base de datos
 	private void aceptar() throws SQLException {		
-		boolean cumple = true;
 		
-		if ((titulo.isEmpty()) || (descripcion.isEmpty()) || (pais.isEmpty()) || (provincia.isEmpty()) || (localidad.isEmpty()) || 
-				(domicilio.isEmpty()) || (monto.isEmpty())) {
-			cumple = false;			
-		} else {
+		if ( !hayCamposVacios() ) {			
 			try {
-	        binder.writeBean(propiedad);	        
-			} catch (ValidationException e) {
-	    	  e.printStackTrace();
-	    	  resultado1.setValue("ERROR DESCONOCIDO");
-			}
-		}
-		propiedad.setFotos(fotos);
-		
-//		resultado1.setValue(titulo.getValue()+" "+descripcion.getValue()+" "+pais.getValue()+" "+provincia.getValue()+" "+localidad.getValue()+" "+domicilio.getValue()+" "+monto.getValue()+cumple);
-		resultado1.setValue("Agregando residencia...");
-		
-		//si cumple todos los requisitos, cargo la residencia y borro el formulario
-		if (cumple) {
-			ConnectionBD con = new ConnectionBD();
-			con.agregarResidencia(propiedad);
-			resultado1.setValue("Éxito.");
+		        binder.writeBean(propiedad);        
+				} catch (ValidationException e) {
+		    	  e.printStackTrace();
+		    	  mostrarNotificacion("Error de la base de datos.", Notification.Type.ERROR_MESSAGE);
+				}
+			propiedad.setFotos(fotos);			
 			
-			//reinicio todos los campos
-			for ( Component comp : formulario ) {
-			    if (comp instanceof AbstractTextField) {
-			    	((AbstractTextField) comp).setValue(((AbstractTextField) comp).getEmptyValue());
-			    }
-			}
-			url.setValue(url.getEmptyValue());
-			uploadField.setValue(uploadField.getEmptyValue());
-			imageFinal1.setSource(null); imageFinal2.setSource(null); imageFinal3.setSource(null); imageFinal4.setSource(null); imageFinal5.setSource(null);
-	    	fotos = new byte[5][];
-	    	tot = 0;
-		}
-		
+			if ( !existePropiedad() ) {
+				//si cumple todos los requisitos, cargo la residencia y borro el formulario
+				ConnectionBD con = new ConnectionBD();
+				con.agregarResidencia(propiedad);
+				mostrarNotificacion("Éxito.", Notification.Type.HUMANIZED_MESSAGE);
+				
+				//reinicio todos los campos
+				for ( Component comp : formulario ) {
+				    if (comp instanceof AbstractTextField) {
+				    	((AbstractTextField) comp).setValue(((AbstractTextField) comp).getEmptyValue());
+				    }
+				}
+				url.setValue(url.getEmptyValue());
+				uploadField.setValue(uploadField.getEmptyValue());
+				imageFinal1.setSource(null); imageFinal2.setSource(null); imageFinal3.setSource(null); imageFinal4.setSource(null); imageFinal5.setSource(null);
+		    	fotos = new byte[5][];
+		    	tot = 0;
+				
+			} else mostrarNotificacion("Error: Ya existe una propiedad con el mismo título en esa localidad.", Notification.Type.ERROR_MESSAGE);
+		} else mostrarNotificacion("Error: Al menos un campo se encuentra vacío.", Notification.Type.ERROR_MESSAGE);
 	}
+			
+	
+    private boolean existePropiedad() throws SQLException {
+    	ConnectionBD con = new ConnectionBD();
+    	 ArrayList<Propiedad> propiedades = con.listaPropiedades();
+    	 
+    	 boolean existe = false;
+    	 for (int i = 0; ( (i < propiedades.size()) && !existe ); i++) {
+				if ( (propiedades.get(i).getTitulo().equals(propiedad.getTitulo())) &&
+						(propiedades.get(i).getLocalidad().equals(propiedad.getLocalidad())) )
+					existe = true;								
+			}
+    	
+    	return existe;
+	}
+    
+
+	private boolean hayCamposVacios() {
+    	return ((titulo.isEmpty()) || (descripcion.isEmpty()) || (pais.isEmpty()) || (provincia.isEmpty()) || (localidad.isEmpty()) || 
+				(domicilio.isEmpty()) || (monto.isEmpty()));
+	}
+	
+
+	private void mostrarNotificacion(String st, Notification.Type tipo) {
+    	resultado1 = new Notification(st, tipo);
+    	resultado1.setDelayMsec(5000);
+    	resultado1.show(Page.getCurrent());
+    }
 }

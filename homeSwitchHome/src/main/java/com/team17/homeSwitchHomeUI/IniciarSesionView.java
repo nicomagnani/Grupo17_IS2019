@@ -72,7 +72,7 @@ public class IniciarSesionView extends Composite implements View {  //.necesita 
 						if ( (admins.get(i).getMail().equals(textoEmail.getValue())) && 
 								(admins.get(i).getContraseña().equals(textoContraseña.getValue())) ) {
 							msj.setValue("Éxito. Iniciando sesión de usuario...");
-							this.iniciarSesionUsuario(admins.get(i).getMail(), interfaz);
+							this.iniciarSesionAdmin(admins.get(i).getMail(), interfaz);
 							ok = true;
 						}
 					}

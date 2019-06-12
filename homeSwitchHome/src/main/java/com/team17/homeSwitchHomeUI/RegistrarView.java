@@ -105,8 +105,7 @@ public class RegistrarView extends Composite implements View {
 					//busco en la tabla usuarios
 					for (int i = 0; ( (i < usuarios.size()) && !existe ); i++) {
 						if ( usuarios.get(i).getMail().equals(textoEmail.getValue()) )
-							existe = true;
-							
+							existe = true;							
 					}
 					
 					//si no encuentra en la tabla usuarios, busca en la tabla admins
@@ -121,8 +120,7 @@ public class RegistrarView extends Composite implements View {
 						
 						for (int i = 0; ( (i < admins.size()) && !existe ); i++) {
 							if ( admins.get(i).getMail().equals(textoEmail.getValue()) )
-								existe = true;
-								
+								existe = true;								
 						}
 						
 						if (!existe) {				
