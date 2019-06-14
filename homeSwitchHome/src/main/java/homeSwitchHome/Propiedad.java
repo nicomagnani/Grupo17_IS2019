@@ -1,11 +1,22 @@
 package homeSwitchHome;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+
 public class Propiedad {
 
 	private String titulo,pais,provincia,localidad,domicilio,descripcion;
-
 	private float montoBase;
 	private byte[][] fotos = new byte[5][];
+	private byte[] foto1;
+	private byte[] foto2;
+	private byte[] foto3;
+	private byte[] foto4;
+	private byte[] foto5;
+	
+	
+	
+	private ArrayList<Reserva> reservas;
 		
 	public Propiedad() {
 		super();
@@ -36,6 +47,7 @@ public class Propiedad {
 	 	this.descripcion = descripcion;
 	 	this.montoBase = montoBase;
 	 	this.fotos = fotos;
+	 	 
 	}
 	
 	public void reservarSemana(int unaSemana)
@@ -48,6 +60,22 @@ public class Propiedad {
 		
 	}
 
+	public boolean añadirReserva(Reserva reserva) {		
+		// >>true si tuvo exito
+		return false;
+	}
+	
+	public boolean eliminarReserva(Reserva reserva) {		
+		// >>true si tuvo exito
+		return false;
+	} // >>true si tuvo exito
+	
+	public boolean tieneReservaEnFecha(LocalDate fechaDeInicio) {		
+		// >>true si tuvo exito
+		return false;
+	}
+	
+	
 	public String getTitulo() {
 		return titulo;
 	}
@@ -120,6 +148,54 @@ public class Propiedad {
 
 	public void setFotos(byte[][] fotos) {
 		this.fotos = fotos;
+	}
+	
+	public byte[] getFoto1() {
+		return foto1;
+	}
+
+	public void setFoto1(byte[] foto1) {
+		this.foto1 = foto1;
+	}
+
+	public byte[] getFoto2() {
+		return foto2;
+	}
+
+	public void setFoto2(byte[] foto2) {
+		this.foto2 = foto2;
+	}
+
+	public byte[] getFoto3() {
+		return foto3;
+	}
+
+	public void setFoto3(byte[] foto3) {
+		this.foto3 = foto3;
+	}
+
+	public byte[] getFoto4() {
+		return foto4;
+	}
+
+	public void setFoto4(byte[] foto4) {
+		this.foto4 = foto4;
+	}
+
+	public byte[] getFoto5() {
+		return foto5;
+	}
+
+	public void setFoto5(byte[] foto5) {
+		this.foto5 = foto5;
+	}
+
+	public ArrayList<Reserva> getReservas() {
+		return reservas;
+	}
+
+	public void setReservas(ArrayList<Reserva> reservas) {
+		this.reservas = reservas;
 	}
 	
 }

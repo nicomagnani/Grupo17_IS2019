@@ -62,7 +62,6 @@ public class MyUI extends UI {
         this.botonesVisitante();
         this.mostrarLayout();
         this.navigatorVisitante();
-        //this.mostrar5Residencias TODO
     }
    
     public void vistaUsuario() {
@@ -96,7 +95,10 @@ public class MyUI extends UI {
     private void mostrarLayout() {
         mainLayout = new HorizontalLayout(menu, viewContainer);
         mainLayout.setSizeFull();
+        mainLayout.setExpandRatio(viewContainer, 2);
+        mainLayout.setExpandRatio(menu, 1);
         setContent(mainLayout);
+
     }
     
     private void botonesUsuario() {
@@ -130,7 +132,7 @@ public class MyUI extends UI {
     	navigator = new Navigator(this, viewContainer);
         
         try {
-			navigator.addView("residencias", new ResidenciasView());
+			navigator.addView("residencias", new ResidenciasUsuarioView());
 		} catch (SQLException e1) {
 			e1.printStackTrace();
 		}
@@ -140,7 +142,9 @@ public class MyUI extends UI {
         navigator.addView("buscarLugar", new BuscarLugarView());
         navigator.addView("contactar", new ContactarView());    	
         navigator.addView("verFaq", new VerFaqView());
+        navigator.navigateTo("residencias");
     }
+    
     
     private void botonesAdmin() {
     	
@@ -172,9 +176,14 @@ public class MyUI extends UI {
         navigator.addView("subastasAdmin", new SubastasAdminView());
         navigator.addView("reservasAdmin", new ReservasAdminView());
         navigator.addView("agregarResidencia", new AgregarResidenciaView());
+        navigator.navigateTo("residenciasAdmin");
     }
     
+    
     private void botonesVisitante() {
+    	
+    	residenciasButton = new Button("Bienvenida", e -> getNavigator().navigateTo("residenciasVisitante")); 
+    	residenciasButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
     	
     	iniciarSesionButton = new Button("Iniciar Sesión", e -> getNavigator().navigateTo("iniciarSesion")); 
         iniciarSesionButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
@@ -188,19 +197,25 @@ public class MyUI extends UI {
         verFaqButton = new Button("Ayuda", e -> getNavigator().navigateTo("verFaq"));
         verFaqButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
         
-        menu = new CssLayout(img, title, iniciarSesionButton, registrarseButton, contactarButton, verFaqButton);
+        menu = new CssLayout(img, title, residenciasButton, iniciarSesionButton, registrarseButton, contactarButton, verFaqButton);
         menu.addStyleName(ValoTheme.MENU_ROOT);
+        menu.setWidth("250");
     }
     
     private void navigatorVisitante() {
     	navigator = new Navigator(this, viewContainer);
     	
-    	navigator.addView("residenciasVisitante", new ResidenciasVisitanteView());
+    	try {
+			navigator.addView("residenciasVisitante", new ResidenciasVisitanteView());
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         navigator.addView("iniciarSesion", new IniciarSesionView(this));
         navigator.addView("registrar", new RegistrarView(this));
         navigator.addView("contactar", new ContactarView());    	
         navigator.addView("verFaq", new VerFaqView());
-        navigator.navigateTo("residenciasVisitante"); //navega a la lista reducida de residencias - podria ser un botón
+        navigator.navigateTo("residenciasVisitante"); //navega a la lista reducida de residencias
     	
     }  
 

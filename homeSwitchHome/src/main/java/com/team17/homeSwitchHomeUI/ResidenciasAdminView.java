@@ -3,12 +3,10 @@ package com.team17.homeSwitchHomeUI;
 import java.sql.SQLException;
 import java.util.Iterator;
 
-import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.View;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Composite;
-import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
@@ -31,7 +29,7 @@ public class ResidenciasAdminView extends Composite implements View {
 		ConnectionBD conexion = new ConnectionBD(); 
 		Iterator<Propiedad> ite = null;
 		try {
-			ite = conexion.listaPropiedades().iterator();
+			ite = conexion.listaPropiedadesSinFotos().iterator();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

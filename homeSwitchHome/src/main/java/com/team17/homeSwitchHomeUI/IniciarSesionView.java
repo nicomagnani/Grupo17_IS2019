@@ -4,8 +4,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import com.vaadin.annotations.Theme;
-import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Composite;
 import com.vaadin.ui.Label;
@@ -87,8 +87,15 @@ public class IniciarSesionView extends Composite implements View {  //.necesita 
 		
 		
 		VerticalLayout mainLayout = new VerticalLayout(cabecera, textoEmail, textoContraseña, login, msj);
+		mainLayout.setComponentAlignment(cabecera, Alignment.MIDDLE_CENTER);
+		mainLayout.setComponentAlignment(textoEmail, Alignment.MIDDLE_CENTER);
+		mainLayout.setComponentAlignment(textoContraseña, Alignment.MIDDLE_CENTER);
+		mainLayout.setComponentAlignment(login, Alignment.MIDDLE_CENTER);
+		mainLayout.setComponentAlignment(msj, Alignment.MIDDLE_CENTER);
 		
         setCompositionRoot(mainLayout);	
+        
+        
     }
 	
 

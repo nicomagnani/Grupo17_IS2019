@@ -18,6 +18,7 @@ import com.vaadin.navigator.View;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.AbstractTextField;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Composite;
@@ -185,7 +186,7 @@ public class AgregarResidenciaView extends Composite implements View {  //.neces
 		imageFinal5.setWidth(100, Unit.PIXELS);
 		
 		HorizontalLayout verFotosLayout = new HorizontalLayout(imageFinal1, imageFinal2, imageFinal3, imageFinal4, imageFinal5);
-		verFotosLayout.setWidth("400");
+		verFotosLayout.setWidth("650");
 		verFotosLayout.addStyleName("scrollable");
 		
 		formulario.addComponent(buttonAgregarFoto);
@@ -193,11 +194,18 @@ public class AgregarResidenciaView extends Composite implements View {  //.neces
 		formulario.addComponent(verFotosLayout);
 				
 		Panel panel = new Panel(formulario);
-		VerticalLayout main = new VerticalLayout(cabecera, panel, aceptarButton, resultado2);
-
-		panel.setHeight("700");
-		panel.setWidth("500");
+		panel.setHeight("600");
+		panel.setWidth("750");
 		panel.addStyleName("scrollable");
+		
+		VerticalLayout main = new VerticalLayout(cabecera, panel, aceptarButton, resultado2);
+		main.setComponentAlignment(cabecera, Alignment.MIDDLE_CENTER);
+		main.setComponentAlignment(panel, Alignment.MIDDLE_CENTER);
+		main.setComponentAlignment(aceptarButton, Alignment.MIDDLE_CENTER);
+		main.setComponentAlignment(resultado2, Alignment.MIDDLE_CENTER);
+		
+		
+		
 		
 		setCompositionRoot(main);
     }
@@ -287,7 +295,7 @@ public class AgregarResidenciaView extends Composite implements View {  //.neces
 	
     private boolean existePropiedad() throws SQLException {
     	ConnectionBD con = new ConnectionBD();
-    	 ArrayList<Propiedad> propiedades = con.listaPropiedades();
+    	 ArrayList<Propiedad> propiedades = con.listaPropiedadesSinFotos();
     	 
     	 boolean existe = false;
     	 for (int i = 0; ( (i < propiedades.size()) && !existe ); i++) {
