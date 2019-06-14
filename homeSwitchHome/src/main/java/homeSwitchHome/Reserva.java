@@ -2,7 +2,7 @@ package homeSwitchHome;
 
 import java.time.LocalDate;
 
-abstract public class Reserva {
+	abstract public class Reserva {
 
 	private LocalDate fechaInicio;
 	private String propiedad;
@@ -11,10 +11,14 @@ abstract public class Reserva {
 	private EstadoDeReserva estado;
 	
 	
-	public Reserva(LocalDate fechaInicio, String propiedad) { //crearReserva(), tal vez lo borremos
+	public Reserva() {
+		
+	}	
+	
+	public Reserva(LocalDate fechaInicio, String propiedad, EstadoDeReserva estado) {
 		fechaInicio = this.fechaInicio;
 		propiedad = this.propiedad;
-		//tambien se deberia indicar el estado de la reserva 
+		estado = this.estado; 
 	}
 	
 	public LocalDate getFechaInicio() {

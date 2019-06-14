@@ -5,12 +5,18 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 import com.mysql.jdbc.PreparedStatement;
 import com.mysql.jdbc.Statement;
 
+import homeSwitchHome.EstadoDeReserva;
 import homeSwitchHome.Propiedad;
+import homeSwitchHome.Reserva;
+import homeSwitchHome.ReservaDirecta;
+import homeSwitchHome.ReservaHotsale;
+import homeSwitchHome.ReservaSubasta;
 import homeSwitchHome.Tarjeta;
 import homeSwitchHome.Usuario;
 import homeSwitchHome.UsuarioAdministrador;
@@ -111,6 +117,73 @@ public class ConnectionBD {
 			}
 			return propiedades;
 		}
+		
+		
+		public ArrayList<Propiedad> listaPropiedadesPorLugar(String st) throws SQLException {
+			
+			ArrayList<Propiedad> propiedades = new ArrayList<Propiedad>();
+			Propiedad propiedad;
+			
+			String query = "SELECT * FROM propiedad WHERE localidad = '"+st+"'";
+			ResultSet rs = stmt.executeQuery(query);
+			
+			while (rs.next()) {
+				propiedad = new Propiedad();
+				propiedad.setTitulo(rs.getString("titulo"));
+				propiedad.setPais(rs.getString("pais"));
+				propiedad.setProvincia(rs.getString("provincia"));
+				propiedad.setLocalidad(rs.getString("localidad"));
+				propiedad.setDomicilio(rs.getString("domicilio"));
+				propiedad.setDescripción(rs.getString("descripcion"));
+				propiedad.setMontoBase(rs.getInt("monto"));
+				
+				propiedad.setFoto1(rs.getBytes("foto1"));
+				
+				propiedad.setReservas(listaReservasPorPropiedad(propiedad.getTitulo()));
+				
+
+				propiedades.add(propiedad);
+			}
+			return propiedades;
+		}
+		
+		
+		public ArrayList<Reserva> listaReservasPorPropiedad(String st) throws SQLException {
+			
+			ArrayList<Reserva> reservas = new ArrayList<Reserva>();
+			Reserva reserva = new ReservaDirecta();
+			String tipo;
+			
+			String query = "SELECT * FROM reservas WHERE propiedad = '"+st+"'";
+			ResultSet rs = stmt.executeQuery(query);
+			
+			while (rs.next()) {
+				tipo = rs.getString("tipo");
+				if (tipo == "directa") {
+					reserva = new ReservaDirecta();
+					//asigno campos exclusivos de ReservaDirecta
+				} else
+					if (tipo == "subasta") {
+						reserva = new ReservaSubasta();
+						//asigno campos exclusivos de ReservaSubasta
+					} else
+						if (tipo == "hotsale") {
+							reserva = new ReservaHotsale();
+							//asigno campos exclusivos de ReservaHotsale
+						}				
+				
+				reserva.setFechaInicio(rs.getDate("fecha_inicio").toLocalDate());
+				reserva.setPropiedad(rs.getString("propiedad"));
+				reserva.setUsuario(rs.getString("usuario"));
+				reserva.setMonto(rs.getFloat("monto"));
+				reserva.setEstado(EstadoDeReserva.valueOf(rs.getString("EnumColumn")));				
+
+				reservas.add(reserva);
+			}
+
+			return reservas;
+		}
+		
 		
 		
 		//metodo que devuelve los usuarios comunes+premium de la bd
