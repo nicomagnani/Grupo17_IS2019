@@ -2,7 +2,6 @@ package homeSwitchHome;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
 
 public class ReservaSubasta extends Reserva {
 	
@@ -15,7 +14,11 @@ public class ReservaSubasta extends Reserva {
 	}
 	
 	public ReservaSubasta(LocalDate fechaInicio, String propiedad, EstadoDeReserva estado) {
-		super(fechaInicio, propiedad, estado);
+		super(propiedad, fechaInicio, estado);
+	}
+	
+	public ReservaSubasta(String propiedad, String usuario, LocalDate fechaInicio, EstadoDeReserva estado) {
+		super(propiedad, usuario, fechaInicio, estado);
 	}
 
 	@Override

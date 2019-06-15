@@ -1,24 +1,31 @@
 package homeSwitchHome;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 
 	abstract public class Reserva {
 
-	private LocalDate fechaInicio;
 	private String propiedad;
 	private String usuario;
-	private float monto;
+	private LocalDate fechaInicio; //la fecha en que se comienza a publicar la reserva
 	private EstadoDeReserva estado;
-	
+	private float monto;	
 	
 	public Reserva() {
 		
 	}	
 	
-	public Reserva(LocalDate fechaInicio, String propiedad, EstadoDeReserva estado) {
-		fechaInicio = this.fechaInicio;
-		propiedad = this.propiedad;
-		estado = this.estado; 
+	public Reserva(String propiedad, LocalDate fechaInicio, EstadoDeReserva estado) {
+		this.propiedad = propiedad;
+		this.fechaInicio = fechaInicio;
+		this.estado = estado; 
+	}
+	
+	public Reserva(String propiedad, String usuario, LocalDate fechaInicio, EstadoDeReserva estado) {
+		this.propiedad = propiedad;
+		this.usuario = usuario;
+		this.fechaInicio = fechaInicio;
+		this.estado = estado; 
 	}
 	
 	public LocalDate getFechaInicio() {
@@ -59,6 +66,24 @@ import java.time.LocalDate;
 
 	public void setEstado(EstadoDeReserva estado) {
 		this.estado = estado;
+	}
+	
+	//la fecha en que finaliza la publicacion
+	public LocalDate getFechaFin() {
+		return fechaInicio.plusYears(1);
+	}
+	
+	//el rango de fechas en que se hace la reserva (de lunes a domingo)
+	public LocalDate[] getFechasTiempoCompartido() {
+		
+		LocalDate[] fechas = new LocalDate[2];
+		
+		//fechas de inicio y fin del tiempo compartido
+		//agrego 1 semana para que se cumpla al menos 1 año desde la creacion de la reserva
+		fechas[0] = getFechaFin().plusWeeks(1).with(DayOfWeek.MONDAY);
+		fechas[1] = getFechaFin().plusWeeks(1).with(DayOfWeek.SUNDAY);
+		
+		return fechas;
 	}
 
 

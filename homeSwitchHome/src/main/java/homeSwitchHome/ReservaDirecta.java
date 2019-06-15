@@ -9,7 +9,11 @@ public class ReservaDirecta extends Reserva {
 	}
 	
 	public ReservaDirecta(LocalDate fechaInicio, String propiedad, EstadoDeReserva estado) {
-		super(fechaInicio, propiedad, estado);
+		super(propiedad, fechaInicio, estado);
+	}
+	
+	public ReservaDirecta(String propiedad, String usuario, LocalDate fechaInicio, EstadoDeReserva estado) {
+		super(propiedad, usuario, fechaInicio, estado);
 	}
 	
 	@Override

@@ -24,9 +24,9 @@ import homeSwitchHome.Propiedad;
 public class BuscarLugarView extends Composite implements View {  //.necesita composite y view para funcionar correctamente
 
 	Label cabecera = new Label("Buscar residencias por lugar");
-	TextField txtBusqueda = new TextField("Ingrese una localidad");
+	TextField textoBuscar = new TextField("Ingrese una localidad");
 	Button botonBuscar = new Button("Buscar");
-	Label msjError = new Label("Error: No se encontraron residencias disponibles en esa localidad");
+	Label msjResultado = new Label();
 	Grid<Propiedad> tabla = new Grid<>(Propiedad.class);
 
 	ArrayList<Propiedad> propiedades;
@@ -37,10 +37,14 @@ public class BuscarLugarView extends Composite implements View {  //.necesita co
 		cabecera.addStyleName(ValoTheme.MENU_TITLE);		
 		
 		botonBuscar.addClickListener(e -> buscar());
-		msjError.setVisible(false);
-		tabla.setVisible(false);
 		
-		VerticalLayout mainLayout = new VerticalLayout(cabecera, txtBusqueda, botonBuscar, msjError, tabla);
+		tabla.setWidth("750");
+		tabla.setBodyRowHeight(100);
+		
+		tabla.setVisible(false);		
+		
+		
+		VerticalLayout mainLayout = new VerticalLayout(cabecera, textoBuscar, botonBuscar, msjResultado, tabla);
 		
 		setCompositionRoot(mainLayout);
     }
@@ -48,39 +52,50 @@ public class BuscarLugarView extends Composite implements View {  //.necesita co
 
 	private void buscar() {
 		
-		if (!txtBusqueda.isEmpty()) {
+		if (!textoBuscar.isEmpty()) {
 			
 			ConnectionBD conectar = new ConnectionBD();
 			propiedades = new ArrayList<Propiedad>();
 			
 			try {
-				propiedades = conectar.listaPropiedadesPorLugar(txtBusqueda.getValue());
+				propiedades = conectar.listaPropiedadesPorLugar(textoBuscar.getValue());
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}		
+			}
 			
-//			propiedades = new ArrayList<>();   <-- para chequear cuando no hay residencias cargadas
+			propiedades = new ArrayList<>();  // <-- para chequear cuando no hay residencias cargadas
 			if ( propiedades.size() == 0 ) {
 				tabla.setVisible(false);
-				msjError.setVisible(true);
+				msjResultado.setValue("No se encontraron residencias disponibles en esa localidad.");
 			} else {
 				tabla.setVisible(true);
-				msjError.setVisible(false);
-				tabla.setItems(propiedades);
-				tabla.setWidth("750");
-				tabla.setBodyRowHeight(100);
-				tabla.setColumns("titulo", "descripcion", "pais", "provincia", "localidad", "domicilio");
+				msjResultado.setValue("Éxito.");
+				tabla.setItems(propiedades);				
+				tabla.setColumns("titulo", "domicilio");
 				
 				Column<Propiedad, Float> columnaMonto = tabla.addColumn(Propiedad::getMontoBase,
 					      new NumberRenderer(new DecimalFormat("¤#######.##")));
 				columnaMonto.setCaption("Monto base");
 				
+				Column<Propiedad, String> columnaSubasta = tabla.addColumn( p -> parseBoolean(p.isDispSubasta()) );
+				columnaSubasta.setCaption("En subasta");				
+				
+				Column<Propiedad, String> columnaHotsale = tabla.addColumn( p -> parseBoolean(p.isDispHotsale()) );
+				columnaHotsale.setCaption("En Hotsale");								
 				
 				BlobImageRenderer<Propiedad> blobRenderer = new BlobImageRenderer<>(-1, 100);			
 				tabla.addColumn(Propiedad::getFoto1, blobRenderer).setCaption("Foto");
 			}
-			
-		}
+		} else {
+			tabla.setVisible(false);
+			msjResultado.setValue("Error: Debe ingresar una localidad.");
+		}		
 	}
+		
+
+	private String parseBoolean (boolean b) {
+		return (b) ? "Si" : "No";
+	}
+		
+	
 }

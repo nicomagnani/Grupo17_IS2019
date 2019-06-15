@@ -8,24 +8,29 @@ public class Propiedad {
 	private String titulo,pais,provincia,localidad,domicilio,descripcion;
 	private float montoBase;
 	private byte[][] fotos = new byte[5][];
+	
+	//campos para almacenar y acceder a las fotos individualmente
 	private byte[] foto1;
 	private byte[] foto2;
 	private byte[] foto3;
 	private byte[] foto4;
 	private byte[] foto5;
 	
-	
-	
 	private ArrayList<Reserva> reservas;
-		
+
+	
+	//es importante actualizarlos mediante hayReservaEntreFechas o actualizarTiposDeReservasDisponibles
+	private boolean dispDirecta;
+	private boolean dispSubasta;
+	private boolean dispHotsale;
+	
 	public Propiedad() {
-		super();
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	public Propiedad(String titulo, String pais, String provincia, String localidad, String domicilio,
 			String descripción, float montoBase, byte[][] fotos) {
-		super();
+
 		this.titulo = titulo;
 		this.pais = pais;
 		this.provincia = provincia;
@@ -34,11 +39,11 @@ public class Propiedad {
 		this.descripcion = descripción;
 		this.montoBase = montoBase;
 		this.fotos = fotos;
-	}	
+	}
 
 	public Propiedad(String titulo, String pais, String provincia, String localidad, String domicilio,
 			String descripcion, int montoBase, byte[][] fotos) {
-	 	super();
+
 	 	this.titulo = titulo;
 	 	this.pais = pais;
 	 	this.provincia = provincia;
@@ -46,8 +51,7 @@ public class Propiedad {
 	 	this.domicilio = domicilio;
 	 	this.descripcion = descripcion;
 	 	this.montoBase = montoBase;
-	 	this.fotos = fotos;
-	 	 
+	 	this.fotos = fotos;	 	 
 	}
 	
 	public void reservarSemana(int unaSemana)
@@ -196,6 +200,107 @@ public class Propiedad {
 
 	public void setReservas(ArrayList<Reserva> reservas) {
 		this.reservas = reservas;
+	}
+	
+	public boolean hayReservaEnFecha(LocalDate fecha) {
+		
+		LocalDate[] r;
+		boolean ok = false;
+		
+		if (reservas != null)
+			for (int i=0; ((i < reservas.size()) && (!ok)); i++) {
+				r = reservas.get(0).getFechasTiempoCompartido();
+				if ( (!fecha.isBefore(r[0])) && (!fecha.isAfter(r[1])) )
+					ok = true;
+			}
+		
+		return ok;
+	}
+			
+	public boolean hayReservaEntreFechas(LocalDate fecha1, LocalDate fecha2) {
+		
+		dispDirecta = false;
+		dispSubasta = false;
+		dispHotsale = false;		
+		
+		LocalDate[] f;
+		
+		if (reservas != null)
+			for (Reserva res : reservas) {
+				f = res.getFechasTiempoCompartido();
+				
+				//si existen reservas de todos los tipos, ya no necesita recorrer la lista de reservas
+				if (dispDirecta && dispSubasta && dispHotsale) {
+					return true;			
+				}
+				
+				//si hay intersección entre ambos rangos de fechas
+				if ( (!fecha1.isAfter(f[1])) && (!fecha2.isBefore(f[0])) ) 
+					if (res.getEstado() == EstadoDeReserva.DISPONIBLE_DIRECTA) {
+						dispDirecta = true;
+					} else 
+						if (res.getEstado() == EstadoDeReserva.DISPONIBLE_SUBASTA) {
+							dispSubasta = true;
+						} else
+							if (res.getEstado() == EstadoDeReserva.DISPONIBLE_HOTSALE) {
+								dispHotsale = true;
+							}
+			}
+		
+		return (dispDirecta || dispSubasta || dispHotsale);
+	}
+	
+	
+	public void actualizarTiposDeReservasDisponibles() {
+		
+		dispDirecta = false;
+		dispSubasta = false;
+		dispHotsale = false;
+		
+		if (reservas != null)
+			for (Reserva res : reservas) {
+				
+				//si existen reservas de todos los tipos, ya no necesita recorrer la lista de reservas
+				if (dispDirecta && dispSubasta && dispHotsale) {
+					break;			
+				}
+				
+				//si hay intersección entre ambos rangos de fechas
+				if (res.getEstado() == EstadoDeReserva.DISPONIBLE_DIRECTA) {
+						dispDirecta = true;
+					} else 
+						if (res.getEstado() == EstadoDeReserva.DISPONIBLE_SUBASTA) {
+							dispSubasta = true;
+						} else
+							if (res.getEstado() == EstadoDeReserva.DISPONIBLE_HOTSALE) {
+								dispHotsale = true;
+							}
+			}
+	}
+	
+
+	public boolean isDispDirecta() {
+		return dispDirecta;
+	}
+
+	public void setDispDirecta(boolean disponibleDirecta) {
+		this.dispDirecta = disponibleDirecta;
+	}
+
+	public boolean isDispSubasta() {
+		return dispSubasta;
+	}
+
+	public void setDispSubasta(boolean disponibleSubasta) {
+		this.dispSubasta = disponibleSubasta;
+	}
+
+	public boolean isDispHotsale() {
+		return dispHotsale;
+	}
+
+	public void setDispHotsale(boolean disponibleHotsale) {
+		this.dispHotsale = disponibleHotsale;
 	}
 	
 }

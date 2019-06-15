@@ -11,12 +11,11 @@ import com.vaadin.ui.Grid;
 
 import homeSwitchHome.Propiedad;
 
-public class ResidenciasUsuarioView extends Composite implements View {  //.necesita composite y view para funcionar correctamente
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	
+
+public class ResidenciasUsuarioView extends Composite implements View {
+
+
+		
 	public ResidenciasUsuarioView() throws SQLException {		
 			 ConnectionBD conectar = new ConnectionBD();
 			 ArrayList<Propiedad> propiedades = conectar.listaPropiedadesSinFotos();
@@ -30,7 +29,7 @@ public class ResidenciasUsuarioView extends Composite implements View {  //.nece
 					 });					
 			 }
 		
-		  if(propiedades.size()==0) {
+		  if (propiedades.size() == 0) {
 			  grid.setColumns("No hay residencias.");
 		  }			
               

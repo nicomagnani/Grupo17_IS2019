@@ -17,8 +17,8 @@ public abstract class Usuario {
 	private List<Reserva> reservas = new ArrayList<Reserva>();
 	
 	
-	public Usuario() {	//crearUsuario(), tal vez lo borremos
-		super();
+	public Usuario() {
+		
 	}
 		
 	public Usuario(String mail, String contraseña, String nombre, String apellido,

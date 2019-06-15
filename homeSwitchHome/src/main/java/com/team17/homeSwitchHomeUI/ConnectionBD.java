@@ -122,9 +122,47 @@ public class ConnectionBD {
 		public ArrayList<Propiedad> listaPropiedadesPorLugar(String st) throws SQLException {
 			
 			ArrayList<Propiedad> propiedades = new ArrayList<Propiedad>();
+			ArrayList<Propiedad> propiedades2 = new ArrayList<Propiedad>();
 			Propiedad propiedad;
 			
 			String query = "SELECT * FROM propiedad WHERE localidad = '"+st+"'";
+			ResultSet rs = stmt.executeQuery(query);
+			 
+			while (rs.next()) {
+				propiedad = new Propiedad();
+				propiedad.setTitulo(rs.getString("titulo"));
+				propiedad.setPais(rs.getString("pais"));
+				propiedad.setProvincia(rs.getString("provincia"));
+				propiedad.setLocalidad(rs.getString("localidad"));
+				propiedad.setDomicilio(rs.getString("domicilio"));
+				propiedad.setDescripción(rs.getString("descripcion"));
+				propiedad.setMontoBase(rs.getInt("monto"));
+				
+				propiedad.setFoto1(rs.getBytes("foto1"));				
+
+				propiedades.add(propiedad);
+			}			
+			
+			//filtro propiedades sin reservas disponibles
+			for (Propiedad p : propiedades) {
+				p.setReservas(listaReservasPorPropiedad(p.getTitulo()));				
+				if (p.getReservas().size() > 0) {
+					p.actualizarTiposDeReservasDisponibles();
+					propiedades2.add(p);
+				}				
+			}	
+			
+			return propiedades2;
+		}
+		
+		
+		public ArrayList<Propiedad> listaPropiedadesPorFecha(LocalDate fecha1, LocalDate fecha2) throws SQLException {
+			
+			ArrayList<Propiedad> propiedades = new ArrayList<Propiedad>();
+			ArrayList<Propiedad> propiedades2 = new ArrayList<Propiedad>();
+			Propiedad propiedad;
+			
+			String query = "SELECT * FROM propiedad";
 			ResultSet rs = stmt.executeQuery(query);
 			
 			while (rs.next()) {
@@ -139,12 +177,18 @@ public class ConnectionBD {
 				
 				propiedad.setFoto1(rs.getBytes("foto1"));
 				
-				propiedad.setReservas(listaReservasPorPropiedad(propiedad.getTitulo()));
-				
+				propiedades.add(propiedad);					
+			}			
 
-				propiedades.add(propiedad);
+			//filtro propiedades sin reservas disponibles			
+			for (Propiedad p : propiedades) {
+				p.setReservas(listaReservasPorPropiedad(p.getTitulo()));				
+				if (p.hayReservaEntreFechas(fecha1, fecha2)) {
+					propiedades2.add(p);
+				}
 			}
-			return propiedades;
+			
+			return propiedades2;
 		}
 		
 		
@@ -170,21 +214,19 @@ public class ConnectionBD {
 						if (tipo == "hotsale") {
 							reserva = new ReservaHotsale();
 							//asigno campos exclusivos de ReservaHotsale
-						}				
+						}
 				
-				reserva.setFechaInicio(rs.getDate("fecha_inicio").toLocalDate());
 				reserva.setPropiedad(rs.getString("propiedad"));
 				reserva.setUsuario(rs.getString("usuario"));
+				reserva.setFechaInicio(rs.getDate("fecha_inicio").toLocalDate());
+				reserva.setEstado(EstadoDeReserva.valueOf(rs.getString("estado")));				
 				reserva.setMonto(rs.getFloat("monto"));
-				reserva.setEstado(EstadoDeReserva.valueOf(rs.getString("EnumColumn")));				
 
 				reservas.add(reserva);
 			}
 
 			return reservas;
 		}
-		
-		
 		
 		//metodo que devuelve los usuarios comunes+premium de la bd
 		public ArrayList<Usuario> listaUsuarios() throws SQLException {

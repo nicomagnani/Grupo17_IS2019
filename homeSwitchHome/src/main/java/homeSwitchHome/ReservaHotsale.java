@@ -9,9 +9,13 @@ public class ReservaHotsale extends Reserva {
 	}
 
 	public ReservaHotsale(LocalDate fechaInicio, String propiedad, EstadoDeReserva estado) {
-		super(fechaInicio, propiedad, estado);
+		super(propiedad, fechaInicio, estado);
 	}
-
+	
+	public ReservaHotsale(String propiedad, String usuario, LocalDate fechaInicio, EstadoDeReserva estado) {
+		super(propiedad, usuario, fechaInicio, estado);
+	}
+	
 	@Override
 	public void borrarReserva() {
 		// TODO Auto-generated method stub
