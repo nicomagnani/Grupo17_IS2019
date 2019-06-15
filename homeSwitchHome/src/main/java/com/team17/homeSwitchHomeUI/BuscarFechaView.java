@@ -10,6 +10,7 @@ import org.vaadin.grid.cellrenderers.view.BlobImageRenderer;
 
 import com.vaadin.navigator.View;
 import com.vaadin.shared.ui.datefield.DateResolution;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Composite;
 import com.vaadin.ui.DateField;
@@ -28,7 +29,7 @@ public class BuscarFechaView extends Composite implements View {  //necesita com
 	private Label cabecera = new Label("Buscar residencias por fecha");
 	private DateField campoFecha1 = new DateField("Fecha inicio",LocalDate.now().plusMonths(6));
 	private DateField campoFecha2 = new DateField("Fecha fin",LocalDate.now().plusMonths(8));
-	private Label msjResultado = new Label();	
+	private Label msjResultado = new Label();
 	private Button botonBuscar = new Button("Buscar");	
 	private Grid<Propiedad> tabla = new Grid<>(Propiedad.class);
 	
@@ -57,6 +58,11 @@ public class BuscarFechaView extends Composite implements View {  //necesita com
 		HorizontalLayout fechas = new HorizontalLayout(campoFecha1, campoFecha2);
 		VerticalLayout mainLayout = new VerticalLayout(cabecera, fechas, botonBuscar, msjResultado, tabla);
 		
+		mainLayout.setComponentAlignment(botonBuscar, Alignment.MIDDLE_CENTER);
+		mainLayout.setComponentAlignment(fechas, Alignment.MIDDLE_CENTER);
+		mainLayout.setComponentAlignment(msjResultado, Alignment.MIDDLE_CENTER);
+		mainLayout.setComponentAlignment(tabla, Alignment.MIDDLE_LEFT);
+		
 		setCompositionRoot(mainLayout);
     }
 	
@@ -83,12 +89,11 @@ public class BuscarFechaView extends Composite implements View {  //necesita com
 			//propiedades = new ArrayList<>();   <-- para chequear cuando no hay residencias cargadas
 			if ( propiedades.size() == 0 ) {			
 				tabla.setVisible(false);
-//				msjResultado.setValue("No se encontraron residencias en ese rango de fechas.");
-				msjResultado.setValue(campoFecha1.getValue()+" "+campoFecha2.getValue());
+				msjResultado.setValue("No se encontraron residencias en ese rango de fechas.");
 			} else {
 				tabla.setVisible(true);
 				msjResultado.setValue("Éxito.");				
-				tabla.setItems(propiedades);				
+				tabla.setItems(propiedades);
 				tabla.setColumns("titulo", "provincia", "localidad", "domicilio");
 				
 				Column<Propiedad, Float> columnaMonto = tabla.addColumn(Propiedad::getMontoBase,

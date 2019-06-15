@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import org.vaadin.grid.cellrenderers.view.BlobImageRenderer;
 
 import com.vaadin.navigator.View;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Composite;
 import com.vaadin.ui.Grid;
@@ -41,10 +42,16 @@ public class BuscarLugarView extends Composite implements View {  //.necesita co
 		tabla.setWidth("750");
 		tabla.setBodyRowHeight(100);
 		
+		
 		tabla.setVisible(false);		
 		
 		
 		VerticalLayout mainLayout = new VerticalLayout(cabecera, textoBuscar, botonBuscar, msjResultado, tabla);
+		
+		mainLayout.setComponentAlignment(textoBuscar, Alignment.MIDDLE_CENTER);
+		mainLayout.setComponentAlignment(botonBuscar, Alignment.MIDDLE_CENTER);
+		mainLayout.setComponentAlignment(msjResultado, Alignment.MIDDLE_CENTER);
+		mainLayout.setComponentAlignment(tabla, Alignment.MIDDLE_LEFT);
 		
 		setCompositionRoot(mainLayout);
     }
@@ -63,7 +70,7 @@ public class BuscarLugarView extends Composite implements View {  //.necesita co
 				e.printStackTrace();
 			}
 			
-			propiedades = new ArrayList<>();  // <-- para chequear cuando no hay residencias cargadas
+			//propiedades = new ArrayList<>();  // <-- para chequear cuando no hay residencias cargadas
 			if ( propiedades.size() == 0 ) {
 				tabla.setVisible(false);
 				msjResultado.setValue("No se encontraron residencias disponibles en esa localidad.");

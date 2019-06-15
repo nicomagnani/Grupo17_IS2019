@@ -145,7 +145,7 @@ public class ConnectionBD {
 			
 			//filtro propiedades sin reservas disponibles
 			for (Propiedad p : propiedades) {
-				p.setReservas(listaReservasPorPropiedad(p.getTitulo()));				
+				p.setReservas(listaReservasPorPropiedad(p.getTitulo()));
 				if (p.getReservas().size() > 0) {
 					p.actualizarTiposDeReservasDisponibles();
 					propiedades2.add(p);
@@ -219,7 +219,7 @@ public class ConnectionBD {
 				reserva.setPropiedad(rs.getString("propiedad"));
 				reserva.setUsuario(rs.getString("usuario"));
 				reserva.setFechaInicio(rs.getDate("fecha_inicio").toLocalDate());
-				reserva.setEstado(EstadoDeReserva.valueOf(rs.getString("estado")));				
+				reserva.setEstado(EstadoDeReserva.valueOf(rs.getString("estado")));
 				reserva.setMonto(rs.getFloat("monto"));
 
 				reservas.add(reserva);
@@ -268,20 +268,18 @@ public class ConnectionBD {
 		//metodo que devuelve los admins de la bd
 		public ArrayList<UsuarioAdministrador> listaAdmins() throws SQLException {
 
-
 			String query = "SELECT * FROM administradores";
 			ResultSet rs = stmt.executeQuery(query);
 
 			ArrayList<UsuarioAdministrador> admins = new ArrayList<UsuarioAdministrador>();
 			UsuarioAdministrador admin = new UsuarioAdministrador();
 
-			while (rs.next())
-		      {
-
+			while (rs.next()) {
   				admin.setMail(rs.getString("mail"));
 				admin.setContraseña(rs.getString("contraseña"));
 				admins.add(admin);
 		     }
+			
 		return admins;
 		}
 
@@ -369,6 +367,39 @@ public class ConnectionBD {
 			ps.close();
 			con.close();
 
+		}
+
+
+		public Usuario buscarUsuario(String mail) throws SQLException {
+			
+			String query = "SELECT * FROM usuarios WHERE mail = '"+mail+"'";
+			ResultSet rs = stmt.executeQuery(query);
+			
+			Usuario usuario = null;
+			Tarjeta tarjeta = new Tarjeta();
+
+			while (rs.next()) {
+				if (!rs.getBoolean("premium")) {
+					usuario = new UsuarioComun();
+				} else {
+					usuario = new UsuarioPremium();
+				}
+  				usuario.setMail(rs.getString("mail"));
+				usuario.setContraseña(rs.getString("contraseña"));
+				usuario.setNombre(rs.getString("nombre"));
+				usuario.setApellido(rs.getString("apellido"));
+				usuario.setfNac((rs.getDate("f_nac").toLocalDate()));
+				usuario.setCreditos(rs.getShort("creditos"));
+
+				tarjeta.setNumero(rs.getLong("nro_tarj"));
+				tarjeta.setMarca(rs.getString("marca_tarj"));
+				tarjeta.setTitular(rs.getString("titu_tarj"));
+				tarjeta.setfVenc(rs.getDate("venc_tarj").toLocalDate());
+				tarjeta.setCodigo(rs.getShort("cod_tarj"));
+				usuario.setTarjeta(tarjeta);
+			}
+
+			return usuario;
 		}
 
 }
