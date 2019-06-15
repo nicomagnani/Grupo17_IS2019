@@ -16,7 +16,7 @@ import homeSwitchHome.Propiedad;
 
 public class ResidenciasAdminView extends Composite implements View {
 	VerticalLayout mainLayout;
-		
+	ConnectionBD conexion = new ConnectionBD(); 
 	public ResidenciasAdminView() {
 		
 		mainLayout = new VerticalLayout();
@@ -26,7 +26,7 @@ public class ResidenciasAdminView extends Composite implements View {
 
 	private void cargarResidencias() {
 		
-		ConnectionBD conexion = new ConnectionBD(); 
+		
 		Iterator<Propiedad> ite = null;
 		try {
 			ite = conexion.listaPropiedadesSinFotos().iterator();
@@ -46,7 +46,14 @@ public class ResidenciasAdminView extends Composite implements View {
 	private void añadirResidencia(Propiedad unaResidencia) {
 		
     	Button modificar = new Button("Modificar", e -> this.modificar(unaResidencia));
-    	Button eliminar = new Button("Eliminar", e -> this.eliminar(unaResidencia));
+    	Button eliminar = new Button("Eliminar", e -> {
+			try {
+				this.eliminar(unaResidencia);
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		});
     	HorizontalLayout botones = new HorizontalLayout(modificar,eliminar);
     	
 		Label titulo = new Label(unaResidencia.getTitulo());
@@ -71,7 +78,8 @@ public class ResidenciasAdminView extends Composite implements View {
 		//TODO
 	}
 	
-	private void eliminar(Propiedad unaResidencia) {
-		//TODO
+	private void eliminar(Propiedad unaResidencia) throws SQLException {
+		conexion.eliminarResidencia(unaResidencia);
+		conexion.listaPropiedadesSinFotos();
 	}
 }
