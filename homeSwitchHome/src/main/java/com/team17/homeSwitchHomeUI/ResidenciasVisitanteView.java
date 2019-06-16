@@ -28,7 +28,7 @@ public class ResidenciasVisitanteView extends Composite implements View {
 			+ " los usuarios podrán realizar reservas a residencias.</p><p style=\"text-align: center; font-size: 120%;\">Para"
 			+ " acceder al sitio web completo puede iniciar sesión o registrar una cuenta.</p>", ContentMode.HTML);
 	
-	private Label msj = new Label("No hay residencias.");
+	private Label msj = new Label("No hay residencias disponibles en el sistema.");
 	private Grid<Propiedad> tabla = new Grid<>(Propiedad.class);
 	
 	

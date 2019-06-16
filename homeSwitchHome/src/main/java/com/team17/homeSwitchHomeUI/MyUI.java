@@ -72,7 +72,7 @@ public class MyUI extends UI {
         this.navigatorUsuario();
     }
     
-    public void vistaAdmin() {
+    public void vistaAdmin() throws SQLException {
         
     	this.mostrarLogo();
         this.botonesAdmin();
@@ -168,7 +168,7 @@ public class MyUI extends UI {
     	
     }
     
-    public void navigatorAdmin() {
+    public void navigatorAdmin() throws SQLException {
         
     	navigator = new Navigator(this, viewContainer);
     	

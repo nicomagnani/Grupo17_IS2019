@@ -17,31 +17,40 @@ import homeSwitchHome.Propiedad;
 public class ResidenciasAdminView extends Composite implements View {
 	VerticalLayout mainLayout;
 	ConnectionBD conexion = new ConnectionBD(); 
-	public ResidenciasAdminView() {
+	public ResidenciasAdminView() throws SQLException {
 		
 		mainLayout = new VerticalLayout();
 		this.cargarResidencias();
-        setCompositionRoot((Component) mainLayout);
+        
 	}
 
-	private void cargarResidencias() {
+	private void cargarResidencias() throws SQLException {
 		
+		Iterator<Propiedad>ite=conexion.listaPropiedadesSinFotos().iterator();
+		if (ite.hasNext() ==false) {
+			Label titulo = new Label();
+			titulo.setValue("no hay residencias disponibles");			
+			setCompositionRoot(titulo);
+		}else {
+			
+				while (ite.hasNext()) {
+				this.añadirResidencia((Propiedad) ite.next());
+			    }
+				Button subasta = new Button("Abrir Subasta", e -> this.subastar(ite));	
+				mainLayout.addComponent(subasta);
+				setCompositionRoot((Component) mainLayout);
+				
+			
+		}
 		
-		Iterator<Propiedad> ite = null;
-		try {
-			ite = conexion.listaPropiedadesSinFotos().iterator();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		if (ite != null) {
-			while (ite.hasNext()) {
-			this.añadirResidencia((Propiedad) ite.next());
-		}
-		}
 		
 	}
 	
+	private Object subastar(Iterator<Propiedad> propiedades) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	//falta visualizar imagenes y añadir estilos.
 	private void añadirResidencia(Propiedad unaResidencia) {
 		
