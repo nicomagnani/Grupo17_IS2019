@@ -361,10 +361,10 @@ public class ConnectionBD {
 			Tarjeta tarjeta = new Tarjeta();
 
 			while (rs.next()) {
-				if (!rs.getBoolean("premium")) {
-					usuario = new UsuarioComun();
-				} else {
+				if (rs.getBoolean("premium")) {
 					usuario = new UsuarioPremium();
+				} else {
+					usuario = new UsuarioComun();
 				}
   				usuario.setMail(rs.getString("mail"));
 				usuario.setContraseña(rs.getString("contraseña"));

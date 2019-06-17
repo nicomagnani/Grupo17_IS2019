@@ -29,6 +29,7 @@ public class ResidenciasUsuarioView extends Composite implements View {
 	private Label msjResultado = new Label("No hay residencias disponibles.");
 	private Grid<Propiedad> tabla = new Grid<>(Propiedad.class);
 	private ArrayList<Propiedad> propiedades;
+	private ArrayList<Propiedad> propiedades2 = new ArrayList<>();
 		
 	public ResidenciasUsuarioView() throws SQLException {
 		
@@ -49,6 +50,14 @@ public class ResidenciasUsuarioView extends Composite implements View {
 		conectar = new ConnectionBD();
 		propiedades = conectar.listaPropiedadesConFotos();		
 		
+		for (Propiedad p : propiedades) {
+			p.setReservas(conectar.listaReservasPorPropiedad(p.getTitulo()));
+			if (p.getReservas().size() > 0) {
+				p.actualizarTiposDeReservasDisponibles();
+				propiedades2.add(p);
+			}				
+		}	
+		
 		if ( propiedades.size() == 0 ) {
 			tabla.setVisible(false);
 			msjResultado.setVisible(true);
@@ -61,6 +70,12 @@ public class ResidenciasUsuarioView extends Composite implements View {
 			Column<Propiedad, Float> columnaMonto = tabla.addColumn(Propiedad::getMontoBase,
 				      new NumberRenderer(new DecimalFormat("¤#######.##")));
 			columnaMonto.setCaption("Monto base");
+			
+			Column<Propiedad, String> columnaSubasta = tabla.addColumn( p -> parseBoolean(p.isDispSubasta()) );
+			columnaSubasta.setCaption("En subasta");				
+			
+			Column<Propiedad, String> columnaHotsale = tabla.addColumn( p -> parseBoolean(p.isDispHotsale()) );
+			columnaHotsale.setCaption("En Hotsale");
 						
 			BlobImageRenderer<Propiedad> blobRenderer1 = new BlobImageRenderer<>(-1, 100);			
 			tabla.addColumn(Propiedad::getFoto1, blobRenderer1).setCaption("Foto 1");			       

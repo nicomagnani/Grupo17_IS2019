@@ -39,6 +39,7 @@ public class MyUI extends UI {
 	Button buscarFechaButton;
 	Button buscarLugarButton;
 	Button iniciarSesionButton;
+	Button miPerfilButton;
 	Button contactarButton;
 	Button verFaqButton;
 	Button registrarseButton;
@@ -113,17 +114,22 @@ public class MyUI extends UI {
         
         buscarLugarButton = new Button("Búsqueda por lugar", e -> getNavigator().navigateTo("buscarLugar"));
         buscarLugarButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
-                
-        contactarButton = new Button("Contactarse", e -> getNavigator().navigateTo("contactar")); 
-        contactarButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
+                        
+        miPerfilButton = new Button("Mi perfil", e -> getNavigator().navigateTo("miPerfil")); 
+        miPerfilButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
         
+        contactarButton = new Button("Contactarse", e -> getNavigator().navigateTo("contactar")); 
+        contactarButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);        
+
         verFaqButton = new Button("Ayuda", e -> getNavigator().navigateTo("verFaq")); 
         verFaqButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
         
         cerrarSesionButton = new Button("Cerrar Sesión", e -> vistaVisitante());
         cerrarSesionButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
         
-        menu = new CssLayout(img, title, residenciasButton, subastasButton, buscarFechaButton, buscarLugarButton, contactarButton, verFaqButton, cerrarSesionButton);
+        menu = new CssLayout(img, title, residenciasButton, subastasButton, buscarFechaButton, buscarLugarButton,
+        		miPerfilButton, contactarButton, verFaqButton, cerrarSesionButton);
+        
         menu.addStyleName(ValoTheme.MENU_ROOT);
     }
     
@@ -140,6 +146,8 @@ public class MyUI extends UI {
     	navigator.addView("subastas", new SubastasView());
         navigator.addView("buscarFecha", new BuscarFechaView());
         navigator.addView("buscarLugar", new BuscarLugarView());
+        navigator.addView("miPerfil", new MiPerfilView(navigator));
+        navigator.addView("modificarPerfil", new ModificarPerfilView());
         navigator.addView("contactar", new ContactarView());    	
         navigator.addView("verFaq", new VerFaqView());
         navigator.navigateTo("residencias");

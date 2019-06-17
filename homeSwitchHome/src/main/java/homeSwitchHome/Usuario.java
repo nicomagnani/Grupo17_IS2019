@@ -1,6 +1,7 @@
 package homeSwitchHome;
 
 import java.time.LocalDate;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +14,7 @@ public abstract class Usuario {
 	private Tarjeta tarjeta;
 	private LocalDate fNac;
 	private short creditos = 2;
+	private LocalDate fVencCred = LocalDate.of(Integer.parseInt(Year.now().toString()), 12, 31); //fecha de vencimiento de los creditos
 	
 	private List<Reserva> reservas = new ArrayList<Reserva>();
 	
@@ -85,6 +87,22 @@ public abstract class Usuario {
 
 	public void setCreditos(short creditos) {
 		this.creditos = creditos;
+	}
+
+	public LocalDate getfVencCred() {
+		return fVencCred;
+	}
+
+	public void setfVencCred(LocalDate fVencCred) {
+		this.fVencCred = fVencCred;
+	}
+
+	public List<Reserva> getReservas() {
+		return reservas;
+	}
+
+	public void setReservas(List<Reserva> reservas) {
+		this.reservas = reservas;
 	}
 	//fin de getters y setters
 	

@@ -6,12 +6,9 @@ import java.time.Period;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import org.apache.commons.beanutils.converters.ShortConverter;
 import org.vaadin.ui.NumberField;
 
 import com.vaadin.data.Binder;
-import com.vaadin.data.Converter;
-import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.navigator.View;
 import com.vaadin.server.Page;
@@ -29,13 +26,13 @@ import com.vaadin.ui.RadioButtonGroup;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.data.util.*;
+
 import homeSwitchHome.HomeSwitchHome;
+import homeSwitchHome.StringToShortConverter;
 import homeSwitchHome.Tarjeta;
 import homeSwitchHome.Usuario;
 import homeSwitchHome.UsuarioAdministrador;
 import homeSwitchHome.UsuarioComun;
-import homeSwitchHome.StringToShortConverter;
 
 
 public class RegistrarView extends Composite implements View {
