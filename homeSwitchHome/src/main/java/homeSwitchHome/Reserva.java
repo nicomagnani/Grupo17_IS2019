@@ -6,6 +6,7 @@ import java.time.LocalDate;
 	abstract public class Reserva {
 
 	private String propiedad;
+	private String localidad;
 	private String usuario;
 	private LocalDate fechaInicio; //la fecha en que se comienza a publicar la reserva
 	private EstadoDeReserva estado;
@@ -43,7 +44,15 @@ import java.time.LocalDate;
 	public void setPropiedad(String propiedad) {
 		this.propiedad = propiedad;
 	}
+	
+	public String getLocalidad() {		
+		return localidad;
+	}	
 
+	public void setLocalidad(String localidad) {
+		this.localidad = localidad;
+	}
+	
 	public String getUsuario() {
 		return usuario;
 	}
@@ -90,5 +99,6 @@ import java.time.LocalDate;
 	private int semana;
 	
 	abstract public void borrarReserva();
+
 	
 }

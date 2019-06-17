@@ -51,7 +51,7 @@ public class ResidenciasUsuarioView extends Composite implements View {
 		propiedades = conectar.listaPropiedadesConFotos();		
 		
 		for (Propiedad p : propiedades) {
-			p.setReservas(conectar.listaReservasPorPropiedad(p.getTitulo()));
+			p.setReservas(conectar.listaReservasPorPropiedad(p.getTitulo(), p.getLocalidad()));
 			if (p.getReservas().size() > 0) {
 				p.actualizarTiposDeReservasDisponibles();
 				propiedades2.add(p);

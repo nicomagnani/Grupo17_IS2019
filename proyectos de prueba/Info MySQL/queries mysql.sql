@@ -19,10 +19,13 @@ INSERT INTO propiedad ( titulo, descripcion, pais, provincia, localidad, domicil
    VALUES
    ('casa1', 'descr1', 'arg', 'bsas', 'lp', '1900 12/34', 888888888);
    
-INSERT INTO reservas ( propiedad, usuario, tipo, fecha_inicio, estado, monto )
+INSERT INTO reservas ( propiedad, localidad, usuario, tipo, fecha_inicio, estado, monto )
    VALUES
-   ( 'prueba2', 'juan@mail.com', 'subasta', '2018-12-25', 'DISPONIBLE_SUBASTA', 12345);  
+   ( 'casa1', 'lp', NULL , 'hotsale', '2019-12-25', 'DISPONIBLE_HOTSALE', 12345);  
    
+INSERT INTO subastas ( propiedad, localidad, fecha_inicio)
+   VALUES
+   ( 'prueba1', 'lp', '2019-06-17');
 
 ------------------------------------
 ## SELECCIONAR (SINTAXIS EN GENERAL) ##
@@ -113,9 +116,17 @@ SET
 WHERE titulo = 'prueba2'; /* buscar fila segun mail indicado */
 
 UPDATE reservas
+SET
+    fecha_inicio = '2018-08-20'
+WHERE propiedad = 'prueba1' AND estado = 'DISPONIBLE_HOTSALE' /* multiples condiciones */
+
+UPDATE reservas
 SET 
     monto = 760.60
 WHERE propiedad = 'prueba1';
 
-
+UPDATE usuarios
+SET 
+    premium = 1
+WHERE mail = 'prueba_1';
 ---------------------------

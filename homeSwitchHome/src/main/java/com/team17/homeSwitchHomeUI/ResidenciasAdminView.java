@@ -3,7 +3,9 @@ package com.team17.homeSwitchHomeUI;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.sql.SQLException;
-import java.util.Iterator;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.util.ArrayList;
 
 import com.vaadin.navigator.View;
 import com.vaadin.server.Page;
@@ -20,7 +22,9 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import homeSwitchHome.EstadoDeReserva;
 import homeSwitchHome.Propiedad;
+import homeSwitchHome.Reserva;
 
 public class ResidenciasAdminView extends Composite implements View {
 	
@@ -29,12 +33,15 @@ public class ResidenciasAdminView extends Composite implements View {
 	
 	private VerticalLayout propiedadesLayout = new VerticalLayout();
 	private Panel panel = new Panel();
+	private Button botonSubastar = new Button("Abrir Subastas");	
 	private Notification notifResultado = new Notification("Residencia borraada con éito.");
-		
-	private ConnectionBD conexion = new ConnectionBD();
 	
+	private ConnectionBD conexion = new ConnectionBD();
 
-
+	private ArrayList<Propiedad> propiedades = new ArrayList();
+	private ArrayList<Reserva> reservas = new ArrayList();
+	private Propiedad propiedad;
+	private Reserva reserva;
 	
 		
 	public ResidenciasAdminView() {
@@ -53,11 +60,14 @@ public class ResidenciasAdminView extends Composite implements View {
 		panel.setContent(propiedadesLayout);
 		panel.setHeight("750");
 		panel.setWidth("550");
-		panel.addStyleName("scrollable");
+		panel.addStyleName("scrollable");		
+
+		botonSubastar.addClickListener(e -> this.subastarTodo());
 		
-		VerticalLayout mainLayout = new VerticalLayout(cabecera, panel, msjResultado);
+		VerticalLayout mainLayout = new VerticalLayout(cabecera, panel, botonSubastar, msjResultado);
 		mainLayout.setComponentAlignment(cabecera, Alignment.MIDDLE_CENTER);
 		mainLayout.setComponentAlignment(panel, Alignment.MIDDLE_CENTER);
+		mainLayout.setComponentAlignment(botonSubastar, Alignment.MIDDLE_CENTER);
 		mainLayout.setComponentAlignment(msjResultado, Alignment.MIDDLE_CENTER);
 		
         setCompositionRoot(mainLayout);
@@ -66,22 +76,23 @@ public class ResidenciasAdminView extends Composite implements View {
 
 	private void cargarResidencias() {
 		
-		Iterator<Propiedad> propiedades = null;
 		
 		try {
-			propiedades = conexion.listaPropiedadesConFotos().iterator();
+			propiedades = conexion.listaPropiedadesConFotos();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		if (propiedades != null) {
+		if (!propiedades.isEmpty()) {
 			panel.setVisible(true);
-			while (propiedades.hasNext()) {
-				this.añadirResidencia( (Propiedad)propiedades.next() );
+			for (int i=0; i < propiedades.size(); i++) {
+				this.añadirResidencia(propiedades.get(i));
 			}
-		} else
+		} else {
 			msjResultado.setVisible(true);
+			botonSubastar.setVisible(false);			
+		}
 		
 	}
 	
@@ -95,8 +106,7 @@ public class ResidenciasAdminView extends Composite implements View {
 		Label descripcion = new Label ("Descripción: "+propiedad.getDescripcion());
 		Label montoBase = new Label ("Monto base: " + String.valueOf(propiedad.getMontoBase()));
 		
-		Button verFotos = new Button("Ver Fotos");
-		Button subastar = new Button("Abrir Subasta", e -> this.subastar(propiedad));		
+		Button verFotos = new Button("Ver Fotos");	
 		Button modificar = new Button("Modificar", e -> this.modificar(propiedad));
 		Button eliminar = new Button("Eliminar");		
 	
@@ -149,7 +159,7 @@ public class ResidenciasAdminView extends Composite implements View {
     		});
     	}
 
-    	HorizontalLayout botonesLayout = new HorizontalLayout(verFotos, subastar, modificar, eliminar);
+    	HorizontalLayout botonesLayout = new HorizontalLayout(verFotos, modificar, eliminar);
     	
     	HorizontalLayout fotosLayout = new HorizontalLayout(foto1,foto2,foto3,foto4,foto5);
     	fotosLayout.setWidth("650");
@@ -160,9 +170,11 @@ public class ResidenciasAdminView extends Composite implements View {
 		FormLayout propiedadLayout = new FormLayout(titulo,ubicacion,descripcion,montoBase,botonesLayout,fotosLayout,separador);
 		propiedadLayout.setWidth("500");
 		propiedadLayout.setSizeFull();
+		propiedadLayout.setComponentAlignment(fotosLayout, Alignment.MIDDLE_CENTER);
+		propiedadLayout.setComponentAlignment(separador, Alignment.MIDDLE_CENTER);		
 		
 		propiedadesLayout.addComponent(propiedadLayout);
-		
+		propiedadesLayout.setComponentAlignment(propiedadLayout, Alignment.MIDDLE_CENTER);		
 		
 		eliminar.addClickListener(e -> {
 			try {
@@ -187,10 +199,41 @@ public class ResidenciasAdminView extends Composite implements View {
 	    image.setSource(resource);
 	}
 	
+	
 	//devuelve true si la subasta fue un exito
-	private boolean subastar(Propiedad propiedad) {
-		//TODO
-		return true;
+	private void subastarTodo() {
+		int n1 = 0, n2 = 0;
+		LocalDate lunesSemanaActual = LocalDate.now().with(DayOfWeek.MONDAY);
+		
+		try {
+			reservas = conexion.listaReservas();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		if (!reservas.isEmpty()) {			
+			//recorre la lista de reservas
+			for (Reserva reserva : reservas) {
+				
+				n2++;
+				//chequea si cumple requisitos para iniciar subasta
+				if ( (reserva.getEstado() == EstadoDeReserva.DISPONIBLE_DIRECTA) && 
+						(reserva.getFechaInicio().isBefore(lunesSemanaActual.minusMonths(6))) ) {
+					
+					try {
+						conexion.comenzarReservaSubasta(reserva);
+						n1++;						
+					} catch (SQLException e) {
+						e.printStackTrace();						
+					}
+					
+				} //fin chequeo
+			}
+			mostrarNotificacion("Se abrieron "+n1+" subastas de un total de "+n2+" reservas.", Notification.Type.HUMANIZED_MESSAGE);
+			
+		} else 
+			mostrarNotificacion("No hay reservas cargadas.", Notification.Type.HUMANIZED_MESSAGE);
+		
 	}
 	
 	private void modificar(Propiedad propiedad) {
