@@ -6,6 +6,13 @@ import java.time.Period;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import org.apache.commons.beanutils.converters.ShortConverter;
+import org.vaadin.ui.NumberField;
+
+import com.vaadin.data.Binder;
+import com.vaadin.data.Converter;
+import com.vaadin.data.converter.StringToIntegerConverter;
+import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.navigator.View;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.ContentMode;
@@ -22,12 +29,13 @@ import com.vaadin.ui.RadioButtonGroup;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-
+import com.vaadin.data.util.*;
 import homeSwitchHome.HomeSwitchHome;
 import homeSwitchHome.Tarjeta;
 import homeSwitchHome.Usuario;
 import homeSwitchHome.UsuarioAdministrador;
 import homeSwitchHome.UsuarioComun;
+import homeSwitchHome.StringToShortConverter;
 
 
 public class RegistrarView extends Composite implements View {
@@ -44,7 +52,7 @@ public class RegistrarView extends Composite implements View {
 	DateField fechaNac = new DateField("Fecha de nacimiento",LocalDate.now()); 
 	
 	Label labelParte2 = new Label("<span style=\"text-align: left; font-weight: bold; text-decoration: underline; font-size: 120%;\">Datos de tarjeta</span>", ContentMode.HTML);
-	TextField campoNroTarj = new TextField("Número de tarjeta:");
+	NumberField campoNroTarj = new NumberField("Número de tarjeta:");
 	RadioButtonGroup<String> campoMarcaTarj = new RadioButtonGroup<>("Marca:");
 	TextField textoTitTarj = new TextField("Titular de tarjeta:");
 	DateField fechaVencTarj = new DateField("Fecha de vencimiento:");
@@ -61,14 +69,23 @@ public class RegistrarView extends Composite implements View {
 		fechaNac.setValue(LocalDate.parse("2000-01-01"));
 	
 		campoNroTarj.setMaxLength(16);
+		campoNroTarj.setDecimalAllowed(false);
+		campoNroTarj.setGroupingUsed(false);
+		campoNroTarj.setNegativeAllowed(false);
+
+		campoMarcaTarj.addStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
+		campoMarcaTarj.setItems("VISA", "MasterCard");		
 		
 		fechaVencTarj.setResolution(DateResolution.MONTH);
-		
+		fechaVencTarj.setTextFieldEnabled(false);		
 		fechaVencTarj.setValue(LocalDate.parse("2020-01-01"));
 		fechaVencTarj.setRangeStart(LocalDate.now());
 		
-		campoMarcaTarj.addStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
-		campoMarcaTarj.setItems("VISA", "MasterCard"); //agregar m
+		nroSegTarj.setMaxLength(4);
+		new Binder<Tarjeta>().forField(nroSegTarj)
+	    .withValidator(new RegexpValidator("Ingrese su código de seguridad", "[-]?[0-9]*\\.?,?[0-9]+"))
+	    .withConverter(new StringToShortConverter())
+	    .bind(Tarjeta::getCodigo, Tarjeta::setCodigo);
 		
 		botonAceptar.addClickListener( e -> aceptar(interfaz) );
 		

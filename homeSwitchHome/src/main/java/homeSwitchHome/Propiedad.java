@@ -17,12 +17,12 @@ public class Propiedad {
 	private byte[] foto5;
 	
 	private ArrayList<Reserva> reservas;
-
 	
 	//es importante actualizarlos mediante hayReservaEntreFechas o actualizarTiposDeReservasDisponibles
 	private boolean dispDirecta;
 	private boolean dispSubasta;
 	private boolean dispHotsale;
+	
 	
 	public Propiedad() {
 		
@@ -54,31 +54,28 @@ public class Propiedad {
 	 	this.fotos = fotos;	 	 
 	}
 	
-	public void reservarSemana(int unaSemana)
-	{
+	public void reservarSemana (int unaSemana) {
 		
 	}
 	
-	public void anularReservaSemana(int unaSemana)
-	{
+	public void anularReservaSemana (int unaSemana) {
 		
 	}
 
-	public boolean añadirReserva(Reserva reserva) {		
+	public boolean añadirReserva (Reserva reserva) {		
 		// >>true si tuvo exito
 		return false;
 	}
 	
-	public boolean eliminarReserva(Reserva reserva) {		
+	public boolean eliminarReserva (Reserva reserva) {		
 		// >>true si tuvo exito
 		return false;
-	} // >>true si tuvo exito
+	}
 	
 	public boolean tieneReservaEnFecha(LocalDate fechaDeInicio) {		
 		// >>true si tuvo exito
 		return false;
-	}
-	
+	}	
 	
 	public String getTitulo() {
 		return titulo;

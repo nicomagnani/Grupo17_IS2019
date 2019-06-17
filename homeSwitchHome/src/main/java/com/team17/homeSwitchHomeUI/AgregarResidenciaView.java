@@ -255,7 +255,7 @@ public class AgregarResidenciaView extends Composite implements View {  //.neces
 	                }
 	            }, "filename.png");
 	    image.setSource(resource);
-	}	
+	}
 	
 	
 	//chequea requisitos finales y sube la residencia a la base de datos

@@ -36,9 +36,9 @@ public class ResidenciasUsuarioView extends Composite implements View {
 		u = conectar.buscarUsuario(HomeSwitchHome.getUsuarioActual());
 		
 		cabecera.setValue("<p style=\"text-align: center; font-size: "
-				+ "200%;\">Bienvenido <strong>"+u.getNombre()+" "+
+				+ "200%;\">Bienvenido, <strong>"+u.getNombre()+" "+
 				u.getApellido()+"</strong>.</p>");
-		cabecera.setContentMode(ContentMode.HTML);		
+		cabecera.setContentMode(ContentMode.HTML);
 		
 		msjResultado.setVisible(false);
 		
