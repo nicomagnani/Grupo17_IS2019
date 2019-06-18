@@ -51,14 +51,13 @@ public class ResidenciasAdminView extends Composite implements View {
 	public ResidenciasAdminView() {
 				
 		cabecera.addStyleName(ValoTheme.MENU_TITLE);
-		
 		panel.setVisible(false);
 		msjResultado.setVisible(false);		
 		
 		propiedadesLayout = new VerticalLayout();
 		propiedadesLayout.setSizeUndefined();
 		
-		cargarResidencias();
+		this.cargarResidencias();
 		
 		//coloco el layout con las propiedades dentro del panel para poder scrollear
 		panel.setContent(propiedadesLayout);
@@ -191,7 +190,7 @@ public class ResidenciasAdminView extends Composite implements View {
     	fotosLayout.setWidth("650");
     	fotosLayout.addStyleName("scrollable");
 
-		Label separador = new Label("____________________________________________________________________");
+		Label separador = MyUI.separador();
 		
 		FormLayout propiedadLayout = new FormLayout(titulo,ubicacion,descripcion,montoBase,botonesLayout,fotosLayout,separador);
 		propiedadLayout.setWidth("500");

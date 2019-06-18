@@ -226,6 +226,10 @@ public class MyUI extends UI {
         navigator.navigateTo("residenciasVisitante"); //navega a la lista reducida de residencias
     	
     }  
+    
+    public static Label separador() {
+    	return new Label("____________________________________________________________________");
+    }
 
     @WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
     @VaadinServletConfiguration(ui = MyUI.class, productionMode = false)

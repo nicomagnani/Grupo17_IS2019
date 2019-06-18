@@ -231,7 +231,47 @@ public class ConnectionBD {
 		}
 
 		return reservas;
-	}	
+	}
+	
+	//No me funciona, solo esta implementado la parte de subasta.
+	public ArrayList<Reserva> listaReservasPorEstado(EstadoDeReserva estado) throws SQLException {
+		
+		ArrayList<Reserva> reservas = new ArrayList<Reserva>();
+		Reserva reserva = null;
+		
+		System.out.println(estado.toString());
+		String query = "SELECT * FROM reservas WHERE estado = '"+estado.toString()+"'";
+		ResultSet rs = stmt.executeQuery(query);
+		
+		while (rs.next()) {
+			String tipo = rs.getString("tipo");
+			if (tipo.equals("directa")) {
+				reserva = new ReservaDirecta();
+				//asigno campos exclusivos de ReservaDirecta
+			} else
+				if (tipo.equals("subasta")) {
+					reserva = new ReservaSubasta();
+					reserva.setMontos(rs.getString("montos").split(" "));
+					reserva.setUsuarios(rs.getString("usuarios").split(" "));
+					reserva.setFechaSubasta(rs.getDate("fecha_subasta").toLocalDate());
+				} else
+					if (tipo.equals("hotsale")) {
+						reserva = new ReservaHotsale();
+						//asigno campos exclusivos de ReservaHotsale
+					}
+			
+			reserva.setPropiedad(rs.getString("propiedad"));
+			reserva.setLocalidad(rs.getString("localidad"));
+			reserva.setUsuario(rs.getString("usuario"));
+			reserva.setFechaInicio(rs.getDate("fecha_inicio").toLocalDate());
+			reserva.setEstado(EstadoDeReserva.valueOf(rs.getString("estado")));
+			reserva.setMonto(rs.getFloat("monto"));
+
+			reservas.add(reserva);
+		}
+
+		return reservas;
+	}
 	
 	
 	public ArrayList<Reserva> listaReservasPorPropiedad(String propiedad, String localidad) throws SQLException {
