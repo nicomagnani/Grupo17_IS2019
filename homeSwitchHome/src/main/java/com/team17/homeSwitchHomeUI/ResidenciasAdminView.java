@@ -255,8 +255,11 @@ public class ResidenciasAdminView extends Composite implements View {
 					
 				} //fin chequeo
 			}
-			mostrarNotificacion("Se abrieron "+n1+" subastas de un total de "+n2+" reservas.", Notification.Type.HUMANIZED_MESSAGE);
-			
+			if (n1 > 0) {
+				mostrarNotificacion("Se abrieron "+n1+" subastas de un total de "+n2+" reservas.", Notification.Type.HUMANIZED_MESSAGE);
+			} else {
+				mostrarNotificacion("No se abrió ninguna subasta.", Notification.Type.HUMANIZED_MESSAGE);
+			}
 		} else 
 			mostrarNotificacion("No hay reservas cargadas.", Notification.Type.HUMANIZED_MESSAGE);
 		
