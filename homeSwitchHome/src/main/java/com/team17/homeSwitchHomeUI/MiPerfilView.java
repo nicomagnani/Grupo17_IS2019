@@ -25,6 +25,8 @@ public class MiPerfilView extends Composite implements View {  //.necesita compo
 	Label cabecera = new Label("Perfil de usuario");
 	
 	Button botonModificar = new Button("Modificar mis datos");
+	Button botonModificarContraseña= new Button("Modificar Contraseña");
+	Button botonModificarTarjeta= new Button("Modificar Tarjeta");
 	Usuario usuario;
 	Tarjeta tarjeta;
 		
@@ -63,12 +65,13 @@ public class MiPerfilView extends Composite implements View {  //.necesita compo
 		Label labelTipoUsuario = new Label("<span style=\"font-weight: bold;\">Tipo de usuario:</span> " + tipoUsuario, ContentMode.HTML);		
 		
 		botonModificar.addClickListener(e -> this.modificarUsuario(navigator));
-		
+		botonModificarContraseña.addClickListener(e -> this.modificarContraseña(navigator));
+		botonModificarTarjeta.addClickListener(e -> this.mofificarTarjeta(navigator));
 		
 		FormLayout formLayout = new FormLayout(labelParte1, labelMail, labelNombre, labelApellido, labelFechaNac,
 				labelParte2, labelNroTarj, labelMarcaTarj, labelTitTarj , labelFVencTarj,
 				labelParte3, labelCreditos, labelFVencCred, labelTipoUsuario);
-		VerticalLayout mainLayout = new VerticalLayout(cabecera, formLayout, botonModificar);
+		VerticalLayout mainLayout = new VerticalLayout(cabecera, formLayout, botonModificar,botonModificarContraseña,botonModificarTarjeta);
 		
 		mainLayout.setComponentAlignment(cabecera, Alignment.MIDDLE_CENTER);
 		mainLayout.setComponentAlignment(formLayout, Alignment.MIDDLE_CENTER);
@@ -78,6 +81,22 @@ public class MiPerfilView extends Composite implements View {  //.necesita compo
     
 	}		
 	
+
+	private void mofificarTarjeta(Navigator navigator) {
+		navigator.navigateTo("modificarTarjeta");
+	
+	}
+
+
+	private void modificarContraseña(Navigator navigator) {
+		navigator.navigateTo("modificarContraseña");
+	}
+
+
+
+
+
+
 
 	private String ofuscarNro(long n) {
 		StringBuilder stb = new StringBuilder(String.valueOf(n));

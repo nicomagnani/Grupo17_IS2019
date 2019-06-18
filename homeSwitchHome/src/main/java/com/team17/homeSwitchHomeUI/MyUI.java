@@ -133,7 +133,7 @@ public class MyUI extends UI {
         menu.addStyleName(ValoTheme.MENU_ROOT);
     }
     
-    private void navigatorUsuario() {
+ private void navigatorUsuario() {
     	
     	navigator = new Navigator(this, viewContainer);
         
@@ -147,7 +147,9 @@ public class MyUI extends UI {
         navigator.addView("buscarFecha", new BuscarFechaView());
         navigator.addView("buscarLugar", new BuscarLugarView());
         navigator.addView("miPerfil", new MiPerfilView(navigator));
-        navigator.addView("modificarPerfil", new ModificarPerfilView());
+        navigator.addView("modificarPerfil", new ModificarPerfilView(navigator));
+        navigator.addView("modificarTarjeta", new ModificarTarjetaView(navigator));
+        navigator.addView("modificarContraseña", new ModificarContraseñaView(navigator));
         navigator.addView("contactar", new ContactarView());    	
         navigator.addView("verFaq", new VerFaqView());
         navigator.navigateTo("residencias");

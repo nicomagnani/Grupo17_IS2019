@@ -592,6 +592,54 @@ public class ConnectionBD {
 		con.close();
 
 	}
+	
+	public void ModificarPerfil(String mailOriginal, String mail, String nombreNuevo, String apellido) {
+		String query = "UPDATE usuarios SET  mail=?,nombre= ?,apellido=? WHERE mail='"+mailOriginal+"'";
+		try {
+			ps = (PreparedStatement) con.prepareStatement(query);			
+			ps.setString(1, mail);
+			ps.setString(2, nombreNuevo);
+			ps.setString(3, apellido);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+		
+	}
+
+
+
+	public void modificarTarjeta(long numTarj, String marca, String titular, LocalDate fechaVencimiento, short numSeg,String mail) {
+		String query = "UPDATE usuarios SET  nro_tarj=?,marca_tarj= ?,titu_tarj=?,venc_tarj=?,cod_tarj=? WHERE mail='"+mail+"'";
+		try {
+			ps = (PreparedStatement) con.prepareStatement(query);
+			ps.setLong(1, numTarj);
+			ps.setString(2, marca);
+			ps.setString(3, titular);
+			ps.setDate(4, java.sql.Date.valueOf(fechaVencimiento));
+			ps.setLong(5, numSeg);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+	public void cambiarContraseña(String mail, String value) {
+		String query ="UPDATE usuarios SET contraseña=? WHERE mail='"+mail+"'";
+		try {
+			ps = (PreparedStatement) con.prepareStatement(query);
+			ps.setString(1, value);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 
 }
 
