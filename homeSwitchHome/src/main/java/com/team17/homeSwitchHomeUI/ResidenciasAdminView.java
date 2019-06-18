@@ -7,6 +7,9 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+import org.apache.commons.mail.EmailException;
+import org.apache.commons.mail.HtmlEmail;
+
 import com.vaadin.navigator.View;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
@@ -25,6 +28,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import homeSwitchHome.EstadoDeReserva;
 import homeSwitchHome.Propiedad;
 import homeSwitchHome.Reserva;
+import homeSwitchHome.ReservaSubasta;
 
 public class ResidenciasAdminView extends Composite implements View {
 	
@@ -34,14 +38,14 @@ public class ResidenciasAdminView extends Composite implements View {
 	private VerticalLayout propiedadesLayout = new VerticalLayout();
 	private Panel panel = new Panel();
 	private Button botonSubastar = new Button("Abrir Subastas");	
-	private Notification notifResultado = new Notification("Residencia borraada con éito.");
+	private Notification notifResultado = new Notification("Residencia borrada con éito.");
 	
 	private ConnectionBD conexion = new ConnectionBD();
 
-	private ArrayList<Propiedad> propiedades = new ArrayList();
-	private ArrayList<Reserva> reservas = new ArrayList();
-	private Propiedad propiedad;
-	private Reserva reserva;
+	private ArrayList<Propiedad> propiedades = new ArrayList<>();
+	private ArrayList<Reserva> reservas = new ArrayList<>();
+	
+	private HtmlEmail email = new HtmlEmail();
 	
 		
 	public ResidenciasAdminView() {
@@ -64,6 +68,12 @@ public class ResidenciasAdminView extends Composite implements View {
 
 		botonSubastar.addClickListener(e -> this.subastarTodo());
 		
+		try {
+			this.inicializarEmail();
+		} catch (EmailException e1) {
+			e1.printStackTrace();
+		}		
+		
 		VerticalLayout mainLayout = new VerticalLayout(cabecera, panel, botonSubastar, msjResultado);
 		mainLayout.setComponentAlignment(cabecera, Alignment.MIDDLE_CENTER);
 		mainLayout.setComponentAlignment(panel, Alignment.MIDDLE_CENTER);
@@ -73,6 +83,22 @@ public class ResidenciasAdminView extends Composite implements View {
         setCompositionRoot(mainLayout);
 	}
 	
+
+	private void inicializarEmail() throws EmailException {
+
+		email.setHostName("localhost");
+		email.setSmtpPort(9090);
+		email.setAuthentication("homeswitchhome@outlook.com.ar", "1234");		
+		email.setFrom("homeswitchhome@outlook.com.ar");
+		email.setSubject("Propiedad eliminada");
+		
+		String mensaje = "<p>Estimado usuario, la propiedad que se encontraba en subasta"
+				+ " y en la cual usted había ofertado ha sido eliminada. Sepa disculpar las molestias.</p><p>Atte. Staff"
+				+ " de <span style=\"text-decoration: underline;\">HomeSwitchHome</span></p>";
+		email.setHtmlMsg(mensaje);
+		
+	}
+
 
 	private void cargarResidencias() {
 		
@@ -179,7 +205,7 @@ public class ResidenciasAdminView extends Composite implements View {
 		eliminar.addClickListener(e -> {
 			try {
 				this.eliminar(propiedad, propiedadLayout);
-			} catch (SQLException e1) {
+			} catch (SQLException | EmailException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
@@ -236,19 +262,62 @@ public class ResidenciasAdminView extends Composite implements View {
 		
 	}
 	
+	
 	private void modificar(Propiedad propiedad) {
 		//TODO
 	}
 	
-	private void eliminar(Propiedad propiedad, FormLayout propiedadLayout) throws SQLException {
-		//TODO
-		conexion.eliminarResidencia(propiedad);
-		propiedadLayout.setVisible(false);
-		mostrarNotificacion("Residencia borrada con éxito.", Notification.Type.HUMANIZED_MESSAGE);
+	
+	private void eliminar(Propiedad propiedad, FormLayout propiedadLayout) throws SQLException, EmailException {
+		
+		propiedad.setReservas( conexion.listaReservasPorPropiedad(propiedad.getTitulo(), propiedad.getLocalidad()) );
+		
+		if (!propiedad.hayReservasRealizadas()) {
+			
+			if (propiedad.haySubastasEncurso()) {
+				int n = 0; //cantidad de ofertantes informados
+				for (Reserva reserva : propiedad.getReservas()) {
+					if (reserva.getEstado() == EstadoDeReserva.DISPONIBLE_SUBASTA) {
+						ReservaSubasta reserva2 = conexion.buscarSubasta(reserva.getPropiedad(), reserva.getLocalidad(), reserva.getFechaInicio());
+						for (String usuario : reserva2.getUsuarios() )  {
+							if (this.agregarReceptorDeEmail(usuario))
+								n++;
+						}
+						email.send();
+					}
+				}
+				if (n > 0) {
+					mostrarNotificacion("Residencia en subasta borrada con éxito y "+n+" ofertantes informados vía email.", Notification.Type.HUMANIZED_MESSAGE);
+				} else
+					mostrarNotificacion("Residencia en subasta y sin ofertas borrada con éxito.", Notification.Type.HUMANIZED_MESSAGE);				
+			} else
+				mostrarNotificacion("Residencia borrada con éxito.", Notification.Type.HUMANIZED_MESSAGE);
+			conexion.eliminarResidencia(propiedad);
+			propiedadLayout.setVisible(false);
+			 	
+		} else
+			mostrarNotificacion("Error: La residencia se encuentra reservada.", Notification.Type.ERROR_MESSAGE);	
+		
 	}
 	
+	
+	//devuelve true si tuvo exito
+	private boolean agregarReceptorDeEmail (String mail) {				
+		
+		try {
+			email.addTo(mail);
+			return true;
+		} catch (EmailException e) {
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
+
+
 	private void mostrarNotificacion(String st, Notification.Type tipo) {
-    	notifResultado = new Notification(st, tipo);
+    	
+		notifResultado = new Notification(st, tipo);
     	notifResultado.setDelayMsec(5000);
     	notifResultado.show(Page.getCurrent());
     }

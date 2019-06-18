@@ -120,10 +120,11 @@ SET
     fecha_inicio = '2018-08-20'
 WHERE propiedad = 'prueba1' AND estado = 'DISPONIBLE_HOTSALE' /* multiples condiciones */
 
-UPDATE reservas
+UPDATE subastas
 SET 
-    monto = 760.60
-WHERE propiedad = 'prueba1';
+    usuarios = 'pedro@asd.com juan@mail.com',
+	montos = '300 500 700'
+WHERE propiedad = 'prueba2' AND localidad = 'prueba5';
 
 UPDATE usuarios
 SET 

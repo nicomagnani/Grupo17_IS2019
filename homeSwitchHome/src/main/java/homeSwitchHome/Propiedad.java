@@ -198,6 +198,31 @@ public class Propiedad {
 	public void setReservas(ArrayList<Reserva> reservas) {
 		this.reservas = reservas;
 	}
+
+	public boolean isDispDirecta() {
+		return dispDirecta;
+	}
+
+	public void setDispDirecta(boolean disponibleDirecta) {
+		this.dispDirecta = disponibleDirecta;
+	}
+
+	public boolean isDispSubasta() {
+		return dispSubasta;
+	}
+
+	public void setDispSubasta(boolean disponibleSubasta) {
+		this.dispSubasta = disponibleSubasta;
+	}
+
+	public boolean isDispHotsale() {
+		return dispHotsale;
+	}
+
+	public void setDispHotsale(boolean disponibleHotsale) {
+		this.dispHotsale = disponibleHotsale;
+	}
+	
 	
 	public boolean hayReservaEnFecha(LocalDate fecha) {
 		
@@ -213,6 +238,7 @@ public class Propiedad {
 		
 		return ok;
 	}
+	
 			
 	public boolean hayReservaEntreFechas(LocalDate fecha1, LocalDate fecha2) {
 		
@@ -275,29 +301,27 @@ public class Propiedad {
 			}
 	}
 	
-
-	public boolean isDispDirecta() {
-		return dispDirecta;
+	
+	public boolean hayReservasRealizadas() {
+		
+		for (Reserva reserva : reservas) {
+			if (reserva.getEstado() == EstadoDeReserva.RESERVADA) {
+				return true;
+			}
+		}
+		
+		return false;		
 	}
-
-	public void setDispDirecta(boolean disponibleDirecta) {
-		this.dispDirecta = disponibleDirecta;
-	}
-
-	public boolean isDispSubasta() {
-		return dispSubasta;
-	}
-
-	public void setDispSubasta(boolean disponibleSubasta) {
-		this.dispSubasta = disponibleSubasta;
-	}
-
-	public boolean isDispHotsale() {
-		return dispHotsale;
-	}
-
-	public void setDispHotsale(boolean disponibleHotsale) {
-		this.dispHotsale = disponibleHotsale;
-	}
+	
+	
+	public boolean haySubastasEncurso() {
+		
+		for (Reserva reserva : reservas) {
+			if (reserva.getEstado() == EstadoDeReserva.DISPONIBLE_SUBASTA) {
+				return true;
+			}
+		}
+		return false;
+	}	
 	
 }

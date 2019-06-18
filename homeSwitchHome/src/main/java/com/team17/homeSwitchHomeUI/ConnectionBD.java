@@ -2,11 +2,15 @@ package com.team17.homeSwitchHomeUI;
 
 import java.io.ByteArrayInputStream;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import com.mysql.jdbc.PreparedStatement;
 import com.mysql.jdbc.Statement;
@@ -227,30 +231,29 @@ public class ConnectionBD {
 		}
 
 		return reservas;
-	}
+	}	
 	
 	
-	
-	public ArrayList<Reserva> listaReservasPorPropiedad(String st1, String st2) throws SQLException {
+	public ArrayList<Reserva> listaReservasPorPropiedad(String propiedad, String localidad) throws SQLException {
 		
 		ArrayList<Reserva> reservas = new ArrayList<Reserva>();
 		Reserva reserva = new ReservaDirecta();
 		String tipo;
 		
-		String query = "SELECT * FROM reservas WHERE propiedad = '"+st1+"' AND localidad = '"+st2+"'";
+		String query = "SELECT * FROM reservas WHERE propiedad = '"+propiedad+"' AND localidad = '"+localidad+"'";
 		ResultSet rs = stmt.executeQuery(query);
 		
 		while (rs.next()) {
 			tipo = rs.getString("tipo");
-			if (tipo == "directa") {
+			if (tipo.equals("directa")) {
 				reserva = new ReservaDirecta();
 				//asigno campos exclusivos de ReservaDirecta
 			} else
-				if (tipo == "subasta") {
+				if (tipo.equals("subasta")) {
 					reserva = new ReservaSubasta();
 					//asigno campos exclusivos de ReservaSubasta
 				} else
-					if (tipo == "hotsale") {
+					if (tipo.equals("hotsale")) {
 						reserva = new ReservaHotsale();
 						//asigno campos exclusivos de ReservaHotsale
 					}
@@ -272,8 +275,9 @@ public class ConnectionBD {
 	public void comenzarReservaSubasta(Reserva r) throws SQLException {		
 		
 		//parte 1, se actualiza tipo de reserva
-		String query = "UPDATE reservas SET tipo = ?, estado = ?"
-				+" WHERE propiedad = ? AND localidad = ? AND fecha_inicio = ?" ;
+		String query = "UPDATE reservas"
+				+ " SET tipo = ?, estado = ?"
+				+" WHERE propiedad = ? AND localidad = ? AND fecha_inicio = ?";
 			
 		ps = (PreparedStatement) con.prepareStatement(query);
 		
@@ -287,21 +291,84 @@ public class ConnectionBD {
 		ps.close();
 		
 		//parte 2, se agrega subasta a la tabla subastas		
-		query = "INSERT INTO subastas (propiedad, localidad, fecha_inicio, montos)"
+		query = "INSERT INTO subastas (propiedad, localidad, fecha_inicio, fecha_subasta, montos)"
 				+" VALUES (?,?,?,?)";
 			
 		ps = (PreparedStatement) con.prepareStatement(query);		
 		
 		ps.setString(1,r.getPropiedad());
 		ps.setString(2,r.getLocalidad());
-		ps.setDate(3, java.sql.Date.valueOf(LocalDate.now()));
-		ps.setString(4,String.valueOf(r.getMonto()));
+		ps.setDate(3, java.sql.Date.valueOf(r.getFechaInicio()));
+		ps.setDate(4, java.sql.Date.valueOf(LocalDate.now()));
+		ps.setString(5,String.valueOf(r.getMonto()));
 		
 		ps.executeUpdate();
 		ps.close();
 		con.close();		
 	}
+
+
+	public ReservaSubasta buscarSubasta(String propiedad,  String localidad, LocalDate fechaInicio) throws SQLException {
 		
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-LL-dd");
+		String fechaComoString = fechaInicio.format(formatter);
+		
+		String query = "SELECT * FROM subastas WHERE propiedad = '"+propiedad+"' AND localidad = '"
+		+localidad+"' AND fecha_inicio = '"+fechaComoString+"'";
+		ResultSet rs = stmt.executeQuery(query);
+		
+		ReservaSubasta reserva = new ReservaSubasta();
+		String[] lista1;		
+		ArrayList<Float> montos = new ArrayList<>();
+
+		while (rs.next()) {
+			reserva.setPropiedad(rs.getString("propiedad"));
+			reserva.setLocalidad(rs.getString("localidad"));
+			reserva.setFechaInicio(rs.getDate("fecha_inicio").toLocalDate());
+						
+			lista1 = (rs.getString("montos").split("\\s+"));
+			for (String st : lista1)
+				montos.add(Float.parseFloat(st));
+			
+			reserva.setMontos(montos);
+			reserva.setUsuarios( new ArrayList<>(Arrays.asList(rs.getString("usuarios").split("\\s+"))) );
+		}
+
+		return reserva;
+	}
+	
+
+	public Usuario buscarUsuario(String mail) throws SQLException {
+		
+		String query = "SELECT * FROM usuarios WHERE mail = '"+mail+"'";
+		ResultSet rs = stmt.executeQuery(query);
+		
+		Usuario usuario = null;
+		Tarjeta tarjeta = new Tarjeta();
+
+		while (rs.next()) {
+			if (rs.getBoolean("premium")) {
+				usuario = new UsuarioPremium();
+			} else {
+				usuario = new UsuarioComun();
+			}
+			usuario.setMail(rs.getString("mail"));
+			usuario.setContraseña(rs.getString("contraseña"));
+			usuario.setNombre(rs.getString("nombre"));
+			usuario.setApellido(rs.getString("apellido"));
+			usuario.setfNac((rs.getDate("f_nac").toLocalDate()));
+			usuario.setCreditos(rs.getShort("creditos"));
+
+			tarjeta.setNumero(rs.getLong("nro_tarj"));
+			tarjeta.setMarca(rs.getString("marca_tarj"));
+			tarjeta.setTitular(rs.getString("titu_tarj"));
+			tarjeta.setfVenc(rs.getDate("venc_tarj").toLocalDate());
+			tarjeta.setCodigo(rs.getShort("cod_tarj"));
+			usuario.setTarjeta(tarjeta);
+		}
+
+		return usuario;
+	}		
 	
 	
 	//metodo que devuelve los usuarios comunes+premium de la bd
@@ -362,9 +429,14 @@ public class ConnectionBD {
 
     public void eliminarResidencia(Propiedad unaResidencia) throws SQLException {
     	
-    	String query ="DELETE FROM propiedad WHERE titulo = '"+unaResidencia.getTitulo()+"' AND localidad = "+unaResidencia.getLocalidad();
+    	String query ="DELETE FROM propiedad WHERE titulo = ? AND localidad = ?";
     	ps = (PreparedStatement) con.prepareStatement(query);
-    	ps.executeUpdate(query);
+    	
+    	ps.setString(1, unaResidencia.getTitulo());
+    	ps.setString(2, unaResidencia.getLocalidad());
+    	
+    	ps.executeUpdate(); 
+    	ps.close();
     }
     
 
@@ -426,39 +498,6 @@ public class ConnectionBD {
 		ps.close();
 		con.close();
 
-	}
-
-
-	public Usuario buscarUsuario(String mail) throws SQLException {
-		
-		String query = "SELECT * FROM usuarios WHERE mail = '"+mail+"'";
-		ResultSet rs = stmt.executeQuery(query);
-		
-		Usuario usuario = null;
-		Tarjeta tarjeta = new Tarjeta();
-
-		while (rs.next()) {
-			if (rs.getBoolean("premium")) {
-				usuario = new UsuarioPremium();
-			} else {
-				usuario = new UsuarioComun();
-			}
-			usuario.setMail(rs.getString("mail"));
-			usuario.setContraseña(rs.getString("contraseña"));
-			usuario.setNombre(rs.getString("nombre"));
-			usuario.setApellido(rs.getString("apellido"));
-			usuario.setfNac((rs.getDate("f_nac").toLocalDate()));
-			usuario.setCreditos(rs.getShort("creditos"));
-
-			tarjeta.setNumero(rs.getLong("nro_tarj"));
-			tarjeta.setMarca(rs.getString("marca_tarj"));
-			tarjeta.setTitular(rs.getString("titu_tarj"));
-			tarjeta.setfVenc(rs.getDate("venc_tarj").toLocalDate());
-			tarjeta.setCodigo(rs.getShort("cod_tarj"));
-			usuario.setTarjeta(tarjeta);
-		}
-
-		return usuario;
 	}
 
 }
