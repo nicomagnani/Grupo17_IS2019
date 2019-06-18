@@ -2,13 +2,11 @@ package com.team17.homeSwitchHomeUI;
 
 import java.io.ByteArrayInputStream;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -199,25 +197,30 @@ public class ConnectionBD {
 	public ArrayList<Reserva> listaReservas() throws SQLException {
 		
 		ArrayList<Reserva> reservas = new ArrayList<Reserva>();
-		Reserva reserva = new ReservaDirecta();
-		String tipo;
+		Reserva reserva = null;
+		ReservaDirecta reservaDirecta;
+		ReservaSubasta reservaSubasta;
+		ReservaHotsale reservaHotsale;
 		
 		String query = "SELECT * FROM reservas";
 		ResultSet rs = stmt.executeQuery(query);
 		
 		while (rs.next()) {
-			tipo = rs.getString("tipo");
+			String tipo = rs.getString("tipo");
 			if (tipo.equals("directa")) {
-				reserva = new ReservaDirecta();
+				reservaDirecta = new ReservaDirecta();
 				//asigno campos exclusivos de ReservaDirecta
+				reserva = reservaDirecta;				
 			} else
-				if (tipo.equals("subasta")) {
-					reserva = new ReservaSubasta();
+				if (tipo.equals("subasta")) {					
+					reservaSubasta = new ReservaSubasta();		
 					//asigno campos exclusivos de ReservaSubasta
+					reserva = reservaSubasta;					
 				} else
 					if (tipo.equals("hotsale")) {
-						reserva = new ReservaHotsale();
+						reservaHotsale = new ReservaHotsale();
 						//asigno campos exclusivos de ReservaHotsale
+						reserva = reservaHotsale;
 					}
 			
 			reserva.setPropiedad(rs.getString("propiedad"));
@@ -233,33 +236,38 @@ public class ConnectionBD {
 		return reservas;
 	}
 	
+	
 	//No me funciona, solo esta implementado la parte de subasta.
 	public ArrayList<Reserva> listaReservasPorEstado(EstadoDeReserva estado) throws SQLException {
 		
 		ArrayList<Reserva> reservas = new ArrayList<Reserva>();
 		Reserva reserva = null;
+		ReservaDirecta reservaDirecta;
+		ReservaSubasta reservaSubasta;
+		ReservaHotsale reservaHotsale;
 		
-		System.out.println(estado.toString());
 		String query = "SELECT * FROM reservas WHERE estado = '"+estado.toString()+"'";
 		ResultSet rs = stmt.executeQuery(query);
 		
 		while (rs.next()) {
 			String tipo = rs.getString("tipo");
 			if (tipo.equals("directa")) {
-				reserva = new ReservaDirecta();
+				reservaDirecta = new ReservaDirecta();
 				//asigno campos exclusivos de ReservaDirecta
+				reserva = reservaDirecta;
+				
 			} else
-				if (tipo.equals("subasta")) {
-					reserva = new ReservaSubasta();
-					reserva.setMontos(rs.getString("montos").split(" "));
-					reserva.setUsuarios(rs.getString("usuarios").split(" "));
-					reserva.setFechaSubasta(rs.getDate("fecha_subasta").toLocalDate());
+				if (tipo.equals("subasta")) {					
+					reservaSubasta = new ReservaSubasta();		
+					//asigno campos exclusivos de ReservaSubasta
+					reserva = reservaSubasta;
 				} else
 					if (tipo.equals("hotsale")) {
-						reserva = new ReservaHotsale();
+						reservaHotsale = new ReservaHotsale();
 						//asigno campos exclusivos de ReservaHotsale
-					}
-			
+						reserva = reservaHotsale;
+					}			
+					
 			reserva.setPropiedad(rs.getString("propiedad"));
 			reserva.setLocalidad(rs.getString("localidad"));
 			reserva.setUsuario(rs.getString("usuario"));
@@ -277,25 +285,30 @@ public class ConnectionBD {
 	public ArrayList<Reserva> listaReservasPorPropiedad(String propiedad, String localidad) throws SQLException {
 		
 		ArrayList<Reserva> reservas = new ArrayList<Reserva>();
-		Reserva reserva = new ReservaDirecta();
-		String tipo;
+		Reserva reserva = null;
+		ReservaDirecta reservaDirecta;
+		ReservaSubasta reservaSubasta;
+		ReservaHotsale reservaHotsale;
 		
 		String query = "SELECT * FROM reservas WHERE propiedad = '"+propiedad+"' AND localidad = '"+localidad+"'";
 		ResultSet rs = stmt.executeQuery(query);
 		
 		while (rs.next()) {
-			tipo = rs.getString("tipo");
+			String tipo = rs.getString("tipo");
 			if (tipo.equals("directa")) {
-				reserva = new ReservaDirecta();
+				reservaDirecta = new ReservaDirecta();
 				//asigno campos exclusivos de ReservaDirecta
+				reserva = reservaDirecta;				
 			} else
-				if (tipo.equals("subasta")) {
-					reserva = new ReservaSubasta();
+				if (tipo.equals("subasta")) {					
+					reservaSubasta = new ReservaSubasta();		
 					//asigno campos exclusivos de ReservaSubasta
+					reserva = reservaSubasta;					
 				} else
 					if (tipo.equals("hotsale")) {
-						reserva = new ReservaHotsale();
+						reservaHotsale = new ReservaHotsale();
 						//asigno campos exclusivos de ReservaHotsale
+						reserva = reservaHotsale;
 					}
 			
 			reserva.setPropiedad(rs.getString("propiedad"));
@@ -346,6 +359,42 @@ public class ConnectionBD {
 		ps.close();
 		con.close();		
 	}
+	
+	
+	public ArrayList<ReservaSubasta> listaSubastas() throws SQLException {
+
+		ArrayList<ReservaSubasta> reservas = new ArrayList<>();
+		ReservaSubasta reserva;
+		String[] preMontos;
+		String preUsuarios;
+		
+		ArrayList<Float> montos = new ArrayList<>();
+		
+		String query = "SELECT * FROM subastas";
+		ResultSet rs = stmt.executeQuery(query);
+		
+		while (rs.next()) {
+			reserva = new ReservaSubasta();
+			
+			reserva.setPropiedad(rs.getString("propiedad"));
+			reserva.setLocalidad(rs.getString("localidad"));
+			reserva.setFechaInicio(rs.getDate("fecha_inicio").toLocalDate());
+						
+			preMontos = (rs.getString("montos").split("\\s+"));
+			for (String st : preMontos)
+				montos.add(Float.parseFloat(st));
+			reserva.setMontos(montos);			
+			
+			preUsuarios = rs.getString("usuarios");
+			if (preUsuarios != null) {
+				reserva.setUsuarios( new ArrayList<>(Arrays.asList(rs.getString("usuarios").split("\\s+"))) );
+			} //usuarios se inicializa como null, en caso de no haber ofertas no hace falta asignarlo				
+			
+			reservas.add(reserva);
+		}
+		
+		return reservas;
+	}	
 
 
 	public ReservaSubasta buscarSubasta(String propiedad,  String localidad, LocalDate fechaInicio) throws SQLException {
@@ -358,7 +407,8 @@ public class ConnectionBD {
 		ResultSet rs = stmt.executeQuery(query);
 		
 		ReservaSubasta reserva = new ReservaSubasta();
-		String[] lista1;		
+		String[] lista1;	
+		String preUsuarios;
 		ArrayList<Float> montos = new ArrayList<>();
 
 		while (rs.next()) {
@@ -368,10 +418,13 @@ public class ConnectionBD {
 						
 			lista1 = (rs.getString("montos").split("\\s+"));
 			for (String st : lista1)
-				montos.add(Float.parseFloat(st));
-			
+				montos.add(Float.parseFloat(st));			
 			reserva.setMontos(montos);
-			reserva.setUsuarios( new ArrayList<>(Arrays.asList(rs.getString("usuarios").split("\\s+"))) );
+			
+			preUsuarios = rs.getString("usuarios");
+			if (preUsuarios != null) {
+				reserva.setUsuarios( new ArrayList<>(Arrays.asList(rs.getString("usuarios").split("\\s+"))) );
+			} //usuarios se inicializa como null, en caso de no haber ofertas no hace falta asignarlo		
 		}
 
 		return reserva;

@@ -1,11 +1,8 @@
 package com.team17.homeSwitchHomeUI;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import com.vaadin.navigator.View;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Composite;
 import com.vaadin.ui.Label;

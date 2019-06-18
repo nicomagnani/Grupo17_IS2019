@@ -14,8 +14,7 @@ public enum EstadoDeReserva {
 		this.text = text;
 	}
 
-	@Override
-	public String toString() {
+	public String toStringAux() {
 		return text;
 	}
 	

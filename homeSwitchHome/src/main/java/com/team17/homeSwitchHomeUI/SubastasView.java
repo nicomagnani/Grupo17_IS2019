@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import com.vaadin.navigator.View;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.Composite;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Label;
@@ -14,14 +13,11 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import homeSwitchHome.EstadoDeReserva;
-import homeSwitchHome.Propiedad;
-import homeSwitchHome.Reserva;
 import homeSwitchHome.ReservaSubasta;
 
 public class SubastasView extends Composite implements View {  //.necesita composite y view para funcionar correctamente
 
-	private ArrayList<Reserva> subastas;
+	private ArrayList<ReservaSubasta> subastas;
 	private ConnectionBD conexion = new ConnectionBD();
 	
 	private Label cabecera = new Label("Lista de subastas");
@@ -57,7 +53,7 @@ public class SubastasView extends Composite implements View {  //.necesita compo
 	private void cargarSubastas() {
 		
 		try {
-			subastas = conexion.listaReservasPorEstado(EstadoDeReserva.DISPONIBLE_SUBASTA);
+			subastas = conexion.listaSubastas();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -74,19 +70,19 @@ public class SubastasView extends Composite implements View {  //.necesita compo
 		
 	}
 
-	private void añadirSubastas(Reserva unaSubasta) {
+	private void añadirSubastas(ReservaSubasta unaSubasta) {
 		
 		Label titulo = new Label("Título: "+unaSubasta.getPropiedad());
 		Label localidad = new Label("Localidad: "+unaSubasta.getLocalidad());
 		//Label tiempoRestante = new Label ...
-		Label monto = new Label ("Monto actual: " + String.valueOf(unaSubasta.getMonto()));
+		Label monto = new Label ("Monto actual: " + unaSubasta.getMontos().get(0));
 		
 		Button pujar = new Button("Pujar", e -> this.pujar());
 		
 		Label separador = MyUI.separador();
 		
 		FormLayout subastaLayout = new FormLayout(titulo,localidad,monto,pujar,separador);
-		subastaLayout.setWidth("500");
+		subastaLayout.setWidth("600");
 		subastaLayout.setSizeFull();
 		subastaLayout.setComponentAlignment(separador, Alignment.MIDDLE_CENTER);		
 		

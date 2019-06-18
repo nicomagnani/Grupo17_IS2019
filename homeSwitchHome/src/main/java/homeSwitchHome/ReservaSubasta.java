@@ -7,7 +7,7 @@ public class ReservaSubasta extends Reserva {
 	
 	//NOTA: si la subasta no recibio ofertas, ambas listas estarán vacías
 	private ArrayList<Float> montos = new ArrayList<>(); //contiene la historia del monto de la subasta (empezando por el monto actual)
-	private ArrayList<String> usuarios = new ArrayList<>(); //contiene la historia de usuarios con una oferta válida (empezando por el ofertante actual)
+	private ArrayList<String> usuarios = null; //contiene la historia de usuarios con una oferta válida (empezando por el ofertante actual)
 	private LocalDate fechaSubasta = LocalDate.now();
 	
 	public ReservaSubasta() {
