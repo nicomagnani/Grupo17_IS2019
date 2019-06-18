@@ -10,6 +10,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Composite;
 import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -24,7 +25,7 @@ public class MiPerfilView extends Composite implements View {  //.necesita compo
 	
 	Label cabecera = new Label("Perfil de usuario");
 	
-	Button botonModificar = new Button("Modificar mis datos");
+	Button botonModificarDatos = new Button("Modificar mis datos");
 	Button botonModificarContraseña= new Button("Modificar Contraseña");
 	Button botonModificarTarjeta= new Button("Modificar Tarjeta");
 	Usuario usuario;
@@ -64,18 +65,21 @@ public class MiPerfilView extends Composite implements View {  //.necesita compo
 		Label labelFVencCred = new Label("<span style=\"font-weight: bold;\">Vencimiento de los créditos:</span> " + usuario.getfVencCred(), ContentMode.HTML);
 		Label labelTipoUsuario = new Label("<span style=\"font-weight: bold;\">Tipo de usuario:</span> " + tipoUsuario, ContentMode.HTML);		
 		
-		botonModificar.addClickListener(e -> this.modificarUsuario(navigator));
+		botonModificarDatos.addClickListener(e -> this.modificarUsuario(navigator));
 		botonModificarContraseña.addClickListener(e -> this.modificarContraseña(navigator));
 		botonModificarTarjeta.addClickListener(e -> this.mofificarTarjeta(navigator));
 		
 		FormLayout formLayout = new FormLayout(labelParte1, labelMail, labelNombre, labelApellido, labelFechaNac,
 				labelParte2, labelNroTarj, labelMarcaTarj, labelTitTarj , labelFVencTarj,
 				labelParte3, labelCreditos, labelFVencCred, labelTipoUsuario);
-		VerticalLayout mainLayout = new VerticalLayout(cabecera, formLayout, botonModificar,botonModificarContraseña,botonModificarTarjeta);
+		
+		HorizontalLayout botonesLayout = new HorizontalLayout(botonModificarDatos,botonModificarContraseña,botonModificarTarjeta);
+		
+		VerticalLayout mainLayout = new VerticalLayout(cabecera, formLayout, botonesLayout);
 		
 		mainLayout.setComponentAlignment(cabecera, Alignment.MIDDLE_CENTER);
 		mainLayout.setComponentAlignment(formLayout, Alignment.MIDDLE_CENTER);
-		mainLayout.setComponentAlignment(botonModificar, Alignment.MIDDLE_CENTER);
+		mainLayout.setComponentAlignment(botonesLayout, Alignment.MIDDLE_CENTER);
 		
         setCompositionRoot(mainLayout);
     

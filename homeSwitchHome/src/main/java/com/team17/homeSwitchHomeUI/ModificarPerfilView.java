@@ -1,37 +1,27 @@
 package com.team17.homeSwitchHomeUI;
 
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 
-import org.vaadin.ui.NumberField;
-
-import com.vaadin.data.Binder;
-import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
+import com.vaadin.server.Page;
 import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.shared.ui.datefield.DateResolution;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.Composite;
-import com.vaadin.ui.DateField;
 import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.PasswordField;
-import com.vaadin.ui.RadioButtonGroup;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
 
 import homeSwitchHome.HomeSwitchHome;
-import homeSwitchHome.StringToShortConverter;
-import homeSwitchHome.Tarjeta;
 import homeSwitchHome.Usuario;
 
 public class ModificarPerfilView extends Composite implements View {  //.necesita composite y view para funcionar correctamente
+	
 	Label cabecera = new Label("Modificar datos");
 	Label labelParte1 = new Label("<span style=\"text-align: left; font-weight: bold; text-decoration: underline; font-size: 120%;\">Datos generales</span>", ContentMode.HTML);
 	TextField textoEmail = new TextField("Email:");	
@@ -41,7 +31,10 @@ public class ModificarPerfilView extends Composite implements View {  //.necesit
 	Button botonAceptar = new Button("Modificar");
 	Button botonCancelar= new Button("Cancelar");
 	Usuario usuario;
-	ConnectionBD conectar ;
+	ConnectionBD conectar;
+	Notification notification = new Notification("sd");
+	
+	
 	public ModificarPerfilView(Navigator navigator) {
 
 	ConnectionBD conectar = new ConnectionBD();		
@@ -59,7 +52,10 @@ public class ModificarPerfilView extends Composite implements View {  //.necesit
 		botonCancelar.addClickListener(e-> cancelar(navigator));
 		
 		FormLayout layout1 = new FormLayout(textoEmail, textoNombre, textoApellido);			
-		VerticalLayout mainLayout = new VerticalLayout(cabecera, labelParte1, layout1,botonAceptar,botonCancelar);
+		HorizontalLayout botonesLayout = new HorizontalLayout(botonAceptar, botonCancelar);
+		VerticalLayout mainLayout = new VerticalLayout(cabecera, labelParte1, layout1, botonesLayout);
+		
+		mainLayout.setComponentAlignment(botonesLayout, Alignment.MIDDLE_CENTER);
 			
 		setCompositionRoot(mainLayout);		
     }
@@ -70,22 +66,22 @@ public class ModificarPerfilView extends Composite implements View {  //.necesit
 	
 	private void modificar(Navigator navigator) {		
        ConnectionBD conectar = new ConnectionBD();
-       ArrayList<Usuario>listaUsuarios=new ArrayList<Usuario>();
+       ArrayList<Usuario>listaUsuarios = new ArrayList<Usuario>();
        try {
 	       usuario = conectar.buscarUsuario(HomeSwitchHome.getUsuarioActual());
-	       listaUsuarios= conectar.listaUsuarios();
+	       listaUsuarios = conectar.listaUsuarios();
        } catch (SQLException e) {
 	    // TODO Auto-generated catch block
 	   e.printStackTrace();
        }
        if (textoEmail.isEmpty()||textoNombre.isEmpty()|| textoApellido.isEmpty()) {
-    	   Notification.show("hay campos vacios");
+    	   this.mostrarNotificacion("Error: Hay campos vacíos.", Notification.Type.ERROR_MESSAGE);
        }else {
     	   if(mailYaRegistrado()){
-    		   Notification.show("el mail ya existe en el sistema, por favor ingrese otro mail");
+    		   this.mostrarNotificacion("Error: El mail ya existe en el sistema, por favor ingrese otro mail.", Notification.Type.ERROR_MESSAGE);
     	   }else {	   	   
     	   conectar.ModificarPerfil(usuario.getMail(),textoEmail.getValue(),textoNombre.getValue(),textoApellido.getValue());
-    	   Notification.show("modificando datos");
+    	   this.mostrarNotificacion("Modificación exitosa", Notification.Type.HUMANIZED_MESSAGE);
     	   navigator.navigateTo("miPerfil");
     	   
        }
@@ -109,5 +105,11 @@ public class ModificarPerfilView extends Composite implements View {  //.necesit
 	       return false;
 	       
 	}
+	
+	private void mostrarNotificacion(String st, Notification.Type tipo) {
+    	notification = new Notification(st, tipo);
+    	notification.setDelayMsec(5000);
+		notification.show(Page.getCurrent());
+    }
 	
 }

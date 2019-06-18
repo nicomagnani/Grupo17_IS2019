@@ -1,9 +1,15 @@
 package com.team17.homeSwitchHomeUI;
 
 import java.sql.SQLException;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
+import org.apache.commons.lang3.time.DurationFormatUtils;
+
 import com.vaadin.navigator.View;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Composite;
@@ -55,7 +61,6 @@ public class SubastasView extends Composite implements View {  //.necesita compo
 		try {
 			subastas = conexion.listaSubastas();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -65,23 +70,30 @@ public class SubastasView extends Composite implements View {  //.necesita compo
 				this.añadirSubastas(subastas.get(i));
 			}
 		} else {
-			msjResultado.setVisible(true);		
+			msjResultado.setVisible(true);
 		}
 		
 	}
 
 	private void añadirSubastas(ReservaSubasta unaSubasta) {
 		
-		Label titulo = new Label("Título: "+unaSubasta.getPropiedad());
-		Label localidad = new Label("Localidad: "+unaSubasta.getLocalidad());
-		//Label tiempoRestante = new Label ...
-		Label monto = new Label ("Monto actual: " + unaSubasta.getMontos().get(0));
+		// para mostrar tiempo restante
+		//long tiempo1 = Duration.between(LocalDateTime.now(), unaSubasta.getFechaInicioSubasta().plusDays(3).atStartOfDay()).toMillis();
+		//String tiempo2 = DurationFormatUtils.formatDuration(tiempo1, "H horas, mm minutos", true);
+		
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+		String fechaFinSubasta = unaSubasta.getFechaInicioSubasta().plusDays(3).atStartOfDay().format(formatter);
+		
+		Label titulo = new Label("<p><span style=\"text-align: left; font-weight: bold; font-size: 120%;\">Título:</span> <span style=\"font-size: 120%;\">"+unaSubasta.getPropiedad()+"</span></p>", ContentMode.HTML);
+		Label localidad = new Label("<span style=\"font-weight: bold;\">Localidad:</span> " + unaSubasta.getLocalidad(), ContentMode.HTML);	
+		Label tiempoRestante = new Label("<span style=\"font-weight: bold;\">Tiempo restante:</span> " + fechaFinSubasta + " hs.", ContentMode.HTML);	
+		Label monto = new Label("<span style=\"font-weight: bold;\">Monto actual:</span> " + unaSubasta.getMontos().get(0), ContentMode.HTML);
 		
 		Button pujar = new Button("Pujar", e -> this.pujar());
 		
 		Label separador = MyUI.separador();
 		
-		FormLayout subastaLayout = new FormLayout(titulo,localidad,monto,pujar,separador);
+		FormLayout subastaLayout = new FormLayout(titulo,localidad,tiempoRestante,monto,pujar,separador);
 		subastaLayout.setWidth("600");
 		subastaLayout.setSizeFull();
 		subastaLayout.setComponentAlignment(separador, Alignment.MIDDLE_CENTER);		

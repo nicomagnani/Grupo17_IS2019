@@ -9,6 +9,7 @@ import com.vaadin.data.Binder;
 import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
+import com.vaadin.server.Page;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.datefield.DateResolution;
 import com.vaadin.ui.Alignment;
@@ -16,6 +17,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Composite;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
@@ -40,7 +42,9 @@ public class ModificarTarjetaView extends Composite implements View {
 	Button botonAceptar= new Button("Modificar");
 	Button botonCancelar= new Button("Cancelar");
 	Usuario usuario;
-	ConnectionBD conectar ;
+	ConnectionBD conectar;
+	Notification notification = new Notification("sd");
+	
 	public ModificarTarjetaView(Navigator navigator) {
 		ConnectionBD conectar = new ConnectionBD();		
 		try {
@@ -55,8 +59,8 @@ public class ModificarTarjetaView extends Composite implements View {
 		campoNroTarj.setGroupingUsed(false);
 		campoNroTarj.setNegativeAllowed(false);		
 		
-       campoNroTarj.setValue((double) usuario.getTarjeta().getNumero());
-       textoTitTarj.setValue(usuario.getTarjeta().getTitular());       
+		campoNroTarj.setValue((double) usuario.getTarjeta().getNumero());
+		textoTitTarj.setValue(usuario.getTarjeta().getTitular());       
        
 		campoMarcaTarj.addStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
 		campoMarcaTarj.setItems("VISA", "MasterCard");			
@@ -65,6 +69,7 @@ public class ModificarTarjetaView extends Composite implements View {
 		fechaVencTarj.setValue(LocalDate.parse("2020-01-01"));
 		fechaVencTarj.setRangeStart(LocalDate.now());
 		nroSegTarj.setMaxLength(4);
+		
 		new Binder<Tarjeta>().forField(nroSegTarj)
 	    .withValidator(new RegexpValidator("Ingrese su código de seguridad", "[-]?[0-9]*\\.?,?[0-9]+"))
 	    .withConverter(new StringToShortConverter())
@@ -73,14 +78,19 @@ public class ModificarTarjetaView extends Composite implements View {
 		botonAceptar.addClickListener( e -> modificar(navigator) );
 		botonCancelar.addClickListener(e-> cancelar(navigator));
 		
-		FormLayout layout2 = new FormLayout(campoNroTarj, campoMarcaTarj,textoTitTarj,fechaVencTarj, nroSegTarj);
-		VerticalLayout mainLayout = new VerticalLayout( labelParte2, layout2, botonAceptar,botonCancelar);
+		FormLayout layout2 = new FormLayout(campoNroTarj, campoMarcaTarj, textoTitTarj, fechaVencTarj, nroSegTarj);
+		HorizontalLayout botonesLayout = new HorizontalLayout(botonAceptar, botonCancelar);
+		VerticalLayout mainLayout = new VerticalLayout(labelParte2, layout2, botonesLayout);
+		
+		mainLayout.setComponentAlignment(botonesLayout, Alignment.MIDDLE_CENTER);
+		
 		setCompositionRoot(mainLayout);
 		
 	}
 	private void cancelar(Navigator navigator) {
 		navigator.navigateTo("miPerfil");
 	}
+	
 	private void modificar(Navigator navigator) {
 		ConnectionBD conectar = new ConnectionBD();		
 		try {
@@ -92,18 +102,25 @@ public class ModificarTarjetaView extends Composite implements View {
 	       
 	       if((campoNroTarj.isEmpty()) || (campoMarcaTarj.isEmpty()) || 
     			(textoTitTarj.isEmpty()) || (fechaVencTarj.isEmpty()) || (nroSegTarj.isEmpty())) {
-	    	   Notification.show("hay campos vacios");
+	    	   this.mostrarNotificacion("Error: Hay campos vacíos.", Notification.Type.ERROR_MESSAGE);
 	       }else {
 	    	   conectar.modificarTarjeta(Long.parseLong(campoNroTarj.getValue()),
 						campoMarcaTarj.getValue(), textoTitTarj.getValue(), fechaVencTarj.getValue(),
 						Short.parseShort(nroSegTarj.getValue()), usuario.getMail() );
 	    		   
-	    	   Notification.show("mofificacion exitosa");
+	    	   this.mostrarNotificacion("Modificación exitosa", Notification.Type.HUMANIZED_MESSAGE);
 	    	   navigator.navigateTo("miPerfil");
 	    	   
 	       }
 	       
 	}
+	
+    private void mostrarNotificacion(String st, Notification.Type tipo) {
+    	notification = new Notification(st, tipo);
+    	notification.setDelayMsec(5000);
+		notification.show(Page.getCurrent());
+    }
+    
 }
 
 	

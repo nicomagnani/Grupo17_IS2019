@@ -367,18 +367,19 @@ public class ConnectionBD {
 		ReservaSubasta reserva;
 		String[] preMontos;
 		String preUsuarios;
-		
-		ArrayList<Float> montos = new ArrayList<>();
+		ArrayList<Float> montos;
 		
 		String query = "SELECT * FROM subastas";
 		ResultSet rs = stmt.executeQuery(query);
 		
 		while (rs.next()) {
 			reserva = new ReservaSubasta();
+			montos = new ArrayList<>();
 			
 			reserva.setPropiedad(rs.getString("propiedad"));
 			reserva.setLocalidad(rs.getString("localidad"));
 			reserva.setFechaInicio(rs.getDate("fecha_inicio").toLocalDate());
+			reserva.setFechaInicioSubasta(rs.getDate("fecha_subasta").toLocalDate());
 						
 			preMontos = (rs.getString("montos").split("\\s+"));
 			for (String st : preMontos)
@@ -415,6 +416,7 @@ public class ConnectionBD {
 			reserva.setPropiedad(rs.getString("propiedad"));
 			reserva.setLocalidad(rs.getString("localidad"));
 			reserva.setFechaInicio(rs.getDate("fecha_inicio").toLocalDate());
+			reserva.setFechaInicioSubasta(rs.getDate("fecha_subasta").toLocalDate());
 						
 			lista1 = (rs.getString("montos").split("\\s+"));
 			for (String st : lista1)
@@ -590,9 +592,9 @@ public class ConnectionBD {
 	    ps.executeUpdate();
 		ps.close();
 		con.close();
-
 	}
-	
+
+
 	public void ModificarPerfil(String mailOriginal, String mail, String nombreNuevo, String apellido) {
 		String query = "UPDATE usuarios SET  mail=?,nombre= ?,apellido=? WHERE mail='"+mailOriginal+"'";
 		try {
@@ -605,10 +607,7 @@ public class ConnectionBD {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	
-		
 	}
-
 
 
 	public void modificarTarjeta(long numTarj, String marca, String titular, LocalDate fechaVencimiento, short numSeg,String mail) {
@@ -625,8 +624,8 @@ public class ConnectionBD {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 	}
+
 
 	public void cambiarContraseña(String mail, String value) {
 		String query ="UPDATE usuarios SET contraseña=? WHERE mail='"+mail+"'";
@@ -638,8 +637,8 @@ public class ConnectionBD {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 	}
+
 
 }
 

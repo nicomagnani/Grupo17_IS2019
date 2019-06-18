@@ -13,6 +13,7 @@ import org.apache.commons.mail.HtmlEmail;
 import com.vaadin.navigator.View;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Composite;
@@ -125,12 +126,13 @@ public class ResidenciasAdminView extends Composite implements View {
 	
 	private void añadirResidencia(Propiedad propiedad) {
 		
-    	Label titulo = new Label("Título: "+propiedad.getTitulo());
-		Label ubicacion = new Label("Ubicación: "+ propiedad.getPais() + ", " +
-				propiedad.getProvincia() + ", " + propiedad.getLocalidad() +
-				", " + propiedad.getDomicilio());
-		Label descripcion = new Label ("Descripción: "+propiedad.getDescripcion());
-		Label montoBase = new Label ("Monto base: " + String.valueOf(propiedad.getMontoBase()));
+		Label titulo = new Label("<p><span style=\"text-align: left; font-weight: bold; font-size: 120%;\">Título:</span> <span style=\"font-size: 120%;\">"
+						+propiedad.getTitulo()+"</span></p>", ContentMode.HTML);
+		Label ubicacion = new Label("<span style=\"font-weight: bold;\">Ubicación:</span> " + propiedad.getPais() + ", " +
+						propiedad.getProvincia() + ", " + propiedad.getLocalidad() +
+						", " + propiedad.getDomicilio(), ContentMode.HTML);	
+		Label descripcion = new Label("<span style=\"font-weight: bold;\">Descripción:</span> " + propiedad.getDescripcion(), ContentMode.HTML);	
+		Label montoBase = new Label("<span style=\"font-weight: bold;\">Monto base:</span> " + String.valueOf(propiedad.getMontoBase()), ContentMode.HTML);
 		
 		Button verFotos = new Button("Ver Fotos");	
 		Button modificar = new Button("Modificar", e -> this.modificar(propiedad));
