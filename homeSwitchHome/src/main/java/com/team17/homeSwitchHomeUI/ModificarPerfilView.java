@@ -35,7 +35,7 @@ public class ModificarPerfilView extends Composite implements View {  //.necesit
 	Notification notification = new Notification("sd");
 	
 	
-	public ModificarPerfilView(Navigator navigator) {
+	public ModificarPerfilView(Navigator navigator, MyUI interfaz) {
 
 	ConnectionBD conectar = new ConnectionBD();		
 		try {
@@ -48,7 +48,7 @@ public class ModificarPerfilView extends Composite implements View {  //.necesit
 		textoNombre.setValue(usuario.getNombre());
 		textoApellido.setValue(usuario.getApellido());
 		
-		botonAceptar.addClickListener( e -> modificar(navigator) );
+		botonAceptar.addClickListener( e -> modificar(interfaz) );
 		botonCancelar.addClickListener(e-> cancelar(navigator));
 		
 		FormLayout layout1 = new FormLayout(textoEmail, textoNombre, textoApellido);			
@@ -64,7 +64,7 @@ public class ModificarPerfilView extends Composite implements View {  //.necesit
 		navigator.navigateTo("miPerfil");
 	}
 	
-	private void modificar(Navigator navigator) {		
+	private void modificar(MyUI interfaz) {		
        ConnectionBD conectar = new ConnectionBD();
        ArrayList<Usuario>listaUsuarios = new ArrayList<Usuario>();
        try {
@@ -77,12 +77,13 @@ public class ModificarPerfilView extends Composite implements View {  //.necesit
        if (textoEmail.isEmpty()||textoNombre.isEmpty()|| textoApellido.isEmpty()) {
     	   this.mostrarNotificacion("Error: Hay campos vacíos.", Notification.Type.ERROR_MESSAGE);
        }else {
-    	   if(mailYaRegistrado()){
+    	   if( (usuario.getMail() != textoEmail.getValue()) && mailYaRegistrado() ) {
     		   this.mostrarNotificacion("Error: El mail ya existe en el sistema, por favor ingrese otro mail.", Notification.Type.ERROR_MESSAGE);
     	   }else {	   	   
     	   conectar.ModificarPerfil(usuario.getMail(),textoEmail.getValue(),textoNombre.getValue(),textoApellido.getValue());
+    	   HomeSwitchHome.setUsuarioActual(textoEmail.getValue());
     	   this.mostrarNotificacion("Modificación exitosa", Notification.Type.HUMANIZED_MESSAGE);
-    	   navigator.navigateTo("miPerfil");
+    	   interfaz.vistaUsuario("miPerfil");
     	   
        }
        }

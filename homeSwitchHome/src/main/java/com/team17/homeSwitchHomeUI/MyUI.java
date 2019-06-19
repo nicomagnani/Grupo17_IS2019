@@ -65,20 +65,20 @@ public class MyUI extends UI {
         this.navigatorVisitante();
     }
    
-    public void vistaUsuario() {
+    public void vistaUsuario(String vistaInicial) {
         
     	this.mostrarLogo();
         this.botonesUsuario();
         this.mostrarLayout();
-        this.navigatorUsuario();
+        this.navigatorUsuario(vistaInicial);
     }
     
-    public void vistaAdmin() {
+    public void vistaAdmin(String vistaIncial) {
         
     	this.mostrarLogo();
         this.botonesAdmin();
         this.mostrarLayout();
-        this.navigatorAdmin();
+        this.navigatorAdmin(vistaIncial);
     }
     
     private void mostrarLogo() {    	
@@ -133,7 +133,7 @@ public class MyUI extends UI {
         menu.addStyleName(ValoTheme.MENU_ROOT);
     }
     
- private void navigatorUsuario() {
+ private void navigatorUsuario(String vistaIncial) {
     	
     	navigator = new Navigator(this, viewContainer);
         
@@ -147,12 +147,12 @@ public class MyUI extends UI {
         navigator.addView("buscarFecha", new BuscarFechaView());
         navigator.addView("buscarLugar", new BuscarLugarView());
         navigator.addView("miPerfil", new MiPerfilView(navigator));
-        navigator.addView("modificarPerfil", new ModificarPerfilView(navigator));
-        navigator.addView("modificarTarjeta", new ModificarTarjetaView(navigator));
-        navigator.addView("modificarContraseña", new ModificarContraseñaView(navigator));
+        navigator.addView("modificarPerfil", new ModificarPerfilView(navigator,this));
+        navigator.addView("modificarTarjeta", new ModificarTarjetaView(navigator,this));
+        navigator.addView("modificarContraseña", new ModificarContraseñaView(navigator,this));
         navigator.addView("contactar", new ContactarView());    	
         navigator.addView("verFaq", new VerFaqView());
-        navigator.navigateTo("residencias");
+        navigator.navigateTo(vistaIncial);
     }
     
     
@@ -178,7 +178,7 @@ public class MyUI extends UI {
     	
     }
     
-    public void navigatorAdmin() {
+    public void navigatorAdmin(String vistaIncial) {
         
     	navigator = new Navigator(this, viewContainer);
     	
@@ -186,7 +186,7 @@ public class MyUI extends UI {
         navigator.addView("subastasAdmin", new SubastasAdminView());
         navigator.addView("reservasAdmin", new ReservasAdminView());
         navigator.addView("agregarResidencia", new AgregarResidenciaView());
-        navigator.navigateTo("residenciasAdmin");
+        navigator.navigateTo(vistaIncial);
     }
     
     

@@ -45,7 +45,7 @@ public class ModificarTarjetaView extends Composite implements View {
 	ConnectionBD conectar;
 	Notification notification = new Notification("sd");
 	
-	public ModificarTarjetaView(Navigator navigator) {
+	public ModificarTarjetaView(Navigator navigator, MyUI interfaz) {
 		ConnectionBD conectar = new ConnectionBD();		
 		try {
 			usuario = conectar.buscarUsuario(HomeSwitchHome.getUsuarioActual());
@@ -75,7 +75,7 @@ public class ModificarTarjetaView extends Composite implements View {
 	    .withConverter(new StringToShortConverter())
 	    .bind(Tarjeta::getCodigo, Tarjeta::setCodigo);
 
-		botonAceptar.addClickListener( e -> modificar(navigator) );
+		botonAceptar.addClickListener( e -> modificar(interfaz) );
 		botonCancelar.addClickListener(e-> cancelar(navigator));
 		
 		FormLayout layout2 = new FormLayout(campoNroTarj, campoMarcaTarj, textoTitTarj, fechaVencTarj, nroSegTarj);
@@ -91,7 +91,7 @@ public class ModificarTarjetaView extends Composite implements View {
 		navigator.navigateTo("miPerfil");
 	}
 	
-	private void modificar(Navigator navigator) {
+	private void modificar(MyUI interfaz) {
 		ConnectionBD conectar = new ConnectionBD();		
 		try {
 			usuario = conectar.buscarUsuario(HomeSwitchHome.getUsuarioActual());
@@ -109,7 +109,7 @@ public class ModificarTarjetaView extends Composite implements View {
 						Short.parseShort(nroSegTarj.getValue()), usuario.getMail() );
 	    		   
 	    	   this.mostrarNotificacion("Modificación exitosa", Notification.Type.HUMANIZED_MESSAGE);
-	    	   navigator.navigateTo("miPerfil");
+	    	   interfaz.vistaUsuario("miPerfil");
 	    	   
 	       }
 	       

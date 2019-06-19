@@ -27,10 +27,10 @@ public class ModificarContraseñaView extends Composite implements View {
 	Usuario usuario;
 	Notification notification = new Notification("sd");
 	
-	public ModificarContraseñaView(Navigator navigator) {
+	public ModificarContraseñaView(Navigator navigator, MyUI interfaz) {
 		
 		
-		botonAceptar.addClickListener( e -> modificar(navigator) );
+		botonAceptar.addClickListener( e -> modificar(interfaz) );
 		botonCancelar.addClickListener(e-> cancelar(navigator));
 		
 		FormLayout layout1 = new FormLayout(textoContraseña1, textoContraseña2, textoContraseña3);
@@ -48,7 +48,7 @@ public class ModificarContraseñaView extends Composite implements View {
 		navigator.navigateTo("miPerfil");
 	}
 	
-	private void modificar(Navigator navigator) {
+	private void modificar(MyUI interfaz) {
 		
 		ConnectionBD conectar = new ConnectionBD();	
 		try {
@@ -65,7 +65,7 @@ public class ModificarContraseñaView extends Composite implements View {
 				if(textoContraseña2.getValue().equals(textoContraseña3.getValue())) {
 					conectar.cambiarContraseña(usuario.getMail(),textoContraseña2.getValue());
 					this.mostrarNotificacion("Éxito. Regresando...", Notification.Type.HUMANIZED_MESSAGE);
-					navigator.navigateTo("miPerfil");
+					interfaz.vistaUsuario("miPerfil");
 				}else {
 					this.mostrarNotificacion("Error: Las nuevas contraseñas no coinciden.", Notification.Type.ERROR_MESSAGE);
 				}
