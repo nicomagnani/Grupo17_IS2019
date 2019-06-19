@@ -214,7 +214,7 @@ public class RegistrarView extends Composite implements View {
 
 	private void iniciarSesionUsuario(Usuario usuarioActual, MyUI interfaz) {
 		HomeSwitchHome.setUsuarioActual(usuarioActual);
-		interfaz.vistaUsuario("residencias");
+		interfaz.vistaUsuario();
 	}
 
 }

@@ -63,22 +63,34 @@ public class MyUI extends UI {
         this.botonesVisitante();
         this.mostrarLayout();
         this.navigatorVisitante();
+        navigator.navigateTo("");
     }
    
-    public void vistaUsuario(String vistaInicial) {
+    public void vistaUsuario() {
         
     	this.mostrarLogo();
         this.botonesUsuario();
         this.mostrarLayout();
-        this.navigatorUsuario(vistaInicial);
+        this.navigatorUsuario();
+        navigator.navigateTo("");
     }
     
-    public void vistaAdmin(String vistaIncial) {
+    public void vistaUsuario(String unaVista) {
+        
+    	this.mostrarLogo();
+        this.botonesUsuario();
+        this.mostrarLayout();
+        this.navigatorUsuario();
+        navigator.navigateTo(unaVista);
+    }
+    
+    public void vistaAdmin() {
         
     	this.mostrarLogo();
         this.botonesAdmin();
         this.mostrarLayout();
-        this.navigatorAdmin(vistaIncial);
+        this.navigatorAdmin();
+        navigator.navigateTo("");
     }
     
     private void mostrarLogo() {    	
@@ -133,12 +145,18 @@ public class MyUI extends UI {
         menu.addStyleName(ValoTheme.MENU_ROOT);
     }
     
- private void navigatorUsuario(String vistaIncial) {
+ private void navigatorUsuario() {
     	
     	navigator = new Navigator(this, viewContainer);
         
-        try {
-			navigator.addView("residencias", new ResidenciasUsuarioView());
+    	try {
+			navigator.addView("", new ResidenciasUsuarioView(true));
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+
+    	try {
+			navigator.addView("residencias", new ResidenciasUsuarioView(false));
 		} catch (SQLException e1) {
 			e1.printStackTrace();
 		}
@@ -152,7 +170,6 @@ public class MyUI extends UI {
         navigator.addView("modificarContraseña", new ModificarContraseñaView(navigator,this));
         navigator.addView("contactar", new ContactarView());    	
         navigator.addView("verFaq", new VerFaqView());
-        navigator.navigateTo(vistaIncial);
     }
     
     
@@ -178,15 +195,15 @@ public class MyUI extends UI {
     	
     }
     
-    public void navigatorAdmin(String vistaIncial) {
+    public void navigatorAdmin() {
         
     	navigator = new Navigator(this, viewContainer);
     	
+        navigator.addView("", new ResidenciasAdminView());
         navigator.addView("residenciasAdmin", new ResidenciasAdminView());
         navigator.addView("subastasAdmin", new SubastasAdminView());
         navigator.addView("reservasAdmin", new ReservasAdminView());
         navigator.addView("agregarResidencia", new AgregarResidenciaView());
-        navigator.navigateTo(vistaIncial);
     }
     
     
@@ -216,6 +233,12 @@ public class MyUI extends UI {
     	navigator = new Navigator(this, viewContainer);
     	
     	try {
+			navigator.addView("", new ResidenciasVisitanteView());
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	try {
 			navigator.addView("residenciasVisitante", new ResidenciasVisitanteView());
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -224,9 +247,7 @@ public class MyUI extends UI {
         navigator.addView("iniciarSesion", new IniciarSesionView(this));
         navigator.addView("registrar", new RegistrarView(this));
         navigator.addView("contactar", new ContactarView());    	
-        navigator.addView("verFaq", new VerFaqView());
-        navigator.navigateTo("residenciasVisitante"); //navega a la lista reducida de residencias
-    	
+        navigator.addView("verFaq", new VerFaqView());    	
     }  
     
     public static Label separador() {

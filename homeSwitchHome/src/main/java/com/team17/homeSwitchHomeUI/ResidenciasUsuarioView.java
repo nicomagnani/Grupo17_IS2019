@@ -31,7 +31,7 @@ public class ResidenciasUsuarioView extends Composite implements View {
 	private ArrayList<Propiedad> propiedades;
 	private ArrayList<Propiedad> propiedades2 = new ArrayList<>();
 		
-	public ResidenciasUsuarioView() throws SQLException {
+	public ResidenciasUsuarioView(boolean mostrarCabecera) throws SQLException {
 		
 		ConnectionBD conectar = new ConnectionBD();
 		u = HomeSwitchHome.getUsuarioActual();
@@ -40,6 +40,7 @@ public class ResidenciasUsuarioView extends Composite implements View {
 				+ "200%;\">Bienvenido, <strong>"+u.getNombre()+" "+
 				u.getApellido()+"</strong>.</p>");
 		cabecera.setContentMode(ContentMode.HTML);
+		cabecera.setVisible(mostrarCabecera);
 		
 		msjResultado.setVisible(false);
 		

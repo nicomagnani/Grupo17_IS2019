@@ -101,11 +101,11 @@ public class IniciarSesionView extends Composite implements View {  //.necesita 
 
 	private void iniciarSesionUsuario(Usuario usuarioActual, MyUI interfaz) {
 		HomeSwitchHome.setUsuarioActual(usuarioActual);
-		interfaz.vistaUsuario("residencias");
+		interfaz.vistaUsuario();
 	}
 	
 	private void iniciarSesionAdmin(Usuario usuarioActual, MyUI interfaz) {
 		HomeSwitchHome.setUsuarioActual(usuarioActual);
-		interfaz.vistaAdmin("residenciasAdmin");
+		interfaz.vistaAdmin();
 	}
 }
