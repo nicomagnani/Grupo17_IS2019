@@ -34,7 +34,7 @@ public class ResidenciasUsuarioView extends Composite implements View {
 	public ResidenciasUsuarioView() throws SQLException {
 		
 		ConnectionBD conectar = new ConnectionBD();
-		u = conectar.buscarUsuario(HomeSwitchHome.getUsuarioActual());
+		u = HomeSwitchHome.getUsuarioActual();
 		
 		cabecera.setValue("<p style=\"text-align: center; font-size: "
 				+ "200%;\">Bienvenido, <strong>"+u.getNombre()+" "+

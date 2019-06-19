@@ -86,7 +86,7 @@ public class SubastasView extends Composite implements View {  //.necesita compo
 		
 		Label titulo = new Label("<p><span style=\"text-align: left; font-weight: bold; font-size: 120%;\">Título:</span> <span style=\"font-size: 120%;\">"+unaSubasta.getPropiedad()+"</span></p>", ContentMode.HTML);
 		Label localidad = new Label("<span style=\"font-weight: bold;\">Localidad:</span> " + unaSubasta.getLocalidad(), ContentMode.HTML);	
-		Label tiempoRestante = new Label("<span style=\"font-weight: bold;\">Tiempo restante:</span> " + fechaFinSubasta + " hs.", ContentMode.HTML);	
+		Label tiempoRestante = new Label("<span style=\"font-weight: bold;\">Finaliza:</span> " + fechaFinSubasta + " hs.", ContentMode.HTML);	
 		Label monto = new Label("<span style=\"font-weight: bold;\">Monto actual:</span> " + unaSubasta.getMontos().get(0), ContentMode.HTML);
 		
 		Button pujar = new Button("Pujar", e -> this.pujar());

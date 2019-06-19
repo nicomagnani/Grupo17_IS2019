@@ -51,12 +51,7 @@ public class ModificarContraseñaView extends Composite implements View {
 	private void modificar(MyUI interfaz) {
 		
 		ConnectionBD conectar = new ConnectionBD();	
-		try {
-			usuario = conectar.buscarUsuario(HomeSwitchHome.getUsuarioActual());
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();		
-		}
+		usuario = HomeSwitchHome.getUsuarioActual();
 		if(textoContraseña1.isEmpty()||textoContraseña2.isEmpty()||textoContraseña3.isEmpty()) {
 			this.mostrarNotificacion("Error: Hay campos vacíos.", Notification.Type.ERROR_MESSAGE);
 		}else {

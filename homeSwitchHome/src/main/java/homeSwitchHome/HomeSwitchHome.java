@@ -7,7 +7,7 @@ import java.util.List;
 
 public final class HomeSwitchHome {
 
-	private static String usuarioActual;
+	private static Usuario usuarioActual;
 	
 	private static ArrayList<Usuario> usuarios;
 	private static ArrayList<UsuarioAdministrador> administradores;
@@ -20,11 +20,11 @@ public final class HomeSwitchHome {
 	}
 
 	
-	public static String getUsuarioActual() {
+	public static Usuario getUsuarioActual() {
 		return usuarioActual;
 	}
 
-	public static void setUsuarioActual(String usuarioActual) {
+	public static void setUsuarioActual(Usuario usuarioActual) {
 		HomeSwitchHome.usuarioActual = usuarioActual;
 	}
 	

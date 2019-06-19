@@ -1,7 +1,9 @@
 package homeSwitchHome;
 
+
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 	abstract public class Reserva {
 
@@ -10,7 +12,9 @@ import java.time.LocalDate;
 	private String usuario;
 	private LocalDate fechaInicio; //la fecha en que se comienza a publicar la reserva
 	private EstadoDeReserva estado;
-	private float monto;	
+	private float monto;
+	private int semana;
+	
 	
 	public Reserva() {
 		
@@ -95,10 +99,17 @@ import java.time.LocalDate;
 		return fechas;
 	}
 
-
-	private int semana;
-	
 	abstract public void borrarReserva();
+	
+	/*abstract public void setMontos(String[] montos);
+
+	abstract public void setMontos(ArrayList<Float> montos);
+	
+	abstract public void setUsuarios(ArrayList<String> usuarios);
+
+	abstract public void setUsuarios(String[] usuarios);
+	
+	abstract public void setFechaSubasta(LocalDate unaFecha);*/
 
 	
 }

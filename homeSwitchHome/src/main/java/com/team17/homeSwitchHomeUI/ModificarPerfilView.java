@@ -38,12 +38,7 @@ public class ModificarPerfilView extends Composite implements View {  //.necesit
 	public ModificarPerfilView(Navigator navigator, MyUI interfaz) {
 
 	ConnectionBD conectar = new ConnectionBD();		
-		try {
-			usuario = conectar.buscarUsuario(HomeSwitchHome.getUsuarioActual());
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();		
-		}				
+		usuario = HomeSwitchHome.getUsuarioActual();				
 		textoEmail.setValue(usuario.getMail());
 		textoNombre.setValue(usuario.getNombre());
 		textoApellido.setValue(usuario.getApellido());
@@ -67,8 +62,8 @@ public class ModificarPerfilView extends Composite implements View {  //.necesit
 	private void modificar(MyUI interfaz) {		
        ConnectionBD conectar = new ConnectionBD();
        ArrayList<Usuario>listaUsuarios = new ArrayList<Usuario>();
+       usuario = HomeSwitchHome.getUsuarioActual();
        try {
-	       usuario = conectar.buscarUsuario(HomeSwitchHome.getUsuarioActual());
 	       listaUsuarios = conectar.listaUsuarios();
        } catch (SQLException e) {
 	    // TODO Auto-generated catch block
@@ -77,11 +72,18 @@ public class ModificarPerfilView extends Composite implements View {  //.necesit
        if (textoEmail.isEmpty()||textoNombre.isEmpty()|| textoApellido.isEmpty()) {
     	   this.mostrarNotificacion("Error: Hay campos vacíos.", Notification.Type.ERROR_MESSAGE);
        }else {
-    	   if( (usuario.getMail() != textoEmail.getValue()) && mailYaRegistrado() ) {
+    	   if( (!usuario.getMail().equals(textoEmail.getValue())) && mailYaRegistrado() ) {
     		   this.mostrarNotificacion("Error: El mail ya existe en el sistema, por favor ingrese otro mail.", Notification.Type.ERROR_MESSAGE);
     	   }else {	   	   
     	   conectar.ModificarPerfil(usuario.getMail(),textoEmail.getValue(),textoNombre.getValue(),textoApellido.getValue());
-    	   HomeSwitchHome.setUsuarioActual(textoEmail.getValue());
+    	   
+    	   try {
+				HomeSwitchHome.setUsuarioActual(conectar.buscarUsuario(textoEmail.getValue()));
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	   
     	   this.mostrarNotificacion("Modificación exitosa", Notification.Type.HUMANIZED_MESSAGE);
     	   interfaz.vistaUsuario("miPerfil");
     	   

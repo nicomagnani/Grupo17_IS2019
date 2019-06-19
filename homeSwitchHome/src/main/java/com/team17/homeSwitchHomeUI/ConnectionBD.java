@@ -345,9 +345,9 @@ public class ConnectionBD {
 		
 		//parte 2, se agrega subasta a la tabla subastas		
 		query = "INSERT INTO subastas (propiedad, localidad, fecha_inicio, fecha_subasta, montos)"
-				+" VALUES (?,?,?,?)";
+				+" VALUES (?,?,?,?,?)";
 			
-		ps = (PreparedStatement) con.prepareStatement(query);		
+		ps = (PreparedStatement) con.prepareStatement(query);
 		
 		ps.setString(1,r.getPropiedad());
 		ps.setString(2,r.getLocalidad());

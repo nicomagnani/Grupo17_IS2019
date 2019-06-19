@@ -34,15 +34,7 @@ public class MiPerfilView extends Composite implements View {  //.necesita compo
 	public MiPerfilView(Navigator navigator) {		
 		
 		cabecera.addStyleName(ValoTheme.MENU_TITLE);
-						
-		ConnectionBD conectar = new ConnectionBD();
-		
-		try {
-			usuario = conectar.buscarUsuario(HomeSwitchHome.getUsuarioActual());
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		usuario = HomeSwitchHome.getUsuarioActual();
 		
 		Label labelParte1 = new Label("<span style=\"text-align: left; font-weight: bold; text-decoration: underline; font-size: 120%;\">Datos generales</span>", ContentMode.HTML);
 		Label labelMail = new Label("<span style=\"font-weight: bold;\">Email:</span> " + usuario.getMail(), ContentMode.HTML);	

@@ -155,7 +155,7 @@ public class RegistrarView extends Composite implements View {
 								e.printStackTrace();
 							}
 							
-							iniciarSesionUsuario(usuario.getMail(), interfaz);
+							iniciarSesionUsuario(usuario, interfaz);
 						}
 					}
 					
@@ -212,7 +212,7 @@ public class RegistrarView extends Composite implements View {
 	}
 
 
-	private void iniciarSesionUsuario(String usuarioActual, MyUI interfaz) {
+	private void iniciarSesionUsuario(Usuario usuarioActual, MyUI interfaz) {
 		HomeSwitchHome.setUsuarioActual(usuarioActual);
 		interfaz.vistaUsuario("residencias");
 	}

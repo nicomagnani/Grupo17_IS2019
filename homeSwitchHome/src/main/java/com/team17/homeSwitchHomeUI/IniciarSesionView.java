@@ -54,7 +54,7 @@ public class IniciarSesionView extends Composite implements View {  //.necesita 
 					if ( (usuarios.get(i).getMail().equals(textoEmail.getValue())) && 
 							(usuarios.get(i).getContraseña().equals(textoContraseña.getValue())) ) {
 						msj.setValue("Éxito. Iniciando sesión de usuario...");
-						this.iniciarSesionUsuario(usuarios.get(i).getMail(), interfaz);
+						this.iniciarSesionUsuario(usuarios.get(i), interfaz);
 						ok = true;
 					}
 				}
@@ -72,7 +72,7 @@ public class IniciarSesionView extends Composite implements View {  //.necesita 
 						if ( (admins.get(i).getMail().equals(textoEmail.getValue())) && 
 								(admins.get(i).getContraseña().equals(textoContraseña.getValue())) ) {
 							msj.setValue("Éxito. Iniciando sesión de usuario...");
-							this.iniciarSesionAdmin(admins.get(i).getMail(), interfaz);
+							this.iniciarSesionAdmin(admins.get(i), interfaz);
 							ok = true;
 						}
 					}
@@ -99,12 +99,12 @@ public class IniciarSesionView extends Composite implements View {  //.necesita 
     }
 	
 
-	private void iniciarSesionUsuario(String usuarioActual, MyUI interfaz) {
+	private void iniciarSesionUsuario(Usuario usuarioActual, MyUI interfaz) {
 		HomeSwitchHome.setUsuarioActual(usuarioActual);
 		interfaz.vistaUsuario("residencias");
 	}
 	
-	private void iniciarSesionAdmin(String usuarioActual, MyUI interfaz) {
+	private void iniciarSesionAdmin(Usuario usuarioActual, MyUI interfaz) {
 		HomeSwitchHome.setUsuarioActual(usuarioActual);
 		interfaz.vistaAdmin("residenciasAdmin");
 	}
