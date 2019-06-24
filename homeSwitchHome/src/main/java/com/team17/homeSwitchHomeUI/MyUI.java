@@ -84,13 +84,13 @@ public class MyUI extends UI {
         navigator.navigateTo(unaVista);
     }
     
-    public void vistaAdmin() {
+    public void vistaAdmin(String unaVista) {
         
     	this.mostrarLogo();
         this.botonesAdmin();
         this.mostrarLayout();
         this.navigatorAdmin();
-        navigator.navigateTo("");
+        navigator.navigateTo(unaVista);
     }
     
     private void mostrarLogo() {    	
@@ -199,11 +199,10 @@ public class MyUI extends UI {
         
     	navigator = new Navigator(this, viewContainer);
     	
-        navigator.addView("", new ResidenciasAdminView());
-        navigator.addView("residenciasAdmin", new ResidenciasAdminView());
+        navigator.addView("residenciasAdmin", new ResidenciasAdminView(this));
         navigator.addView("subastasAdmin", new SubastasAdminView());
         navigator.addView("reservasAdmin", new ReservasAdminView());
-        navigator.addView("agregarResidencia", new AgregarResidenciaView());
+        navigator.addView("agregarResidencia", new AgregarResidenciaView(this));
     }
     
     

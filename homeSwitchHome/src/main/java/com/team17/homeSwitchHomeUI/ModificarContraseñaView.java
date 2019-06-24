@@ -27,8 +27,8 @@ public class ModificarContraseñaView extends Composite implements View {
 	Usuario usuario;
 	Notification notification = new Notification("sd");
 	
-	public ModificarContraseñaView(Navigator navigator, MyUI interfaz) {
-		
+	
+	public ModificarContraseñaView(Navigator navigator, MyUI interfaz) {		
 		
 		botonAceptar.addClickListener( e -> modificar(interfaz) );
 		botonCancelar.addClickListener(e-> cancelar(navigator));
@@ -43,28 +43,35 @@ public class ModificarContraseñaView extends Composite implements View {
 	}
 	
 	
-	
 	private void cancelar(Navigator navigator) {
 		navigator.navigateTo("miPerfil");
 	}
+	
 	
 	private void modificar(MyUI interfaz) {
 		
 		ConnectionBD conectar = new ConnectionBD();	
 		usuario = HomeSwitchHome.getUsuarioActual();
+		
 		if(textoContraseña1.isEmpty()||textoContraseña2.isEmpty()||textoContraseña3.isEmpty()) {
 			this.mostrarNotificacion("Error: Hay campos vacíos.", Notification.Type.ERROR_MESSAGE);
-		}else {
-			
-			if(textoContraseña1.getValue().equals(usuario.getContraseña())) {
-				if(textoContraseña2.getValue().equals(textoContraseña3.getValue())) {
-					conectar.cambiarContraseña(usuario.getMail(),textoContraseña2.getValue());
-					this.mostrarNotificacion("Éxito. Regresando...", Notification.Type.HUMANIZED_MESSAGE);
-					interfaz.vistaUsuario("miPerfil");
-				}else {
+		} else {			
+			if ( textoContraseña1.getValue().equals(usuario.getContraseña()) ) {
+				if ( textoContraseña2.getValue().equals(textoContraseña3.getValue()) ) {					
+					try {
+						conectar.cambiarContraseña(usuario.getMail(),textoContraseña2.getValue());
+
+						//informa resultado y actualiza la vista solo si no ocurre excepción
+						this.mostrarNotificacion("Éxito. Regresando...", Notification.Type.HUMANIZED_MESSAGE);
+						interfaz.vistaUsuario("miPerfil");
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}					
+				} else {
 					this.mostrarNotificacion("Error: Las nuevas contraseñas no coinciden.", Notification.Type.ERROR_MESSAGE);
 				}
-			}else{
+			} else {
 				this.mostrarNotificacion("Error: Ingrese bien la contraseña anterior.", Notification.Type.ERROR_MESSAGE);
 			}
 		}

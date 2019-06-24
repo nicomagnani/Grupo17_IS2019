@@ -1,6 +1,7 @@
 package com.team17.homeSwitchHomeUI;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 import com.vaadin.navigator.Navigator;
@@ -10,6 +11,7 @@ import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Composite;
+import com.vaadin.ui.DateField;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -27,6 +29,7 @@ public class ModificarPerfilView extends Composite implements View {  //.necesit
 	TextField textoEmail = new TextField("Email:");	
 	TextField textoNombre = new TextField("Nombre:");
 	TextField textoApellido = new TextField("Apellido:");
+	DateField fechaNac = new DateField("Fecha de nacimiento:");
 	
 	Button botonAceptar = new Button("Modificar");
 	Button botonCancelar= new Button("Cancelar");
@@ -38,15 +41,19 @@ public class ModificarPerfilView extends Composite implements View {  //.necesit
 	public ModificarPerfilView(Navigator navigator, MyUI interfaz) {
 
 	ConnectionBD conectar = new ConnectionBD();		
-		usuario = HomeSwitchHome.getUsuarioActual();				
+	   
+		usuario = HomeSwitchHome.getUsuarioActual();
+	   
 		textoEmail.setValue(usuario.getMail());
 		textoNombre.setValue(usuario.getNombre());
 		textoApellido.setValue(usuario.getApellido());
+		fechaNac.setValue(usuario.getfNac());
+		fechaNac.setRangeEnd(LocalDate.now().minusYears(18));		
 		
 		botonAceptar.addClickListener( e -> modificar(interfaz) );
 		botonCancelar.addClickListener(e-> cancelar(navigator));
 		
-		FormLayout layout1 = new FormLayout(textoEmail, textoNombre, textoApellido);			
+		FormLayout layout1 = new FormLayout(textoEmail, textoNombre, textoApellido, fechaNac);			
 		HorizontalLayout botonesLayout = new HorizontalLayout(botonAceptar, botonCancelar);
 		VerticalLayout mainLayout = new VerticalLayout(cabecera, labelParte1, layout1, botonesLayout);
 		
@@ -55,59 +62,68 @@ public class ModificarPerfilView extends Composite implements View {  //.necesit
 		setCompositionRoot(mainLayout);		
     }
 	
+	
 	private void cancelar(Navigator navigator) {
 		navigator.navigateTo("miPerfil");
 	}
 	
-	private void modificar(MyUI interfaz) {		
-       ConnectionBD conectar = new ConnectionBD();
-       ArrayList<Usuario>listaUsuarios = new ArrayList<Usuario>();
-       usuario = HomeSwitchHome.getUsuarioActual();
-       try {
-	       listaUsuarios = conectar.listaUsuarios();
-       } catch (SQLException e) {
-	    // TODO Auto-generated catch block
-	   e.printStackTrace();
-       }
-       if (textoEmail.isEmpty()||textoNombre.isEmpty()|| textoApellido.isEmpty()) {
-    	   this.mostrarNotificacion("Error: Hay campos vacíos.", Notification.Type.ERROR_MESSAGE);
-       }else {
-    	   if( (!usuario.getMail().equals(textoEmail.getValue())) && mailYaRegistrado() ) {
-    		   this.mostrarNotificacion("Error: El mail ya existe en el sistema, por favor ingrese otro mail.", Notification.Type.ERROR_MESSAGE);
-    	   }else {	   	   
-    	   conectar.ModificarPerfil(usuario.getMail(),textoEmail.getValue(),textoNombre.getValue(),textoApellido.getValue());
-    	   
-    	   try {
-				HomeSwitchHome.setUsuarioActual(conectar.buscarUsuario(textoEmail.getValue()));
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-    	   
-    	   this.mostrarNotificacion("Modificación exitosa", Notification.Type.HUMANIZED_MESSAGE);
-    	   interfaz.vistaUsuario("miPerfil");
-    	   
-       }
-       }
-	}
-
-	private Boolean mailYaRegistrado() {
+	
+	private void modificar(MyUI interfaz) {
+		
 		ConnectionBD conectar = new ConnectionBD();
-	       ArrayList<Usuario>listaUsuarios=new ArrayList<Usuario>();
-	       try {
-		          listaUsuarios= conectar.listaUsuarios();
-	       } catch (SQLException e) {
-		 
-		   e.printStackTrace();
-	       }
-	       for(int i=0;i<listaUsuarios.size();i++) {
-	    	   if(listaUsuarios.get(i).getMail().equals(textoEmail.getValue())){
-	    		   return true;
-	    	   }
-	       }
-	       return false;
-	       
+		ArrayList<Usuario>listaUsuarios = new ArrayList<Usuario>();
+		usuario = HomeSwitchHome.getUsuarioActual();
+		
+		try {
+			listaUsuarios = conectar.listaUsuarios();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		//si los campos están vacíos, informa error
+		if (textoEmail.isEmpty() || textoNombre.isEmpty() || textoApellido.isEmpty() || fechaNac.isEmpty()) {
+			this.mostrarNotificacion("Error: Hay campos vacíos.", Notification.Type.ERROR_MESSAGE);
+		} else {
+			//si el mail cambió y ya está registrado, informa error 
+			if( (!usuario.getMail().equals(textoEmail.getValue())) && mailYaRegistrado() ) {
+				this.mostrarNotificacion("Error: El mail ya existe en el sistema, por favor ingrese otro mail.", Notification.Type.ERROR_MESSAGE);
+			} else {
+				
+				//modificar datos y actualizar usuario actual
+				try {
+					conectar.ModificarPerfil(usuario.getMail(),textoEmail.getValue(),textoNombre.getValue(),textoApellido.getValue(),fechaNac.getValue());
+					HomeSwitchHome.setUsuarioActual(conectar.buscarUsuario(textoEmail.getValue()));
+					
+					//informa resultado y actualiza la vista solo si no ocurre excepción
+					this.mostrarNotificacion("Modificación exitosa", Notification.Type.HUMANIZED_MESSAGE);
+					interfaz.vistaUsuario("miPerfil");
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+       }
 	}
+	
+
+	private boolean mailYaRegistrado() {
+		ConnectionBD conectar = new ConnectionBD();
+		ArrayList<Usuario>listaUsuarios=new ArrayList<Usuario>();
+	       
+		try {
+			listaUsuarios= conectar.listaUsuarios();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		for	( Usuario usuario : listaUsuarios) {
+			if ( usuario.getMail().equals(textoEmail.getValue()) )
+				return true;
+		}
+		
+		return false;	       
+	}
+	
 	
 	private void mostrarNotificacion(String st, Notification.Type tipo) {
     	notification = new Notification(st, tipo);

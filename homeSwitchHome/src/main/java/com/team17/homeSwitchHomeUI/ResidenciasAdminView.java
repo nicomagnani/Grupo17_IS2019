@@ -48,9 +48,13 @@ public class ResidenciasAdminView extends Composite implements View {
 	
 	private HtmlEmail email = new HtmlEmail();
 	
+	private MyUI interfaz; 
+
+
+	public ResidenciasAdminView(MyUI interfaz) {
 		
-	public ResidenciasAdminView() {
-				
+		this.interfaz = interfaz;
+		
 		cabecera.addStyleName(ValoTheme.MENU_TITLE);
 		
 		panel.setVisible(false);
@@ -63,7 +67,7 @@ public class ResidenciasAdminView extends Composite implements View {
 		
 		//coloco el layout con las propiedades dentro del panel para poder scrollear
 		panel.setContent(propiedadesLayout);
-		panel.setHeight("750");
+		panel.setHeight("600");
 		panel.setWidth("550");
 		panel.addStyleName("scrollable");		
 
@@ -73,7 +77,7 @@ public class ResidenciasAdminView extends Composite implements View {
 			this.inicializarEmail();
 		} catch (EmailException e1) {
 			e1.printStackTrace();
-		}		
+		}
 		
 		VerticalLayout mainLayout = new VerticalLayout(cabecera, panel, botonSubastar, msjResultado);
 		mainLayout.setComponentAlignment(cabecera, Alignment.MIDDLE_CENTER);
@@ -101,8 +105,7 @@ public class ResidenciasAdminView extends Composite implements View {
 	}
 
 
-	private void cargarResidencias() {
-		
+	private void cargarResidencias() {		
 		
 		try {
 			propiedades = conexion.listaPropiedadesConFotos();
@@ -118,7 +121,7 @@ public class ResidenciasAdminView extends Composite implements View {
 			}
 		} else {
 			msjResultado.setVisible(true);
-			botonSubastar.setVisible(false);			
+			botonSubastar.setVisible(false);
 		}
 		
 	}
@@ -259,6 +262,7 @@ public class ResidenciasAdminView extends Composite implements View {
 			}
 			if (n1 > 0) {
 				mostrarNotificacion("Se abrieron "+n1+" subastas de un total de "+n2+" reservas.", Notification.Type.HUMANIZED_MESSAGE);
+				interfaz.vistaAdmin("residenciasAdmin");
 			} else {
 				mostrarNotificacion("No se abrió ninguna subasta.", Notification.Type.HUMANIZED_MESSAGE);
 			}
@@ -294,11 +298,13 @@ public class ResidenciasAdminView extends Composite implements View {
 				if (n > 0) {
 					mostrarNotificacion("Residencia en subasta borrada con éxito y "+n+" ofertantes informados vía email.", Notification.Type.HUMANIZED_MESSAGE);
 				} else
-					mostrarNotificacion("Residencia en subasta y sin ofertas borrada con éxito.", Notification.Type.HUMANIZED_MESSAGE);				
+					mostrarNotificacion("Residencia en subasta y sin ofertas borrada con éxito.", Notification.Type.HUMANIZED_MESSAGE);interfaz.vistaAdmin("residenciasAdmin");
+				
 			} else
 				mostrarNotificacion("Residencia borrada con éxito.", Notification.Type.HUMANIZED_MESSAGE);
 			conexion.eliminarResidencia(propiedad);
-			propiedadLayout.setVisible(false);
+			interfaz.vistaAdmin("residenciasAdmin");
+//			propiedadLayout.setVisible(false);
 			 	
 		} else
 			mostrarNotificacion("Error: La residencia se encuentra reservada.", Notification.Type.ERROR_MESSAGE);	
@@ -307,7 +313,7 @@ public class ResidenciasAdminView extends Composite implements View {
 	
 	
 	//devuelve true si tuvo exito
-	private boolean agregarReceptorDeEmail (String mail) {				
+	private boolean agregarReceptorDeEmail (String mail) {
 		
 		try {
 			email.addTo(mail);

@@ -2,9 +2,11 @@ package com.team17.homeSwitchHomeUI;
 
 import java.io.ByteArrayInputStream;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -338,7 +340,7 @@ public class ConnectionBD {
 		ps.setString(2,"DISPONIBLE_SUBASTA");
 		ps.setString(3,r.getPropiedad());
 		ps.setString(4,r.getLocalidad());
-		ps.setDate(5, java.sql.Date.valueOf(r.getFechaInicio()));		
+		ps.setDate(5, Date.valueOf(r.getFechaInicio()));		
 		
 		ps.executeUpdate();
 		ps.close();
@@ -351,8 +353,8 @@ public class ConnectionBD {
 		
 		ps.setString(1,r.getPropiedad());
 		ps.setString(2,r.getLocalidad());
-		ps.setDate(3, java.sql.Date.valueOf(r.getFechaInicio()));
-		ps.setDate(4, java.sql.Date.valueOf(LocalDate.now()));
+		ps.setDate(3, Date.valueOf(r.getFechaInicio()));
+		ps.setDate(4, Date.valueOf(LocalDate.now()));
 		ps.setString(5,String.valueOf(r.getMonto()));
 		
 		ps.executeUpdate();
@@ -558,7 +560,7 @@ public class ConnectionBD {
 				bais = new ByteArrayInputStream(foto);
 				ps.setBinaryStream(col, bais);
 			} else
-				ps.setNull(col, java.sql.Types.BLOB);
+				ps.setNull(col, Types.BLOB);
 			col++; //incrementa fuera del if-else para asegurar que se guarde en la pos correcta
 		}
 
@@ -581,12 +583,12 @@ public class ConnectionBD {
 		ps.setString(2, uc.getContraseña());
 		ps.setString(3, uc.getNombre());
 		ps.setString(4, uc.getApellido());
-		ps.setDate(5, java.sql.Date.valueOf(uc.getfNac()));
+		ps.setDate(5, Date.valueOf(uc.getfNac()));
 		ps.setShort(6, uc.getCreditos());
 		ps.setLong(7, tarjeta.getNumero());
 		ps.setString(8, tarjeta.getMarca());
 		ps.setString(9, tarjeta.getTitular());
-		ps.setDate(10, java.sql.Date.valueOf(tarjeta.getfVenc()));
+		ps.setDate(10, Date.valueOf(tarjeta.getfVenc()));
 		ps.setShort(11, tarjeta.getCodigo());
 
 	    ps.executeUpdate();
@@ -595,48 +597,47 @@ public class ConnectionBD {
 	}
 
 
-	public void ModificarPerfil(String mailOriginal, String mail, String nombreNuevo, String apellido) {
-		String query = "UPDATE usuarios SET  mail=?,nombre= ?,apellido=? WHERE mail='"+mailOriginal+"'";
-		try {
-			ps = (PreparedStatement) con.prepareStatement(query);			
-			ps.setString(1, mail);
-			ps.setString(2, nombreNuevo);
-			ps.setString(3, apellido);
-			ps.executeUpdate();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public void ModificarPerfil(String mailOriginal, String mailNuevo, String nombre, String apellido, LocalDate fechaNacimiento) throws SQLException {
+		
+		String query = "UPDATE usuarios SET"
+				+ " mail = ?, nombre = ?, apellido = ?, f_nac = ?"
+				+ " WHERE mail = '"+mailOriginal+"'";		
+		ps = (PreparedStatement) con.prepareStatement(query);
+		
+		ps.setString(1, mailNuevo);
+		ps.setString(2, nombre);
+		ps.setString(3, apellido);
+		ps.setDate(4, Date.valueOf(fechaNacimiento));
+		
+		ps.executeUpdate();
 	}
 
 
-	public void modificarTarjeta(long numTarj, String marca, String titular, LocalDate fechaVencimiento, short numSeg,String mail) {
-		String query = "UPDATE usuarios SET  nro_tarj=?,marca_tarj= ?,titu_tarj=?,venc_tarj=?,cod_tarj=? WHERE mail='"+mail+"'";
-		try {
-			ps = (PreparedStatement) con.prepareStatement(query);
-			ps.setLong(1, numTarj);
-			ps.setString(2, marca);
-			ps.setString(3, titular);
-			ps.setDate(4, java.sql.Date.valueOf(fechaVencimiento));
-			ps.setLong(5, numSeg);
-			ps.executeUpdate();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public void modificarTarjeta(long numTarj, String marca, String titular, LocalDate fechaVencimiento, short numSeg, String mail) throws SQLException {		
+		
+		String query = "UPDATE usuarios SET"
+				+ " nro_tarj = ?, marca_tarj = ?, titu_tarj = ?, venc_tarj = ?, cod_tarj = ?"
+				+ " WHERE mail = '"+mail+"'";		
+		ps = (PreparedStatement) con.prepareStatement(query);
+		
+		ps.setLong(1, numTarj);
+		ps.setString(2, marca);
+		ps.setString(3, titular);
+		ps.setDate(4, Date.valueOf(fechaVencimiento));
+		ps.setLong(5, numSeg);
+		
+		ps.executeUpdate();
 	}
 
 
-	public void cambiarContraseña(String mail, String value) {
-		String query ="UPDATE usuarios SET contraseña=? WHERE mail='"+mail+"'";
-		try {
-			ps = (PreparedStatement) con.prepareStatement(query);
-			ps.setString(1, value);
-			ps.executeUpdate();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public void cambiarContraseña(String mail, String value) throws SQLException {		
+		
+		String query ="UPDATE usuarios SET contraseña=? WHERE mail='"+mail+"'";		
+		ps = (PreparedStatement) con.prepareStatement(query);
+		
+		ps.setString(1, value);
+		
+		ps.executeUpdate();
 	}
 
 

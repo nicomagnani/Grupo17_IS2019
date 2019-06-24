@@ -95,14 +95,15 @@ public class ModificarTarjetaView extends Composite implements View {
 				|| (fechaVencTarj.isEmpty()) || (nroSegTarj.isEmpty())) {
 			this.mostrarNotificacion("Error: Hay campos vacíos.", Notification.Type.ERROR_MESSAGE);
 		} else {
-			conectar.modificarTarjeta(Long.parseLong(campoNroTarj.getValue()), campoMarcaTarj.getValue(),
-					textoTitTarj.getValue(), fechaVencTarj.getValue(), Short.parseShort(nroSegTarj.getValue()),
-					usuario.getMail());
-
-			this.mostrarNotificacion("Modificación exitosa", Notification.Type.HUMANIZED_MESSAGE);
-			interfaz.vistaUsuario("miPerfil");
 			try {
+				conectar.modificarTarjeta(Long.parseLong(campoNroTarj.getValue()), campoMarcaTarj.getValue(),
+						textoTitTarj.getValue(), fechaVencTarj.getValue(), Short.parseShort(nroSegTarj.getValue()),
+						usuario.getMail());
 				HomeSwitchHome.setUsuarioActual(conectar.buscarUsuario(usuario.getMail()));
+				
+				//informa resultado y actualiza la vista solo si no ocurre excepción
+				this.mostrarNotificacion("Modificación exitosa", Notification.Type.HUMANIZED_MESSAGE);
+				interfaz.vistaUsuario("miPerfil");
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

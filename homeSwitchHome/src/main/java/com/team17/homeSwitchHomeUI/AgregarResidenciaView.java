@@ -14,6 +14,7 @@ import org.vaadin.ui.NumberField;
 import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationException;
 import com.vaadin.data.converter.StringToFloatConverter;
+import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
@@ -73,7 +74,7 @@ public class AgregarResidenciaView extends Composite implements View {  //.neces
 	private int tot = 0;
 	
 	
-	public AgregarResidenciaView() {
+	public AgregarResidenciaView(MyUI interfaz) {
 		
 		Label cabecera = new Label("Agregar una residencia");
 		cabecera.addStyleName(ValoTheme.MENU_TITLE);
@@ -159,7 +160,7 @@ public class AgregarResidenciaView extends Composite implements View {  //.neces
 		//configuro boton para agregar una residencia
 		aceptarButton.addClickListener(e -> {
 			try {
-				aceptar();
+				aceptar(interfaz);
 			} catch (SQLException e1) {
 				e1.printStackTrace();
 			}
@@ -259,7 +260,7 @@ public class AgregarResidenciaView extends Composite implements View {  //.neces
 	
 	
 	//chequea requisitos finales y sube la residencia a la base de datos
-	private void aceptar() throws SQLException {		
+	private void aceptar(MyUI interfaz) throws SQLException {		
 		
 		if ( !hayCamposVacios() ) {			
 			try {
@@ -282,11 +283,15 @@ public class AgregarResidenciaView extends Composite implements View {  //.neces
 				    	((AbstractTextField) comp).setValue(((AbstractTextField) comp).getEmptyValue());
 				    }
 				}
-				url.setValue(url.getEmptyValue());
-				uploadField.setValue(uploadField.getEmptyValue());
-				imageFinal1.setSource(null); imageFinal2.setSource(null); imageFinal3.setSource(null); imageFinal4.setSource(null); imageFinal5.setSource(null);
-		    	fotos = new byte[5][];
-		    	tot = 0;
+				
+				//recarga la sesion de admin con la nueva residencia
+				interfaz.vistaAdmin("agregarResidencia");
+				
+//				url.setValue(url.getEmptyValue());
+//				uploadField.setValue(uploadField.getEmptyValue());
+//				imageFinal1.setSource(null); imageFinal2.setSource(null); imageFinal3.setSource(null); imageFinal4.setSource(null); imageFinal5.setSource(null);
+//		    	fotos = new byte[5][];
+//		    	tot = 0;
 				
 			} else mostrarNotificacion("Error: Ya existe una propiedad con el mismo título en esa localidad.", Notification.Type.ERROR_MESSAGE);
 		} else mostrarNotificacion("Error: Al menos un campo se encuentra vacío.", Notification.Type.ERROR_MESSAGE);
