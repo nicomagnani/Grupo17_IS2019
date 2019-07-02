@@ -14,7 +14,6 @@ import org.vaadin.ui.NumberField;
 import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationException;
 import com.vaadin.data.converter.StringToFloatConverter;
-import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;

@@ -427,7 +427,7 @@ public class ConnectionBD {
 			
 			preUsuarios = rs.getString("usuarios");
 			if (preUsuarios != null) {
-				reserva.setUsuarios( new ArrayList<>(Arrays.asList(rs.getString("usuarios").split("\\s+"))) );
+				reserva.setUsuarios( new ArrayList<>(Arrays.asList(preUsuarios.split("\\s+"))) );
 			} //usuarios se inicializa como null, en caso de no haber ofertas no hace falta asignarlo		
 		}
 
@@ -522,19 +522,6 @@ public class ConnectionBD {
 		
 	return admins;
 	}
-
-
-    public void eliminarResidencia(Propiedad unaResidencia) throws SQLException {
-    	
-    	String query ="DELETE FROM propiedad WHERE titulo = ? AND localidad = ?";
-    	ps = (PreparedStatement) con.prepareStatement(query);
-    	
-    	ps.setString(1, unaResidencia.getTitulo());
-    	ps.setString(2, unaResidencia.getLocalidad());
-    	
-    	ps.executeUpdate(); 
-    	ps.close();
-    }
     
 
 	public void agregarResidencia(Propiedad p) throws SQLException {
@@ -570,6 +557,43 @@ public class ConnectionBD {
 	}
 
 
+    public void eliminarResidencia(Propiedad unaResidencia) throws SQLException {
+    	
+    	String query ="DELETE FROM propiedad WHERE titulo = ? AND localidad = ?";
+    	ps = (PreparedStatement) con.prepareStatement(query);
+    	
+    	ps.setString(1, unaResidencia.getTitulo());
+    	ps.setString(2, unaResidencia.getLocalidad());
+    	
+    	ps.executeUpdate(); 
+    	ps.close();
+    	
+    	//en caso de haber reservas y/o subastas asociadas a la residencias, las elimino 
+    	if ( !unaResidencia.getReservas().isEmpty() ) {    		
+    		
+    		//elimino reservas
+    		query ="DELETE FROM reservas WHERE propiedad = ? AND localidad = ?";
+    		ps = (PreparedStatement) con.prepareStatement(query);
+        	
+        	ps.setString(1, unaResidencia.getTitulo());
+        	ps.setString(2, unaResidencia.getLocalidad());
+        	
+        	ps.executeUpdate(); 
+        	ps.close();
+        	
+        	//elimino subastas
+        	query ="DELETE FROM subastas WHERE propiedad = ? AND localidad = ?";
+    		ps = (PreparedStatement) con.prepareStatement(query);
+        	
+        	ps.setString(1, unaResidencia.getTitulo());
+        	ps.setString(2, unaResidencia.getLocalidad());
+        	
+        	ps.executeUpdate(); 
+        	ps.close();        	
+    	}
+    }
+    
+    
 	public void agregarUsuario(UsuarioComun uc) throws SQLException {
 		Tarjeta tarjeta = uc.getTarjeta();
 
@@ -599,9 +623,9 @@ public class ConnectionBD {
 
 	public void ModificarPerfil(String mailOriginal, String mailNuevo, String nombre, String apellido, LocalDate fechaNacimiento) throws SQLException {
 		
-		String query = "UPDATE usuarios SET"
-				+ " mail = ?, nombre = ?, apellido = ?, f_nac = ?"
-				+ " WHERE mail = '"+mailOriginal+"'";		
+		String query = "UPDATE usuarios "
+				+ "SET mail = ?, nombre = ?, apellido = ?, f_nac = ? "
+				+ "WHERE mail = '"+mailOriginal+"'";		
 		ps = (PreparedStatement) con.prepareStatement(query);
 		
 		ps.setString(1, mailNuevo);
@@ -615,9 +639,9 @@ public class ConnectionBD {
 
 	public void modificarTarjeta(long numTarj, String marca, String titular, LocalDate fechaVencimiento, short numSeg, String mail) throws SQLException {		
 		
-		String query = "UPDATE usuarios SET"
-				+ " nro_tarj = ?, marca_tarj = ?, titu_tarj = ?, venc_tarj = ?, cod_tarj = ?"
-				+ " WHERE mail = '"+mail+"'";		
+		String query = "UPDATE usuarios "
+				+ "SET nro_tarj = ?, marca_tarj = ?, titu_tarj = ?, venc_tarj = ?, cod_tarj = ? "
+				+ "WHERE mail = '"+mail+"'";		
 		ps = (PreparedStatement) con.prepareStatement(query);
 		
 		ps.setLong(1, numTarj);
@@ -632,10 +656,23 @@ public class ConnectionBD {
 
 	public void cambiarContraseña(String mail, String value) throws SQLException {		
 		
-		String query ="UPDATE usuarios SET contraseña=? WHERE mail='"+mail+"'";		
+		String query ="UPDATE usuarios "
+				+ "SET contraseña = ? "
+				+ "WHERE mail = '"+mail+"'";		
 		ps = (PreparedStatement) con.prepareStatement(query);
 		
 		ps.setString(1, value);
+		
+		ps.executeUpdate();
+	}
+	
+	
+	public void agregarCredito(String mail) throws SQLException {		
+		
+		String query ="UPDATE usuarios "
+				+ "SET creditos = creditos + 1 "
+				+ "WHERE mail = '"+mail+"'";
+		ps = (PreparedStatement) con.prepareStatement(query);
 		
 		ps.executeUpdate();
 	}

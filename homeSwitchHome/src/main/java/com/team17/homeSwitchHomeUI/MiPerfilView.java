@@ -1,7 +1,5 @@
 package com.team17.homeSwitchHomeUI;
 
-import java.sql.SQLException;
-
 import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;

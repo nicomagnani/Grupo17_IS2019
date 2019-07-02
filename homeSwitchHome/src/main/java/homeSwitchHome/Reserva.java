@@ -13,7 +13,6 @@ import java.util.ArrayList;
 	private LocalDate fechaInicio; //la fecha en que se comienza a publicar la reserva
 	private EstadoDeReserva estado;
 	private float monto;
-	private int semana;
 	
 	
 	public Reserva() {

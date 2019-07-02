@@ -14,6 +14,7 @@ import com.vaadin.navigator.View;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.AbstractTextField;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Composite;
@@ -29,6 +30,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import homeSwitchHome.EstadoDeReserva;
 import homeSwitchHome.Propiedad;
 import homeSwitchHome.Reserva;
+import homeSwitchHome.ReservaDirecta;
 import homeSwitchHome.ReservaSubasta;
 
 public class ResidenciasAdminView extends Composite implements View {
@@ -233,8 +235,9 @@ public class ResidenciasAdminView extends Composite implements View {
 	
 	//devuelve true si la subasta fue un exito
 	private void subastarTodo() {
-		int n1 = 0, n2 = 0;
-		LocalDate lunesSemanaActual = LocalDate.now().with(DayOfWeek.MONDAY);
+		
+		int n1 = 0;
+		LocalDate hace6meses = LocalDate.now().minusMonths(6);
 		
 		try {
 			reservas = conexion.listaReservas();
@@ -246,11 +249,10 @@ public class ResidenciasAdminView extends Composite implements View {
 			//recorre la lista de reservas
 			for (Reserva reserva : reservas) {
 				
-				n2++;
 				//chequea si cumple requisitos para iniciar subasta
 				if ( (reserva.getEstado() == EstadoDeReserva.DISPONIBLE_DIRECTA) && 
-						(reserva.getFechaInicio().isBefore(lunesSemanaActual.minusMonths(6))) ) {
-					
+						(!reserva.getFechaInicio().isAfter(hace6meses)) &&
+						(!reserva.getFechaInicio().isBefore(hace6meses.minusDays(3))) ) {					
 					try {
 						conexion.comenzarReservaSubasta(reserva);
 						n1++;						
@@ -261,7 +263,7 @@ public class ResidenciasAdminView extends Composite implements View {
 				} //fin chequeo
 			}
 			if (n1 > 0) {
-				mostrarNotificacion("Se abrieron "+n1+" subastas de un total de "+n2+" reservas.", Notification.Type.HUMANIZED_MESSAGE);
+				mostrarNotificacion("Se abrieron "+n1+" subastas.", Notification.Type.HUMANIZED_MESSAGE);
 				interfaz.vistaAdmin("residenciasAdmin");
 			} else {
 				mostrarNotificacion("No se abrió ninguna subasta.", Notification.Type.HUMANIZED_MESSAGE);
@@ -277,14 +279,15 @@ public class ResidenciasAdminView extends Composite implements View {
 	}
 	
 	
-	private void eliminar(Propiedad propiedad, FormLayout propiedadLayout) throws SQLException, EmailException {
+	private void eliminar(Propiedad propiedad, FormLayout propiedadLayout) throws SQLException, EmailException {		
+		
+		int n = 0; //cantidad de ofertantes informados o reservas eliminadas 
 		
 		propiedad.setReservas( conexion.listaReservasPorPropiedad(propiedad.getTitulo(), propiedad.getLocalidad()) );
 		
 		if (!propiedad.hayReservasRealizadas()) {
 			
-			if (propiedad.haySubastasEncurso()) {
-				int n = 0; //cantidad de ofertantes informados
+			if (propiedad.haySubastasEncurso()) {				
 				for (Reserva reserva : propiedad.getReservas()) {
 					if (reserva.getEstado() == EstadoDeReserva.DISPONIBLE_SUBASTA) {
 						ReservaSubasta reserva2 = conexion.buscarSubasta(reserva.getPropiedad(), reserva.getLocalidad(), reserva.getFechaInicio());
@@ -301,13 +304,20 @@ public class ResidenciasAdminView extends Composite implements View {
 					mostrarNotificacion("Residencia en subasta y sin ofertas borrada con éxito.", Notification.Type.HUMANIZED_MESSAGE);interfaz.vistaAdmin("residenciasAdmin");
 				
 			} else
-				mostrarNotificacion("Residencia borrada con éxito.", Notification.Type.HUMANIZED_MESSAGE);
-			conexion.eliminarResidencia(propiedad);
-			interfaz.vistaAdmin("residenciasAdmin");
-//			propiedadLayout.setVisible(false);
+				mostrarNotificacion("Residencia sin reservas borrada con éxito.", Notification.Type.HUMANIZED_MESSAGE);			
 			 	
-		} else
-			mostrarNotificacion("Error: La residencia se encuentra reservada.", Notification.Type.ERROR_MESSAGE);	
+		} else {			
+			//devolver creditos de reservas directas
+			for (Reserva r : propiedad.getReservas()) { 
+				if ( (r instanceof ReservaDirecta) && (r.getEstado() == EstadoDeReserva.RESERVADA) )
+					conexion.agregarCredito(r.getUsuario());
+			}
+			
+			mostrarNotificacion("Residencia con "+propiedad.getReservas().size()+" reservas borrada con éxito.", Notification.Type.ERROR_MESSAGE);			
+		}
+		
+		conexion.eliminarResidencia(propiedad);
+		interfaz.vistaAdmin("residenciasAdmin");
 		
 	}
 	

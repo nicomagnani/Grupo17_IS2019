@@ -1,12 +1,8 @@
 package com.team17.homeSwitchHomeUI;
 
 import java.sql.SQLException;
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-
-import org.apache.commons.lang3.time.DurationFormatUtils;
 
 import com.vaadin.navigator.View;
 import com.vaadin.shared.ui.ContentMode;
