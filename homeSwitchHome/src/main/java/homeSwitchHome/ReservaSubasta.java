@@ -46,10 +46,13 @@ public class ReservaSubasta extends Reserva {
 		this.fechaInicioSubasta = fechaInicioSubasta;
 	}
 
+	public String getTipo() {
+		return "Subasta";
+	}
+	
 	@Override
-	public void borrarReserva() {
-		// TODO Auto-generated method stub
-
+	public float getMonto() {
+		return montos.get(0);
 	}
 
 }

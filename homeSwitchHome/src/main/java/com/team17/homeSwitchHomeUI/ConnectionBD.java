@@ -284,7 +284,7 @@ public class ConnectionBD {
 	}
 	
 	
-	public ArrayList<Reserva> listaReservasPorPropiedad(String propiedad, String localidad) throws SQLException {
+	public ArrayList<Reserva> listaReservasPorPropiedad(String titulo, String localidad) throws SQLException {
 		
 		ArrayList<Reserva> reservas = new ArrayList<Reserva>();
 		Reserva reserva = null;
@@ -292,7 +292,7 @@ public class ConnectionBD {
 		ReservaSubasta reservaSubasta;
 		ReservaHotsale reservaHotsale;
 		
-		String query = "SELECT * FROM reservas WHERE propiedad = '"+propiedad+"' AND localidad = '"+localidad+"'";
+		String query = "SELECT * FROM reservas WHERE propiedad = '"+titulo+"' AND localidad = '"+localidad+"'";
 		ResultSet rs = stmt.executeQuery(query);
 		
 		while (rs.next()) {

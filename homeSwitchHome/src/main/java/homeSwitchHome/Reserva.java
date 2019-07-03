@@ -17,7 +17,7 @@ import java.util.ArrayList;
 	
 	public Reserva() {
 		
-	}	
+	}
 	
 	public Reserva(String propiedad, LocalDate fechaInicio, EstadoDeReserva estado) {
 		this.propiedad = propiedad;
@@ -59,7 +59,7 @@ import java.util.ArrayList;
 	public String getUsuario() {
 		return usuario;
 	}
-
+	
 	public void setUsuario(String usuario) {
 		this.usuario = usuario;
 	}
@@ -80,6 +80,10 @@ import java.util.ArrayList;
 		this.estado = estado;
 	}
 	
+	public String getEstadoComoString() {
+		return estado.toStringAux();
+	}	
+	
 	//la fecha en que finaliza la publicacion
 	public LocalDate getFechaFin() {
 		return fechaInicio.plusYears(1);
@@ -97,8 +101,14 @@ import java.util.ArrayList;
 		
 		return fechas;
 	}
-
-	abstract public void borrarReserva();
+	
+	public boolean reservadaEntreFechas(LocalDate fechaInicio, LocalDate fechaFin) {
+		
+		LocalDate[] f = this.getFechasTiempoCompartido();		
+		return ( (!fechaInicio.isAfter(f[1])) && (!fechaFin.isBefore(f[0])) );
+	}
+	
+	abstract public String getTipo();
 	
 	/*abstract public void setMontos(String[] montos);
 

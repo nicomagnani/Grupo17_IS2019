@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 
+import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
@@ -41,7 +42,7 @@ public class ResidenciasAdminView extends Composite implements View {
 	private VerticalLayout propiedadesLayout = new VerticalLayout();
 	private Panel panel = new Panel();
 	private Button botonSubastar = new Button("Abrir Subastas");	
-	private Notification notifResultado = new Notification("Residencia borrada con éito.");
+	private Notification notifResultado = new Notification("Residencia borrada con éxito.");
 	
 	private ConnectionBD conexion = new ConnectionBD();
 
@@ -50,19 +51,20 @@ public class ResidenciasAdminView extends Composite implements View {
 	
 	private HtmlEmail email = new HtmlEmail();
 	
-	private MyUI interfaz; 
+	private MyUI interfaz;
+	private Navigator navigator;
 
 
-	public ResidenciasAdminView(MyUI interfaz) {
+	public ResidenciasAdminView(MyUI interfaz, Navigator navigator) throws SQLException {
 		
 		this.interfaz = interfaz;
+		this.navigator = navigator;
 		
 		cabecera.addStyleName(ValoTheme.MENU_TITLE);
 		
 		panel.setVisible(false);
-		msjResultado.setVisible(false);		
+		msjResultado.setVisible(false);
 		
-		propiedadesLayout = new VerticalLayout();
 		propiedadesLayout.setSizeUndefined();
 		
 		cargarResidencias();
@@ -71,9 +73,16 @@ public class ResidenciasAdminView extends Composite implements View {
 		panel.setContent(propiedadesLayout);
 		panel.setHeight("600");
 		panel.setWidth("550");
-		panel.addStyleName("scrollable");		
+		panel.addStyleName("scrollable");
 
-		botonSubastar.addClickListener(e -> this.subastarTodo());
+		botonSubastar.addClickListener(e -> {
+			try {
+				this.subastarTodo();
+			} catch (SQLException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+		});
 		
 		try {
 			this.inicializarEmail();
@@ -107,14 +116,9 @@ public class ResidenciasAdminView extends Composite implements View {
 	}
 
 
-	private void cargarResidencias() {		
+	private void cargarResidencias() throws SQLException {		
 		
-		try {
-			propiedades = conexion.listaPropiedadesConFotos();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		propiedades = conexion.listaPropiedadesConFotos();
 		
 		if (!propiedades.isEmpty()) {
 			panel.setVisible(true);
@@ -134,14 +138,15 @@ public class ResidenciasAdminView extends Composite implements View {
 		Label titulo = new Label("<p><span style=\"text-align: left; font-weight: bold; font-size: 120%;\">Título:</span> <span style=\"font-size: 120%;\">"
 						+propiedad.getTitulo()+"</span></p>", ContentMode.HTML);
 		Label ubicacion = new Label("<span style=\"font-weight: bold;\">Ubicación:</span> " + propiedad.getPais() + ", " +
-						propiedad.getProvincia() + ", " + propiedad.getLocalidad() +
-						", " + propiedad.getDomicilio(), ContentMode.HTML);	
-		Label descripcion = new Label("<span style=\"font-weight: bold;\">Descripción:</span> " + propiedad.getDescripcion(), ContentMode.HTML);	
+						propiedad.getProvincia() + ", " + propiedad.getLocalidad(), ContentMode.HTML);	
+				
+		Label descripcion = new Label("<span style=\"font-weight: bold;\">Descripción:</span> " + propiedad.getDescripcion(), ContentMode.HTML);
 		Label montoBase = new Label("<span style=\"font-weight: bold;\">Monto base:</span> " + String.valueOf(propiedad.getMontoBase()), ContentMode.HTML);
 		
-		Button verFotos = new Button("Ver Fotos");	
+		Button verFotos = new Button("Ver Fotos");
+		Button verDetalle = new Button("Ver Detalle", e -> navigator.navigateTo("detalleResidencia"));
 		Button modificar = new Button("Modificar", e -> this.modificar(propiedad));
-		Button eliminar = new Button("Eliminar");		
+		Button eliminar = new Button("Eliminar");
 	
     	Image foto1 = new Image("Foto 1");
     	Image foto2 = new Image("Foto 2");
@@ -192,7 +197,7 @@ public class ResidenciasAdminView extends Composite implements View {
     		});
     	}
 
-    	HorizontalLayout botonesLayout = new HorizontalLayout(verFotos, modificar, eliminar);
+    	HorizontalLayout botonesLayout = new HorizontalLayout(verFotos, verDetalle, modificar, eliminar);
     	
     	HorizontalLayout fotosLayout = new HorizontalLayout(foto1,foto2,foto3,foto4,foto5);
     	fotosLayout.setWidth("650");
@@ -204,7 +209,7 @@ public class ResidenciasAdminView extends Composite implements View {
 		propiedadLayout.setWidth("500");
 		propiedadLayout.setSizeFull();
 		propiedadLayout.setComponentAlignment(fotosLayout, Alignment.MIDDLE_CENTER);
-		propiedadLayout.setComponentAlignment(separador, Alignment.MIDDLE_CENTER);		
+		propiedadLayout.setComponentAlignment(separador, Alignment.MIDDLE_CENTER);
 		
 		propiedadesLayout.addComponent(propiedadLayout);
 		propiedadesLayout.setComponentAlignment(propiedadLayout, Alignment.MIDDLE_CENTER);		
@@ -234,16 +239,12 @@ public class ResidenciasAdminView extends Composite implements View {
 	
 	
 	//devuelve true si la subasta fue un exito
-	private void subastarTodo() {
+	private void subastarTodo() throws SQLException {
 		
 		int n1 = 0;
 		LocalDate hace6meses = LocalDate.now().minusMonths(6);
 		
-		try {
-			reservas = conexion.listaReservas();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		reservas = conexion.listaReservas();
 		
 		if (!reservas.isEmpty()) {			
 			//recorre la lista de reservas
@@ -253,16 +254,13 @@ public class ResidenciasAdminView extends Composite implements View {
 				if ( (reserva.getEstado() == EstadoDeReserva.DISPONIBLE_DIRECTA) && 
 						(!reserva.getFechaInicio().isAfter(hace6meses)) &&
 						(!reserva.getFechaInicio().isBefore(hace6meses.minusDays(3))) ) {					
-					try {
-						conexion.comenzarReservaSubasta(reserva);
-						n1++;						
-					} catch (SQLException e) {
-						e.printStackTrace();						
-					}
-					
+					conexion.comenzarReservaSubasta(reserva);
+					n1++;
+					//TODO: guardar informacion de la reserva/residencia) para mostrarla en la notifiacion					
 				} //fin chequeo
 			}
 			if (n1 > 0) {
+				//TODO: mostrar informacion de las subastas abiertas
 				mostrarNotificacion("Se abrieron "+n1+" subastas.", Notification.Type.HUMANIZED_MESSAGE);
 				interfaz.vistaAdmin("residenciasAdmin");
 			} else {

@@ -20,6 +20,8 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
+import homeSwitchHome.HomeSwitchHome;
+
 
 /**
  * This UI is the application entry point. A UI may either represent a browser window 
@@ -151,16 +153,14 @@ public class MyUI extends UI {
         
     	try {
 			navigator.addView("", new ResidenciasUsuarioView(true));
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-		}
-
-    	try {
 			navigator.addView("residencias", new ResidenciasUsuarioView(false));
 		} catch (SQLException e1) {
 			e1.printStackTrace();
 		}
-        
+    	navigator.addView("detalleResidenciaUsuario", new DetalleResidenciaView("usuario"));
+    	navigator.addView("detalleResidenciaBusqueda", new DetalleResidenciaView("busqueda"));
+    	
+    	
     	navigator.addView("subastas", new SubastasView());
         navigator.addView("buscarFecha", new BuscarFechaView());
         navigator.addView("buscarLugar", new BuscarLugarView());
@@ -170,6 +170,7 @@ public class MyUI extends UI {
         navigator.addView("modificarContraseña", new ModificarContraseñaView(navigator,this));
         navigator.addView("contactar", new ContactarView());    	
         navigator.addView("verFaq", new VerFaqView());
+        
     }
     
     
@@ -199,10 +200,16 @@ public class MyUI extends UI {
         
     	navigator = new Navigator(this, viewContainer);
     	
-        navigator.addView("residenciasAdmin", new ResidenciasAdminView(this));
+        try {
+			navigator.addView("residenciasAdmin", new ResidenciasAdminView(this,navigator));
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         navigator.addView("subastasAdmin", new SubastasAdminView());
         navigator.addView("reservasAdmin", new ReservasAdminView());
         navigator.addView("agregarResidencia", new AgregarResidenciaView(this));
+        navigator.addView("detalleResidencia", new DetalleResidenciaView("admin"));
     }
     
     

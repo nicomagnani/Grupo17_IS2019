@@ -22,13 +22,14 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.renderers.NumberRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 
+import homeSwitchHome.HomeSwitchHome;
 import homeSwitchHome.Propiedad;
 
 public class BuscarFechaView extends Composite implements View {  //necesita composite y view para funcionar correctamente
 
 	private Label cabecera = new Label("Buscar residencias por fecha");
-	private DateField campoFecha1 = new DateField("Fecha inicio",LocalDate.now().plusMonths(6));
-	private DateField campoFecha2 = new DateField("Fecha fin",LocalDate.now().plusMonths(8));
+	private DateField campoFechaIncio = new DateField("Fecha inicio",LocalDate.now().plusMonths(6));
+	private DateField campoFechaFin = new DateField("Fecha fin",LocalDate.now().plusMonths(8));
 	private Label msjResultado = new Label();
 	private Button botonBuscar = new Button("Buscar");	
 	private Grid<Propiedad> tabla = new Grid<>(Propiedad.class);
@@ -40,13 +41,13 @@ public class BuscarFechaView extends Composite implements View {  //necesita com
 		
 		cabecera.addStyleName(ValoTheme.MENU_TITLE);
 		
-		campoFecha1.setTextFieldEnabled(false);		
-		campoFecha1.setResolution(DateResolution.DAY);
-		campoFecha1.setRangeStart(LocalDate.now().plusMonths(6));
+		campoFechaIncio.setTextFieldEnabled(false);		
+		campoFechaIncio.setResolution(DateResolution.DAY);
+		campoFechaIncio.setRangeStart(LocalDate.now().plusMonths(6));
 				
-		campoFecha2.setTextFieldEnabled(false);
-		campoFecha2.setResolution(DateResolution.DAY);
-		campoFecha2.setRangeStart(LocalDate.now().plusMonths(8));
+		campoFechaFin.setTextFieldEnabled(false);
+		campoFechaFin.setResolution(DateResolution.DAY);
+		campoFechaFin.setRangeStart(LocalDate.now().plusMonths(8));
 				
 		tabla.setVisible(false);
 		
@@ -55,7 +56,7 @@ public class BuscarFechaView extends Composite implements View {  //necesita com
 		tabla.setWidth("750");
 		tabla.setBodyRowHeight(100);
 		
-		HorizontalLayout fechas = new HorizontalLayout(campoFecha1, campoFecha2);
+		HorizontalLayout fechas = new HorizontalLayout(campoFechaIncio, campoFechaFin);
 		VerticalLayout mainLayout = new VerticalLayout(cabecera, fechas, botonBuscar, msjResultado, tabla);
 		
 		mainLayout.setComponentAlignment(botonBuscar, Alignment.MIDDLE_CENTER);
@@ -69,19 +70,21 @@ public class BuscarFechaView extends Composite implements View {  //necesita com
 	
 	private void buscar() {
 		
-		LocalDate fecha1 = campoFecha1.getValue();
-		LocalDate fecha2 = campoFecha2.getValue();
+		LocalDate fechaInicio = campoFechaIncio.getValue();
+		LocalDate fechaFin = campoFechaFin.getValue();
+		HomeSwitchHome.setFechaInicioBuscada(fechaInicio);
+		HomeSwitchHome.setFechaFinBuscada(fechaFin);
 		
 		/* 1º parte: chequea si la fecha de inicio es mayor a la fecha de fin
 		   2º parte: chequea si la fecha de fin es más de 2 meses mayor a la fecha de inicio
 		*/		
-		if ( (!fecha1.isAfter(fecha2)) && (!fecha2.isAfter(fecha1.plusMonths(2))) ) {
+		if ( (!fechaInicio.isAfter(fechaFin)) && (!fechaFin.isAfter(fechaInicio.plusMonths(2))) ) {
 			
 			ConnectionBD conectar = new ConnectionBD();
 			propiedades = new ArrayList<Propiedad>();
 			
 			try {
-				propiedades = conectar.listaPropiedadesPorFecha(fecha1, fecha2);
+				propiedades = conectar.listaPropiedadesPorFecha(fechaInicio, fechaFin);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}

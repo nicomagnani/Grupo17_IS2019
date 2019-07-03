@@ -16,10 +16,8 @@ public class ReservaDirecta extends Reserva {
 		super(propiedad, usuario, fechaInicio, estado);
 	}
 	
-	@Override
-	public void borrarReserva() {
-		// TODO Auto-generated method stub
-
+	public String getTipo() {
+		return "Directa";
 	}
 
 }
