@@ -16,6 +16,7 @@ import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.renderers.NumberRenderer;
+import com.vaadin.ui.themes.ValoTheme;
 
 import homeSwitchHome.HomeSwitchHome;
 import homeSwitchHome.Propiedad;
@@ -25,7 +26,8 @@ import homeSwitchHome.Usuario;
 public class ResidenciasUsuarioView extends Composite implements View {
 	
 	private Usuario u;
-	private Label cabecera = new Label();
+	private Label cabecera = new Label("Lista de residencias");;
+	private Label msjBienvenida = new Label();
 	private Label msjResultado = new Label("No hay residencias disponibles.");
 	private Grid<Propiedad> tabla = new Grid<>(Propiedad.class);
 	private ArrayList<Propiedad> propiedades;
@@ -33,14 +35,18 @@ public class ResidenciasUsuarioView extends Composite implements View {
 		
 	public ResidenciasUsuarioView(boolean mostrarCabecera) throws SQLException {
 		
+		cabecera.addStyleName(ValoTheme.MENU_TITLE);
+		
 		ConnectionBD conectar = new ConnectionBD();
 		u = HomeSwitchHome.getUsuarioActual();
 		
-		cabecera.setValue("<p style=\"text-align: center; font-size: "
+		msjBienvenida.setValue("<p style=\"text-align: center; font-size: "
 				+ "200%;\">Bienvenido, <strong>"+u.getNombre()+" "+
 				u.getApellido()+"</strong>.</p>");
-		cabecera.setContentMode(ContentMode.HTML);
-		cabecera.setVisible(mostrarCabecera);
+		msjBienvenida.setContentMode(ContentMode.HTML);
+		msjBienvenida.setVisible(mostrarCabecera);
+		cabecera.setVisible(!mostrarCabecera);
+		
 		
 		msjResultado.setVisible(false);
 		
@@ -94,8 +100,9 @@ public class ResidenciasUsuarioView extends Composite implements View {
 			tabla.addColumn(Propiedad::getFoto5, blobRenderer5).setCaption("Foto 5");
 		}
 		
-		VerticalLayout mainLayout = new VerticalLayout(cabecera, msjResultado, tabla);
+		VerticalLayout mainLayout = new VerticalLayout(cabecera, msjBienvenida, msjResultado, tabla);
 		mainLayout.setComponentAlignment(cabecera, Alignment.MIDDLE_CENTER);
+		mainLayout.setComponentAlignment(msjBienvenida, Alignment.MIDDLE_CENTER);
 		mainLayout.setComponentAlignment(tabla, Alignment.MIDDLE_LEFT);
 		
 		setCompositionRoot(mainLayout);

@@ -53,8 +53,7 @@ public class ResidenciasVisitanteView extends Composite implements View {
 			BlobImageRenderer<Propiedad> blobRenderer = new BlobImageRenderer<>(-1, 100);
 			tabla.addColumn(Propiedad::getFoto1, blobRenderer).setCaption("Foto");
 			tabla.getColumn("titulo").setWidth(300);
-			tabla.getColumn("localidad").setWidth(300);
-			
+			tabla.getColumn("localidad").setWidth(300);			
 		}
 		
 		img.setHeight("250");	

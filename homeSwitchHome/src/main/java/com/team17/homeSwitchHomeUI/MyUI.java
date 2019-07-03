@@ -20,8 +20,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
-import homeSwitchHome.HomeSwitchHome;
-
 
 /**
  * This UI is the application entry point. A UI may either represent a browser window 
@@ -38,6 +36,7 @@ public class MyUI extends UI {
 	
 	Button residenciasButton;
 	Button subastasButton;
+	Button misSubastasButton;
 	Button buscarFechaButton;
 	Button buscarLugarButton;
 	Button iniciarSesionButton;
@@ -135,7 +134,10 @@ public class MyUI extends UI {
         residenciasButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
         
         subastasButton = new Button("Subastas", e -> getNavigator().navigateTo("subastas"));
-        subastasButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
+        subastasButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);        
+
+        misSubastasButton = new Button("Ofertas en subastas", e -> getNavigator().navigateTo("misSubastas"));
+        misSubastasButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
         
         buscarFechaButton = new Button("Búsqueda por fecha", e -> getNavigator().navigateTo("buscarFecha"));
         buscarFechaButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
@@ -155,8 +157,8 @@ public class MyUI extends UI {
         cerrarSesionButton = new Button("Cerrar Sesión", e -> vistaVisitante());
         cerrarSesionButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
         
-        menu = new CssLayout(img, title, residenciasButton, subastasButton, buscarFechaButton, buscarLugarButton,
-        		miPerfilButton, contactarButton, verFaqButton, cerrarSesionButton);
+        menu = new CssLayout(img, title, residenciasButton, subastasButton, misSubastasButton, buscarFechaButton,
+        		buscarLugarButton, miPerfilButton, contactarButton, verFaqButton, cerrarSesionButton);
         
         menu.addStyleName(ValoTheme.MENU_ROOT);
     }
@@ -171,11 +173,10 @@ public class MyUI extends UI {
 		} catch (SQLException e1) {
 			e1.printStackTrace();
 		}
-    	navigator.addView("detalleResidenciaUsuario", new DetalleResidenciaView("usuario"));
-    	navigator.addView("detalleResidenciaBusqueda", new DetalleResidenciaView("busqueda"));
-    	
-    	
-    	navigator.addView("subastas", new SubastasView());
+//    	navigator.addView("detalleResidenciaUsuario", new DetalleResidenciaView("usuario"));
+//    	navigator.addView("detalleResidenciaBusqueda", new DetalleResidenciaView("busqueda"));    	
+    	navigator.addView("subastas", new SubastasUsuarioView());
+    	navigator.addView("misSubastas", new MisSubastasView());
         navigator.addView("buscarFecha", new BuscarFechaView());
         navigator.addView("buscarLugar", new BuscarLugarView());
         navigator.addView("miPerfil", new MiPerfilView(navigator));

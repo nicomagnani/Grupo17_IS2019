@@ -1,7 +1,10 @@
 package homeSwitchHome;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+
+import com.google.web.bindery.autobean.shared.AutoBeanFactory.NoWrap;
 
 public class ReservaSubasta extends Reserva {
 	
@@ -44,6 +47,20 @@ public class ReservaSubasta extends Reserva {
 
 	public void setFechaInicioSubasta(LocalDate fechaInicioSubasta) {
 		this.fechaInicioSubasta = fechaInicioSubasta;
+	}
+	
+	public LocalDate getFechaFinSubasta() {
+		return this.getFechaInicioSubasta().plusDays(3);		
+	}
+	
+	public String getFechaFinSubastaString() {
+		
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+		
+		if ( LocalDate.now().isBefore(this.getFechaFinSubasta()) ) {
+			return this.getFechaInicioSubasta().plusDays(3).atStartOfDay().format(formatter);
+		} else
+			return "Finalizada";
 	}
 
 	public String getTipo() {
