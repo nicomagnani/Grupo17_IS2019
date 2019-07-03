@@ -30,6 +30,8 @@ import homeSwitchHome.EstadoDeReserva;
 import homeSwitchHome.HomeSwitchHome;
 import homeSwitchHome.Propiedad;
 import homeSwitchHome.Reserva;
+import homeSwitchHome.ReservaDirecta;
+import homeSwitchHome.ReservaSubasta;
 
 public class DetalleResidenciaView extends Composite implements View {
 	
@@ -63,8 +65,10 @@ public class DetalleResidenciaView extends Composite implements View {
 	
 	public DetalleResidenciaView(String tipo) {		
 		
-		cabecera.addStyleName(ValoTheme.MENU_TITLE);		
+		cabecera.addStyleName(ValoTheme.MENU_TITLE);
+		
 		this.tipo = tipo;
+		this.propiedad = HomeSwitchHome.getPropiedadActual();
 		
 		//configura la cabecera dependiendo de donde proviene
 		if (tipo.equals("admin")) {
@@ -86,11 +90,8 @@ public class DetalleResidenciaView extends Composite implements View {
 				propiedad.getProvincia() + ", " + propiedad.getLocalidad(), ContentMode.HTML);			
 		descripcion = new Label("<span style=\"font-weight: bold;\">Descripción:</span> " + propiedad.getDescripcion(), ContentMode.HTML);
 		
-		foto1.setWidth(100, Unit.PIXELS);
-		foto2.setWidth(100, Unit.PIXELS);
-		foto3.setWidth(100, Unit.PIXELS);
-		foto4.setWidth(100, Unit.PIXELS);
-		foto5.setWidth(100, Unit.PIXELS);
+		
+		
 		foto1.setVisible(false);
 		foto2.setVisible(false);
 		foto3.setVisible(false);
@@ -104,22 +105,29 @@ public class DetalleResidenciaView extends Composite implements View {
 			verFotos.addClickListener(e -> {
 				if (propiedad.getFoto1() != null) {
 					cargarFoto(foto1, propiedad.getFoto1());
+					foto1.setWidth(100, Unit.PIXELS);
 					foto1.setVisible(true);
 				}				
 				if (propiedad.getFoto2() != null) {
 					cargarFoto(foto2, propiedad.getFoto2());
+					foto2.setWidth(100, Unit.PIXELS);
+					
 					foto2.setVisible(true);
 				}				
 				if (propiedad.getFoto3() != null) {
 					cargarFoto(foto3, propiedad.getFoto3());
+					foto3.setWidth(100, Unit.PIXELS);
+					
 					foto3.setVisible(true);
 				}				
 				if (propiedad.getFoto4() != null) {
 					cargarFoto(foto4, propiedad.getFoto4());
+					foto4.setWidth(100, Unit.PIXELS);
 					foto4.setVisible(true);
 				}				
 				if (propiedad.getFoto5() != null) {
 					cargarFoto(foto5, propiedad.getFoto5());
+					foto5.setWidth(100, Unit.PIXELS);
 					foto5.setVisible(true);
 				}
 			});
@@ -130,7 +138,12 @@ public class DetalleResidenciaView extends Composite implements View {
 		tablaSemanas.setVisible(false);
 		tablaReservas.setVisible(false);		
 
-		this.cargarReservas();
+		try {
+			this.cargarReservas();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 				
 		HorizontalLayout fotosLayout = new HorizontalLayout(foto1,foto2,foto3,foto4,foto5);		
@@ -143,19 +156,18 @@ public class DetalleResidenciaView extends Composite implements View {
 		propiedadLayout.setComponentAlignment(verFotos, Alignment.MIDDLE_CENTER);
 		propiedadLayout.setComponentAlignment(fotosLayout, Alignment.MIDDLE_CENTER);
 		
-		VerticalLayout tablasLayout = new VerticalLayout(tablaSemanas, msjSemanas, tablaReservas, msjReservas);
+		VerticalLayout contentLayout = new VerticalLayout(propiedadLayout, tablaSemanas, msjSemanas, tablaReservas, msjReservas);
 		
-		tablasLayout.setSizeUndefined();
+		contentLayout.setSizeUndefined();
 		
 		//coloco el layout con las tablas dentro del panel para poder scrollear
-		panel.setContent(tablasLayout);
-		panel.setHeight("500");
+		panel.setContent(contentLayout);
+		panel.setHeight("600");
 		panel.setWidth("750");
 		panel.addStyleName("scrollable");
 		
-		VerticalLayout mainLayout = new VerticalLayout(cabecera, propiedadLayout, panel);
-		mainLayout.setComponentAlignment(cabecera, Alignment.MIDDLE_CENTER);
-		mainLayout.setComponentAlignment(propiedadLayout, Alignment.MIDDLE_CENTER);
+		VerticalLayout mainLayout = new VerticalLayout(cabecera, panel);
+		mainLayout.setComponentAlignment(cabecera, Alignment.MIDDLE_CENTER);		
 		mainLayout.setComponentAlignment(panel, Alignment.MIDDLE_CENTER);
 		
 		setCompositionRoot(mainLayout);
@@ -163,41 +175,56 @@ public class DetalleResidenciaView extends Composite implements View {
 
 
 
-	private void cargarReservas() {		
+	private void cargarReservas() throws SQLException {
+
+		ReservaSubasta r2;
 		
-		try {
-			reservas = conexion.listaReservasPorPropiedad(propiedad.getTitulo(), propiedad.getLocalidad());
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}			
+		reservas = conexion.listaReservasPorPropiedad(propiedad.getTitulo(), propiedad.getLocalidad());
 		
 		//crea la lista de semanas de acuerdo al tipo
 		if (tipo.equals("admin")) {			
-			for (Reserva r : reservas) {
-				if ( (r.getEstado() != EstadoDeReserva.FINALIZADA) && (r.getEstado() != EstadoDeReserva.RESERVADA) )
-					resSinReservar.add(r);
-			}
-			
-		} else
-			if (tipo.equals("usuario")) {
-				for (Reserva r : reservas) {
-					if ( (r.getEstado() == EstadoDeReserva.DISPONIBLE_DIRECTA) || (r.getEstado() == EstadoDeReserva.DISPONIBLE_SUBASTA)
-							|| (r.getEstado() == EstadoDeReserva.DISPONIBLE_HOTSALE) )
+			for (Reserva r : reservas) {				
+				//chequea que la semana no lleve un año publicada ni esté reservada
+				if ( (r.getEstado() != EstadoDeReserva.FINALIZADA) && (r.getEstado() != EstadoDeReserva.RESERVADA) ) {					
+					//si es una subasta, carga sus datos desde la tabla 'subastas'
+					if (r instanceof ReservaSubasta) {
+						r2 = conexion.buscarSubasta(r.getPropiedad(), r.getLocalidad(), r.getFechaInicio(), r.getEstado());
+						resSinReservar.add(r2);
+					} else
 						resSinReservar.add(r);
 				}
-				
-			} else
-				if (tipo.equals("busqueda")) {
+			}			
+		} else if (tipo.equals("usuario")) {
+				for (Reserva r : reservas) {
+					//chequea que la semana esté disponible
+					if ( (r.getEstado() == EstadoDeReserva.DISPONIBLE_DIRECTA) || (r.getEstado() == EstadoDeReserva.DISPONIBLE_SUBASTA)
+							|| (r.getEstado() == EstadoDeReserva.DISPONIBLE_HOTSALE) ) {						
+						//si es una subasta, carga sus datos desde la tabla 'subastas'
+						if (r instanceof ReservaSubasta) {
+							r2 = conexion.buscarSubasta(r.getPropiedad(), r.getLocalidad(), r.getFechaInicio(), r.getEstado());
+							resSinReservar.add(r2);
+						} else
+							resSinReservar.add(r);
+					}
+				}				
+			} else if (tipo.equals("busqueda")) {
 					for (Reserva r : reservas) {
+						//chequea que la semana esté disponible y se encuentre entre las fechas buscadas
 						if ( ((r.getEstado() == EstadoDeReserva.DISPONIBLE_DIRECTA) || (r.getEstado() == EstadoDeReserva.DISPONIBLE_SUBASTA)
 								|| (r.getEstado() == EstadoDeReserva.DISPONIBLE_HOTSALE)) 
-								&& (r.reservadaEntreFechas(HomeSwitchHome.getFechaInicioBuscada(), HomeSwitchHome.getFechaFinBuscada())) )
-							resSinReservar.add(r);
+								&& (r.reservadaEntreFechas(HomeSwitchHome.getFechaInicioBuscada(), HomeSwitchHome.getFechaFinBuscada())) ) {
+							//si es una subasta, carga sus datos desde la tabla 'subastas'
+							if (r instanceof ReservaSubasta) {
+								r2 = conexion.buscarSubasta(r.getPropiedad(), r.getLocalidad(), r.getFechaInicio(), r.getEstado());
+								resSinReservar.add(r2);
+							} else
+								resSinReservar.add(r);
+						}
 					}	
 				}
 
 		//habilito y configuro la tabla de semanas
-		if (resSinReservar.isEmpty() ) {
+		if (resSinReservar.isEmpty()) {
 			msjSemanas.setVisible(true);
 		} else {
 			tablaSemanas.setItems(resSinReservar);
@@ -216,6 +243,7 @@ public class DetalleResidenciaView extends Composite implements View {
 			
 			//creo lista de reservas (admin)
 			for (Reserva r : reservas) {
+				//chequeo que esté reservada (haya finalizado o no)
 				if ( ((r.getEstado() == EstadoDeReserva.FINALIZADA) && (r.getUsuario() != null))
 						|| (r.getEstado() == EstadoDeReserva.RESERVADA) ) {
 					resReservadas.add(r);
@@ -230,11 +258,11 @@ public class DetalleResidenciaView extends Composite implements View {
 				tablaReservas.setVisible(true);
 				tablaReservas.setColumns("fechaInicio", "usuario");
 				
-				tablaSemanas.addColumn(Reserva::getMonto,
+				tablaReservas.addColumn(Reserva::getMonto,
 						new NumberRenderer(new DecimalFormat("¤#######.##")))
 						.setCaption("Monto");
 				
-				tablaSemanas.addColumn(Reserva::getTipo)
+				tablaReservas.addColumn(Reserva::getTipo)
 						.setCaption("Tipo");
 			}
 		}

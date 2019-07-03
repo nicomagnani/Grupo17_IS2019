@@ -29,6 +29,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import homeSwitchHome.EstadoDeReserva;
+import homeSwitchHome.HomeSwitchHome;
 import homeSwitchHome.Propiedad;
 import homeSwitchHome.Reserva;
 import homeSwitchHome.ReservaDirecta;
@@ -54,6 +55,7 @@ public class ResidenciasAdminView extends Composite implements View {
 	private MyUI interfaz;
 	private Navigator navigator;
 
+	
 
 	public ResidenciasAdminView(MyUI interfaz, Navigator navigator) throws SQLException {
 		
@@ -144,7 +146,10 @@ public class ResidenciasAdminView extends Composite implements View {
 		Label montoBase = new Label("<span style=\"font-weight: bold;\">Monto base:</span> " + String.valueOf(propiedad.getMontoBase()), ContentMode.HTML);
 		
 		Button verFotos = new Button("Ver Fotos");
-		Button verDetalle = new Button("Ver Detalle", e -> navigator.navigateTo("detalleResidencia"));
+		Button verDetalle = new Button("Ver Detalle", e -> {
+			HomeSwitchHome.setPropiedadActual(propiedad);			
+			interfaz.vistaAdminConDetalle();
+		});
 		Button modificar = new Button("Modificar", e -> this.modificar(propiedad));
 		Button eliminar = new Button("Eliminar");
 	
@@ -152,12 +157,7 @@ public class ResidenciasAdminView extends Composite implements View {
     	Image foto2 = new Image("Foto 2");
     	Image foto3 = new Image("Foto 3");
     	Image foto4 = new Image("Foto 4");
-    	Image foto5 = new Image("Foto 5");   
-    	foto1.setWidth(100, Unit.PIXELS);
-    	foto2.setWidth(100, Unit.PIXELS);
-    	foto3.setWidth(100, Unit.PIXELS);
-    	foto4.setWidth(100, Unit.PIXELS);
-    	foto5.setWidth(100, Unit.PIXELS);
+    	Image foto5 = new Image("Foto 5");    	
 		foto1.setVisible(false);
 		foto2.setVisible(false);
 		foto3.setVisible(false);
@@ -172,26 +172,31 @@ public class ResidenciasAdminView extends Composite implements View {
     		verFotos.addClickListener(e -> {
     			if (propiedad.getFoto1() != null) {
     				cargarFoto(foto1, propiedad.getFoto1());
+    				foto1.setWidth(100, Unit.PIXELS);
     				foto1.setVisible(true);
     			}
     			
     			if (propiedad.getFoto2() != null) {
     				cargarFoto(foto2, propiedad.getFoto2());
+    				foto2.setWidth(100, Unit.PIXELS);
     				foto2.setVisible(true);
     			}
     			
     			if (propiedad.getFoto3() != null) {
 					cargarFoto(foto3, propiedad.getFoto3());
+					foto3.setWidth(100, Unit.PIXELS);
 					foto3.setVisible(true);
     			}
     			
     			if (propiedad.getFoto4() != null) {
     				cargarFoto(foto4, propiedad.getFoto4());
+    				foto4.setWidth(100, Unit.PIXELS);
     				foto4.setVisible(true);
     			}
     			
     			if (propiedad.getFoto5() != null) {
     				cargarFoto(foto5, propiedad.getFoto5());
+    				foto5.setWidth(100, Unit.PIXELS);
     				foto5.setVisible(true);
     			}
     		});
@@ -288,7 +293,7 @@ public class ResidenciasAdminView extends Composite implements View {
 			if (propiedad.haySubastasEncurso()) {				
 				for (Reserva reserva : propiedad.getReservas()) {
 					if (reserva.getEstado() == EstadoDeReserva.DISPONIBLE_SUBASTA) {
-						ReservaSubasta reserva2 = conexion.buscarSubasta(reserva.getPropiedad(), reserva.getLocalidad(), reserva.getFechaInicio());
+						ReservaSubasta reserva2 = conexion.buscarSubasta(reserva.getPropiedad(), reserva.getLocalidad(), reserva.getFechaInicio(), reserva.getEstado());
 						for (String usuario : reserva2.getUsuarios() )  {
 							if (this.agregarReceptorDeEmail(usuario))
 								n++;

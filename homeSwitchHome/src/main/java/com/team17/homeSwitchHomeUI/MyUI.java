@@ -53,6 +53,9 @@ public class MyUI extends UI {
 	CssLayout viewContainer;
 	HorizontalLayout mainLayout;
 	Navigator navigator;
+	
+	private static DetalleResidenciaView vistaDetalle;
+	
 
     @Override
     protected void init(VaadinRequest vaadinRequest) { //UI principal.
@@ -93,6 +96,17 @@ public class MyUI extends UI {
         this.mostrarLayout();
         this.navigatorAdmin();
         navigator.navigateTo(unaVista);
+    }
+    
+    //crea la sesión de admin  una vez que se asignó una residencia actual 
+    public void vistaAdminConDetalle() {
+        
+    	this.mostrarLogo();
+        this.botonesAdmin();
+        this.mostrarLayout();
+        this.navigatorAdmin();
+        navigator.addView("detalleResidencia", new DetalleResidenciaView("admin"));
+        navigator.navigateTo("detalleResidencia");
     }
     
     private void mostrarLogo() {    	
@@ -209,7 +223,6 @@ public class MyUI extends UI {
         navigator.addView("subastasAdmin", new SubastasAdminView());
         navigator.addView("reservasAdmin", new ReservasAdminView());
         navigator.addView("agregarResidencia", new AgregarResidenciaView(this));
-        navigator.addView("detalleResidencia", new DetalleResidenciaView("admin"));
     }
     
     
@@ -260,7 +273,15 @@ public class MyUI extends UI {
     	return new Label("____________________________________________________________________");
     }
 
-    @WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
+    public static DetalleResidenciaView getVistaDetalle() {
+		return vistaDetalle;
+	}
+
+	public static void setVistaDetalle(DetalleResidenciaView vistaDetalle) {
+		MyUI.vistaDetalle = vistaDetalle;
+	}
+
+	@WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
     @VaadinServletConfiguration(ui = MyUI.class, productionMode = false)
     public static class MyUIServlet extends VaadinServlet {
     }

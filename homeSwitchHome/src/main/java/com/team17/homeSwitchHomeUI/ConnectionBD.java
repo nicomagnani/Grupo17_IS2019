@@ -400,7 +400,7 @@ public class ConnectionBD {
 	}	
 
 
-	public ReservaSubasta buscarSubasta(String propiedad,  String localidad, LocalDate fechaInicio) throws SQLException {
+	public ReservaSubasta buscarSubasta(String propiedad, String localidad, LocalDate fechaInicio, EstadoDeReserva estado) throws SQLException {
 		
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-LL-dd");
 		String fechaComoString = fechaInicio.format(formatter);
@@ -419,6 +419,7 @@ public class ConnectionBD {
 			reserva.setLocalidad(rs.getString("localidad"));
 			reserva.setFechaInicio(rs.getDate("fecha_inicio").toLocalDate());
 			reserva.setFechaInicioSubasta(rs.getDate("fecha_subasta").toLocalDate());
+			reserva.setEstado(estado);
 						
 			lista1 = (rs.getString("montos").split("\\s+"));
 			for (String st : lista1)
@@ -426,9 +427,10 @@ public class ConnectionBD {
 			reserva.setMontos(montos);
 			
 			preUsuarios = rs.getString("usuarios");
+			//usuarios (los ofertantes) se inicializa como null, en caso de no haber ofertas no hace falta asignarlo		
 			if (preUsuarios != null) {
 				reserva.setUsuarios( new ArrayList<>(Arrays.asList(preUsuarios.split("\\s+"))) );
-			} //usuarios se inicializa como null, en caso de no haber ofertas no hace falta asignarlo		
+			}
 		}
 
 		return reserva;
