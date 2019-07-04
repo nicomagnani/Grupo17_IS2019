@@ -38,7 +38,7 @@ import homeSwitchHome.Propiedad;
 
 public class AgregarResidenciaView extends Composite implements View {  //.necesita composite y view para funcionar correctamente	
 
-	FormLayout formulario = new FormLayout();
+	private FormLayout formulario = new FormLayout();
 	private TextField titulo = new TextField("Título");
 	private TextArea descripcion = new TextArea("Descripción");
 	private TextField pais = new TextField("País");
@@ -202,13 +202,11 @@ public class AgregarResidenciaView extends Composite implements View {  //.neces
 		main.setComponentAlignment(cabecera, Alignment.MIDDLE_CENTER);
 		main.setComponentAlignment(panel, Alignment.MIDDLE_CENTER);
 		main.setComponentAlignment(aceptarButton, Alignment.MIDDLE_CENTER);
-		main.setComponentAlignment(resultado2, Alignment.MIDDLE_CENTER);
-		
-		
-		
+		main.setComponentAlignment(resultado2, Alignment.MIDDLE_CENTER);		
 		
 		setCompositionRoot(main);
     }
+	
 	
 	//carga imagen desde url
 	private void showFromURL(String st) {
@@ -285,12 +283,6 @@ public class AgregarResidenciaView extends Composite implements View {  //.neces
 				
 				//recarga la sesion de admin con la nueva residencia
 				interfaz.vistaAdmin("agregarResidencia");
-				
-//				url.setValue(url.getEmptyValue());
-//				uploadField.setValue(uploadField.getEmptyValue());
-//				imageFinal1.setSource(null); imageFinal2.setSource(null); imageFinal3.setSource(null); imageFinal4.setSource(null); imageFinal5.setSource(null);
-//		    	fotos = new byte[5][];
-//		    	tot = 0;
 				
 			} else mostrarNotificacion("Error: Ya existe una propiedad con el mismo título en esa localidad.", Notification.Type.ERROR_MESSAGE);
 		} else mostrarNotificacion("Error: Al menos un campo se encuentra vacío.", Notification.Type.ERROR_MESSAGE);

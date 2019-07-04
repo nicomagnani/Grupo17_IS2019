@@ -65,6 +65,56 @@ public class DetalleResidenciaView extends Composite implements View {
 		this.tipo = tipo;
 		this.propiedad = HomeSwitchHome.getPropiedadActual();
 		
+		this.inicializarDatosResidencia();		
+		
+		this.inicializarFotos();
+
+		msjSemanas.setVisible(false);
+		msjReservas.setVisible(false);
+		tablaSemanas.setVisible(false);
+		tablaReservas.setVisible(false);
+
+		try {
+			this.cargarReservas();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+				
+		HorizontalLayout fotosLayout = new HorizontalLayout(foto1,foto2,foto3,foto4,foto5);		
+		fotosLayout.setWidth("650");
+		fotosLayout.addStyleName("scrollable");
+		
+		FormLayout propiedadLayout = new FormLayout(titulo,ubicacion,descripcion,verFotos,fotosLayout);
+		propiedadLayout.setWidth("750");
+		propiedadLayout.setSizeFull();
+		propiedadLayout.setComponentAlignment(verFotos, Alignment.MIDDLE_CENTER);
+		propiedadLayout.setComponentAlignment(fotosLayout, Alignment.MIDDLE_CENTER);
+		
+		VerticalLayout contentLayout = new VerticalLayout(propiedadLayout, tablaSemanas, msjSemanas, tablaReservas, msjReservas);
+		contentLayout.setComponentAlignment(propiedadLayout, Alignment.MIDDLE_CENTER);
+		contentLayout.setComponentAlignment(tablaSemanas, Alignment.MIDDLE_CENTER);
+		contentLayout.setComponentAlignment(msjSemanas, Alignment.MIDDLE_CENTER);
+		contentLayout.setComponentAlignment(tablaReservas, Alignment.MIDDLE_CENTER);
+		contentLayout.setComponentAlignment(msjReservas, Alignment.MIDDLE_CENTER);
+		contentLayout.setSizeUndefined();
+		
+		//coloco el layout con los datos de la propiedad y las tablas dentro del panel para poder scrollear
+		panel.setContent(contentLayout);
+		panel.setHeight("600");
+		panel.setWidth("750");
+		panel.addStyleName("scrollable");
+		
+		VerticalLayout mainLayout = new VerticalLayout(cabecera, panel);
+		mainLayout.setComponentAlignment(cabecera, Alignment.MIDDLE_CENTER);
+		mainLayout.setComponentAlignment(panel, Alignment.MIDDLE_CENTER);
+		
+		setCompositionRoot(mainLayout);
+	}
+
+
+	private void inicializarDatosResidencia() {
+		
 		//configura la cabecera dependiendo de donde proviene
 		if (tipo.equals("admin")) {
 			cabecera.setValue("Detalle de residencia (administrador)");
@@ -83,15 +133,17 @@ public class DetalleResidenciaView extends Composite implements View {
 				+propiedad.getTitulo()+"</span></p>", ContentMode.HTML);
 		ubicacion = new Label("<span style=\"font-weight: bold;\">Ubicación:</span> " + propiedad.getPais() + ", " +
 				propiedad.getProvincia() + ", " + propiedad.getLocalidad(), ContentMode.HTML);			
-		descripcion = new Label("<span style=\"font-weight: bold;\">Descripción:</span> " + propiedad.getDescripcion(), ContentMode.HTML);
-		
-		
-		
+		descripcion = new Label("<span style=\"font-weight: bold;\">Descripción:</span> " + propiedad.getDescripcion(), ContentMode.HTML);		
+	}
+
+
+	private void inicializarFotos() {		
+
 		foto1.setVisible(false);
 		foto2.setVisible(false);
 		foto3.setVisible(false);
 		foto4.setVisible(false);
-		foto5.setVisible(false);		
+		foto5.setVisible(false);
 		
 		if ( (propiedad.getFoto1() == null) && (propiedad.getFoto2() == null) && (propiedad.getFoto3() == null)
 				&& (propiedad.getFoto4() == null) && (propiedad.getFoto5() == null) ) {
@@ -105,14 +157,12 @@ public class DetalleResidenciaView extends Composite implements View {
 				}				
 				if (propiedad.getFoto2() != null) {
 					cargarFoto(foto2, propiedad.getFoto2());
-					foto2.setWidth(100, Unit.PIXELS);
-					
+					foto2.setWidth(100, Unit.PIXELS);					
 					foto2.setVisible(true);
 				}				
 				if (propiedad.getFoto3() != null) {
 					cargarFoto(foto3, propiedad.getFoto3());
-					foto3.setWidth(100, Unit.PIXELS);
-					
+					foto3.setWidth(100, Unit.PIXELS);					
 					foto3.setVisible(true);
 				}				
 				if (propiedad.getFoto4() != null) {
@@ -126,48 +176,8 @@ public class DetalleResidenciaView extends Composite implements View {
 					foto5.setVisible(true);
 				}
 			});
-		}
-
-		msjSemanas.setVisible(false);
-		msjReservas.setVisible(false);
-		tablaSemanas.setVisible(false);
-		tablaReservas.setVisible(false);		
-
-		try {
-			this.cargarReservas();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-				
-		HorizontalLayout fotosLayout = new HorizontalLayout(foto1,foto2,foto3,foto4,foto5);		
-		fotosLayout.setWidth("650");
-		fotosLayout.addStyleName("scrollable");
-		
-		FormLayout propiedadLayout = new FormLayout(titulo,ubicacion,descripcion,verFotos,fotosLayout);
-		propiedadLayout.setWidth("750");
-		propiedadLayout.setSizeFull();
-		propiedadLayout.setComponentAlignment(verFotos, Alignment.MIDDLE_CENTER);
-		propiedadLayout.setComponentAlignment(fotosLayout, Alignment.MIDDLE_CENTER);
-		
-		VerticalLayout contentLayout = new VerticalLayout(propiedadLayout, tablaSemanas, msjSemanas, tablaReservas, msjReservas);
-		
-		contentLayout.setSizeUndefined();
-		
-		//coloco el layout con las tablas dentro del panel para poder scrollear
-		panel.setContent(contentLayout);
-		panel.setHeight("600");
-		panel.setWidth("750");
-		panel.addStyleName("scrollable");
-		
-		VerticalLayout mainLayout = new VerticalLayout(cabecera, panel);
-		mainLayout.setComponentAlignment(cabecera, Alignment.MIDDLE_CENTER);		
-		mainLayout.setComponentAlignment(panel, Alignment.MIDDLE_CENTER);
-		
-		setCompositionRoot(mainLayout);
+		}		
 	}
-
 
 
 	private void cargarReservas() throws SQLException {

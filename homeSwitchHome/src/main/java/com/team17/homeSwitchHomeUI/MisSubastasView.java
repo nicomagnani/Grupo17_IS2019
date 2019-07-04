@@ -3,11 +3,8 @@ package com.team17.homeSwitchHomeUI;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import org.vaadin.grid.cellrenderers.view.BlobImageRenderer;
-
 import com.vaadin.navigator.View;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.Composite;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Label;
@@ -17,8 +14,6 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import homeSwitchHome.HomeSwitchHome;
 import homeSwitchHome.Oferta;
-import homeSwitchHome.Propiedad;
-import homeSwitchHome.Reserva;
 import homeSwitchHome.ReservaSubasta;
 
 public class MisSubastasView extends Composite implements View {

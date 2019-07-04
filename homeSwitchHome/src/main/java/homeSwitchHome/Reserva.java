@@ -3,7 +3,6 @@ package homeSwitchHome;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.ArrayList;
 
 	abstract public class Reserva {
 

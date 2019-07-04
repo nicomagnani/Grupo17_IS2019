@@ -48,7 +48,7 @@ public class ModificarTarjetaView extends Composite implements View {
 	Notification notification = new Notification("sd");
 
 	public ModificarTarjetaView(Navigator navigator, MyUI interfaz) {
-		ConnectionBD conectar = new ConnectionBD();
+		
 		usuario = HomeSwitchHome.getUsuarioActual();
 
 		campoNroTarj.setMaxLength(16);

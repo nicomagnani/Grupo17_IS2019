@@ -72,7 +72,6 @@ public class MiPerfilView extends Composite implements View {  //.necesita compo
 		mainLayout.setComponentAlignment(botonesLayout, Alignment.MIDDLE_CENTER);
 		
         setCompositionRoot(mainLayout);
-    
 	}		
 	
 
@@ -86,12 +85,7 @@ public class MiPerfilView extends Composite implements View {  //.necesita compo
 		navigator.navigateTo("modificarContraseña");
 	}
 
-
-
-
-
-
-
+	
 	private String ofuscarNro(long n) {
 		StringBuilder stb = new StringBuilder(String.valueOf(n));
 		if (stb.length() > 3) {

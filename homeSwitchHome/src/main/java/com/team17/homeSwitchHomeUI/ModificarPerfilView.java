@@ -40,8 +40,6 @@ public class ModificarPerfilView extends Composite implements View {  //.necesit
 	
 	public ModificarPerfilView(Navigator navigator, MyUI interfaz) {
 
-	ConnectionBD conectar = new ConnectionBD();		
-	   
 		usuario = HomeSwitchHome.getUsuarioActual();
 	   
 		textoEmail.setValue(usuario.getMail());
@@ -71,7 +69,9 @@ public class ModificarPerfilView extends Composite implements View {  //.necesit
 	private void modificar(MyUI interfaz) {
 		
 		ConnectionBD conectar = new ConnectionBD();
-		ArrayList<Usuario>listaUsuarios = new ArrayList<Usuario>();
+		
+		@SuppressWarnings("unused") // <- listaUsuarios se usa para conectar a la base de datos
+		ArrayList<Usuario> listaUsuarios = new ArrayList<Usuario>();
 		usuario = HomeSwitchHome.getUsuarioActual();
 		
 		try {

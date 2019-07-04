@@ -51,14 +51,11 @@ public class ResidenciasAdminView extends Composite implements View {
 	private HtmlEmail email = new HtmlEmail();
 	
 	private MyUI interfaz;
-	private Navigator navigator;
-
 	
 
 	public ResidenciasAdminView(MyUI interfaz, Navigator navigator) throws SQLException {
 		
 		this.interfaz = interfaz;
-		this.navigator = navigator;
 		
 		cabecera.addStyleName(ValoTheme.MENU_TITLE);
 		
@@ -146,9 +143,12 @@ public class ResidenciasAdminView extends Composite implements View {
 		Button verFotos = new Button("Ver Fotos");
 		Button verDetalle = new Button("Ver Detalle", e -> {
 			HomeSwitchHome.setPropiedadActual(propiedad);			
-			interfaz.vistaAdminConDetalle();
+			interfaz.vistaAdminConNuevaVista("detalleResidencia");
 		});
-		Button modificar = new Button("Modificar", e -> this.modificar(propiedad));
+		Button modificar = new Button("Modificar", e -> {
+			HomeSwitchHome.setPropiedadActual(propiedad);			
+			interfaz.vistaAdminConNuevaVista("modificarResidencia");
+		});		
 		Button eliminar = new Button("Eliminar");
 	
     	Image foto1 = new Image("Foto 1");
@@ -273,12 +273,7 @@ public class ResidenciasAdminView extends Composite implements View {
 			mostrarNotificacion("No hay reservas cargadas.", Notification.Type.HUMANIZED_MESSAGE);
 		
 	}
-	
-	
-	private void modificar(Propiedad propiedad) {
-		//TODO
-	}
-	
+		
 	
 	private void eliminar(Propiedad propiedad, FormLayout propiedadLayout) throws SQLException, EmailException {		
 		

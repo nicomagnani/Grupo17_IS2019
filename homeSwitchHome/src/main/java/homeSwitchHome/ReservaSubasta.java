@@ -4,8 +4,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-import com.google.web.bindery.autobean.shared.AutoBeanFactory.NoWrap;
-
 public class ReservaSubasta extends Reserva {
 	
 	//NOTA: si la subasta no recibio ofertas, ambas listas estarán vacías

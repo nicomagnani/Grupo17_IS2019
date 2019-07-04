@@ -98,14 +98,20 @@ public class MyUI extends UI {
     }
     
     //crea la sesión de admin  una vez que se asignó una residencia actual 
-    public void vistaAdminConDetalle() {
+    public void vistaAdminConNuevaVista(String vista) {
         
     	this.mostrarLogo();
         this.botonesAdmin();
         this.mostrarLayout();
         this.navigatorAdmin();
-        navigator.addView("detalleResidencia", new DetalleResidenciaView("admin"));
-        navigator.navigateTo("detalleResidencia");
+        if (vista.equals("detalleResidencia")) {
+        	navigator.addView("detalleResidencia", new DetalleResidenciaView("admin"));
+        	navigator.navigateTo("detalleResidencia");
+        } else
+        	if (vista.equals("modificarResidencia")) {
+        		navigator.addView("modificarResidencia", new ModificarResidenciaView(this));
+            	navigator.navigateTo("modificarResidencia");
+            }
     }
     
     private void mostrarLogo() {    	

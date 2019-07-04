@@ -520,9 +520,8 @@ public class ConnectionBD {
 			admin.setMail(rs.getString("mail"));
 			admin.setContraseña(rs.getString("contraseña"));
 			admins.add(admin);
-	     }
-		
-	return admins;
+	     }		
+		return admins;
 	}
     
 
@@ -555,9 +554,94 @@ public class ConnectionBD {
 
 		ps.executeUpdate();
 		ps.close();
-		con.close();
+	}	
+
+
+	public void modificarResidencia(Propiedad p, String titulo, String localidad) throws SQLException{
+		
+		byte[][] fotos = p.getFotos();
+		ByteArrayInputStream bais;
+		int col = 8;
+
+		String query = "UPDATE propiedad"
+				+ " SET titulo = ?,"
+				+ " descripcion = ?,"
+				+ " pais = ?,"
+				+ " provincia = ?,"
+				+ " localidad = ?,"
+				+ " domicilio = ?,"
+				+ " monto = ?,"
+				+ " foto1 = ?,"
+				+ " foto2 = ?,"
+				+ " foto3 = ?,"
+				+ " foto4 = ?,"
+				+ " foto5 = ?"
+				+ " WHERE titulo = '"+titulo+"' AND localidad = '"+localidad+"'";
+
+		ps = (PreparedStatement) con.prepareStatement(query);
+
+		ps.setString(1,p.getTitulo());
+		ps.setString(2,p.getDescripcion());
+		ps.setString(3,p.getPais());
+		ps.setString(4,p.getProvincia());
+		ps.setString(5,p.getLocalidad());
+		ps.setString(6,p.getDomicilio());
+		ps.setFloat(7,p.getMontoBase());
+
+		for (byte[] foto : fotos) {
+			if (foto != null) {
+				bais = new ByteArrayInputStream(foto);
+				ps.setBinaryStream(col, bais);
+			} else
+				ps.setNull(col, Types.BLOB);
+			col++; //incrementa fuera del if-else para asegurar que se guarde en la pos correcta
+		}
+
+		ps.executeUpdate();
+		ps.close();
+		
+		//TODO: en caso de haber reservas y/o subastas asociadas a la residencias, las modifico
+
 	}
 
+
+	public void modificarResidenciaEnSubasta(Propiedad p, String titulo, String localidad) throws SQLException{
+		
+		byte[][] fotos = p.getFotos();
+		ByteArrayInputStream bais;
+		int col = 3;
+
+		String query = "UPDATE propiedad"
+				+ " descripcion = ?,"
+				+ " monto = ?,"
+				+ " foto1 = ?,"
+				+ " foto2 = ?,"
+				+ " foto3 = ?,"
+				+ " foto4 = ?,"
+				+ " foto5 = ?"
+				+ " WHERE titulo = '"+titulo+"' AND localidad = '"+localidad+"'";
+
+		ps = (PreparedStatement) con.prepareStatement(query);
+
+		ps.setString(1,p.getDescripcion());
+		ps.setFloat(2,p.getMontoBase());
+
+		for (byte[] foto : fotos) {
+			if (foto != null) {
+				bais = new ByteArrayInputStream(foto);
+				ps.setBinaryStream(col, bais);
+			} else
+				ps.setNull(col, Types.BLOB);
+			col++; //incrementa fuera del if-else para asegurar que se guarde en la pos correcta
+		}
+		
+		ps.executeUpdate();
+		ps.close();	
+		
+		//TODO: en caso de haber reservas y/o subastas asociadas a la residencias, las modifico
+	
+	}
+	
 
     public void eliminarResidencia(Propiedad unaResidencia) throws SQLException {
     	
@@ -678,7 +762,6 @@ public class ConnectionBD {
 		
 		ps.executeUpdate();
 	}
-
 
 }
 
