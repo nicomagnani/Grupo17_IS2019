@@ -281,7 +281,7 @@ public class DetalleResidenciaView extends Composite implements View {
 			} else {				
 				tablaReservas.setItems(reservas);
 				tablaReservas.setVisible(true);
-				tablaReservas.setColumns("fechaInicio", "fechaReserva", "usuario");
+				tablaReservas.setColumns("fechaInicio", "fechaFin", "fechaReserva", "usuario");
 				
 				tablaReservas.addColumn(Reserva::getMonto,
 						new NumberRenderer(new DecimalFormat("¤#######.##")))

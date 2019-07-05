@@ -67,7 +67,10 @@ public class ReservaSubasta extends Reserva {
 	
 	@Override
 	public float getMonto() {
-		return montos.get(0);
+		if (getEstado() == EstadoDeReserva.DISPONIBLE_SUBASTA) {
+			return montos.get(0);
+		} else
+			return super.getMonto();		
 	}
 
 }
