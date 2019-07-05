@@ -35,9 +35,13 @@ public class BuscarFechaView extends Composite implements View {  //necesita com
 	private Grid<Propiedad> tabla = new Grid<>(Propiedad.class);
 	
 	ArrayList<Propiedad> propiedades = new ArrayList<>();
+
+	private MyUI interfaz;
 	
 	
-	public BuscarFechaView() {		
+	public BuscarFechaView(MyUI interfaz) {		
+		
+		this.interfaz = interfaz;
 		
 		cabecera.addStyleName(ValoTheme.MENU_TITLE);
 		
@@ -47,7 +51,7 @@ public class BuscarFechaView extends Composite implements View {  //necesita com
 				
 		campoFechaFin.setTextFieldEnabled(false);
 		campoFechaFin.setResolution(DateResolution.DAY);
-		campoFechaFin.setRangeStart(LocalDate.now().plusMonths(8));
+		campoFechaFin.setRangeStart(LocalDate.now().plusMonths(6));
 				
 		tabla.setVisible(false);
 		
@@ -111,6 +115,11 @@ public class BuscarFechaView extends Composite implements View {  //necesita com
 				
 				BlobImageRenderer<Propiedad> blobRenderer = new BlobImageRenderer<>(-1, 100);			
 				tabla.addColumn(Propiedad::getFoto1, blobRenderer).setCaption("Foto");
+				
+				tabla.addItemClickListener( event -> {
+					HomeSwitchHome.setPropiedadActual(event.getItem());
+					interfaz.vistaUsuarioConNuevaVista("detalleResidenciaPorFechas");
+				});
 			}
 		} else {
 			tabla.setVisible(false);

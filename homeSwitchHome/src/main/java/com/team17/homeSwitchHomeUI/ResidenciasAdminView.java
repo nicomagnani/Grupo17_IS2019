@@ -69,7 +69,7 @@ public class ResidenciasAdminView extends Composite implements View {
 		//coloco el layout con las propiedades dentro del panel para poder scrollear
 		panel.setContent(propiedadesLayout);
 		panel.setHeight("600");
-		panel.setWidth("550");
+		panel.setWidth("750");
 		panel.addStyleName("scrollable");
 
 		botonSubastar.addClickListener(e -> {
@@ -205,14 +205,12 @@ public class ResidenciasAdminView extends Composite implements View {
     	HorizontalLayout fotosLayout = new HorizontalLayout(foto1,foto2,foto3,foto4,foto5);
     	fotosLayout.setWidth("650");
     	fotosLayout.addStyleName("scrollable");
-
-		Label separador = new Label("____________________________________________________________________");
 		
-		FormLayout propiedadLayout = new FormLayout(titulo,ubicacion,descripcion,montoBase,botonesLayout,fotosLayout,separador);
+		FormLayout propiedadLayout = new FormLayout(titulo,ubicacion,descripcion,montoBase,botonesLayout,fotosLayout);
 		propiedadLayout.setWidth("500");
 		propiedadLayout.setSizeFull();
 		propiedadLayout.setComponentAlignment(fotosLayout, Alignment.MIDDLE_CENTER);
-		propiedadLayout.setComponentAlignment(separador, Alignment.MIDDLE_CENTER);
+		propiedadLayout.addStyleName("layout-with-border");
 		
 		propiedadesLayout.addComponent(propiedadLayout);
 		propiedadesLayout.setComponentAlignment(propiedadLayout, Alignment.MIDDLE_CENTER);		

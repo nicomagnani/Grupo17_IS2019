@@ -19,6 +19,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.renderers.NumberRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 
+import homeSwitchHome.HomeSwitchHome;
 import homeSwitchHome.Propiedad;
 
 
@@ -31,9 +32,13 @@ public class BuscarLugarView extends Composite implements View {  //.necesita co
 	Grid<Propiedad> tabla = new Grid<>(Propiedad.class);
 
 	ArrayList<Propiedad> propiedades;
+
+	private MyUI interfaz;
 	
 	
-	public BuscarLugarView() {
+	public BuscarLugarView(MyUI interfaz) {
+		
+		this.interfaz = interfaz;
 		
 		cabecera.addStyleName(ValoTheme.MENU_TITLE);		
 		
@@ -92,6 +97,11 @@ public class BuscarLugarView extends Composite implements View {  //.necesita co
 				
 				BlobImageRenderer<Propiedad> blobRenderer = new BlobImageRenderer<>(-1, 100);			
 				tabla.addColumn(Propiedad::getFoto1, blobRenderer).setCaption("Foto");
+				
+				tabla.addItemClickListener( event -> {
+					HomeSwitchHome.setPropiedadActual(event.getItem());
+					interfaz.vistaUsuarioConNuevaVista("detalleResidenciaNormal");
+				});
 			}
 		} else {
 			tabla.setVisible(false);

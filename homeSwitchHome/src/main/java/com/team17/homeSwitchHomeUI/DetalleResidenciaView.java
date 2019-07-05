@@ -30,7 +30,11 @@ import homeSwitchHome.ReservaSubasta;
 
 public class DetalleResidenciaView extends Composite implements View {
 	
-	private Label cabecera = new Label("Detalle de residencia");
+	private Label cabeceraPrincipal = new Label("Detalle de residencia");
+	private Label cabeceraDatos = new Label("Datos de residencia");
+	private Label cabeceraSemanas = new Label("Semanas");
+	private Label cabeceraReservas = new Label("Reservas");
+	
 	private Label msjSemanas = new Label("Esta residencia no posee semanas disponibles.");
 	private Label msjReservas = new Label("Esta residencia no posee reservas realizadas.");
 	private Grid<Reserva> tablaSemanas = new Grid<>(Reserva.class);
@@ -60,7 +64,10 @@ public class DetalleResidenciaView extends Composite implements View {
 	
 	public DetalleResidenciaView(String tipo) {		
 		
-		cabecera.addStyleName(ValoTheme.MENU_TITLE);
+		cabeceraPrincipal.addStyleName(ValoTheme.MENU_TITLE);
+		cabeceraDatos.addStyleName(ValoTheme.MENU_TITLE);
+		cabeceraSemanas.addStyleName(ValoTheme.MENU_TITLE);
+		cabeceraReservas.addStyleName(ValoTheme.MENU_TITLE);		
 		
 		this.tipo = tipo;
 		this.propiedad = HomeSwitchHome.getPropiedadActual();
@@ -72,31 +79,35 @@ public class DetalleResidenciaView extends Composite implements View {
 		msjSemanas.setVisible(false);
 		msjReservas.setVisible(false);
 		tablaSemanas.setVisible(false);
-		tablaReservas.setVisible(false);
-
-		try {
-			this.cargarReservas();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
+		tablaReservas.setVisible(false);		
 				
 		HorizontalLayout fotosLayout = new HorizontalLayout(foto1,foto2,foto3,foto4,foto5);		
 		fotosLayout.setWidth("650");
 		fotosLayout.addStyleName("scrollable");
 		
-		FormLayout propiedadLayout = new FormLayout(titulo,ubicacion,descripcion,verFotos,fotosLayout);
+		FormLayout propiedadLayout = new FormLayout(cabeceraDatos,titulo,ubicacion,descripcion,verFotos,fotosLayout);
 		propiedadLayout.setWidth("750");
 		propiedadLayout.setSizeFull();
 		propiedadLayout.setComponentAlignment(verFotos, Alignment.MIDDLE_CENTER);
 		propiedadLayout.setComponentAlignment(fotosLayout, Alignment.MIDDLE_CENTER);
+		propiedadLayout.addStyleName("layout-with-border");
 		
-		VerticalLayout contentLayout = new VerticalLayout(propiedadLayout, tablaSemanas, msjSemanas, tablaReservas, msjReservas);
+		VerticalLayout semanasLayout = new VerticalLayout (cabeceraSemanas, tablaSemanas, msjSemanas);
+		semanasLayout.setComponentAlignment(tablaSemanas, Alignment.MIDDLE_CENTER);
+		semanasLayout.setComponentAlignment(msjSemanas, Alignment.MIDDLE_CENTER);
+		semanasLayout.addStyleName("layout-with-border");		
+		
+		VerticalLayout reservasLayout = new VerticalLayout (cabeceraReservas, tablaReservas, msjReservas);
+		reservasLayout.setComponentAlignment(tablaReservas, Alignment.MIDDLE_CENTER);
+		reservasLayout.setComponentAlignment(msjReservas, Alignment.MIDDLE_CENTER);		
+		reservasLayout.addStyleName("layout-with-border");
+		
+		VerticalLayout contentLayout = new VerticalLayout(propiedadLayout, semanasLayout, reservasLayout);
 		contentLayout.setComponentAlignment(propiedadLayout, Alignment.MIDDLE_CENTER);
-		contentLayout.setComponentAlignment(tablaSemanas, Alignment.MIDDLE_CENTER);
-		contentLayout.setComponentAlignment(msjSemanas, Alignment.MIDDLE_CENTER);
-		contentLayout.setComponentAlignment(tablaReservas, Alignment.MIDDLE_CENTER);
-		contentLayout.setComponentAlignment(msjReservas, Alignment.MIDDLE_CENTER);
+		contentLayout.setComponentAlignment(semanasLayout, Alignment.MIDDLE_CENTER);
+		contentLayout.setComponentAlignment(reservasLayout, Alignment.MIDDLE_CENTER);
+		reservasLayout.setVisible(false);
+		
 		contentLayout.setSizeUndefined();
 		
 		//coloco el layout con los datos de la propiedad y las tablas dentro del panel para poder scrollear
@@ -105,11 +116,18 @@ public class DetalleResidenciaView extends Composite implements View {
 		panel.setWidth("750");
 		panel.addStyleName("scrollable");
 		
-		VerticalLayout mainLayout = new VerticalLayout(cabecera, panel);
-		mainLayout.setComponentAlignment(cabecera, Alignment.MIDDLE_CENTER);
+		VerticalLayout mainLayout = new VerticalLayout(cabeceraPrincipal, panel);
+		mainLayout.setComponentAlignment(cabeceraPrincipal, Alignment.MIDDLE_CENTER);
 		mainLayout.setComponentAlignment(panel, Alignment.MIDDLE_CENTER);
 		
 		setCompositionRoot(mainLayout);
+		
+
+		try {
+			this.cargarReservas(reservasLayout);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 
@@ -117,19 +135,19 @@ public class DetalleResidenciaView extends Composite implements View {
 		
 		//configura la cabecera dependiendo de donde proviene
 		if (tipo.equals("admin")) {
-			cabecera.setValue("Detalle de residencia (administrador)");
+			cabeceraPrincipal.setValue("Detalle de residencia (administrador)");
 			//
 		} else
 			if (tipo.equals("usuario")) {
-				cabecera.setValue("Detalle de residencia (usuario)");
+				cabeceraPrincipal.setValue("Detalle de residencia (usuario)");
 				//	
 			} else
 				if (tipo.equals("busqueda")) {
-					cabecera.setValue("Detalle de residencia (búsqueda por fecha)");
+					cabeceraPrincipal.setValue("Detalle de residencia (búsqueda por fecha)");
 					//	
 				}
 		
-		titulo = new Label("<p><span style=\"text-align: left; font-weight: bold; font-size: 100%;\">Título:</span> <span style=\"font-size: 100%;\">"
+		titulo = new Label("<p><span style=\"text-align: left; font-weight: bold; font-size: 110%;\">Título:</span> <span style=\"font-size: 110%;\">"
 				+propiedad.getTitulo()+"</span></p>", ContentMode.HTML);
 		ubicacion = new Label("<span style=\"font-weight: bold;\">Ubicación:</span> " + propiedad.getPais() + ", " +
 				propiedad.getProvincia() + ", " + propiedad.getLocalidad(), ContentMode.HTML);			
@@ -180,7 +198,7 @@ public class DetalleResidenciaView extends Composite implements View {
 	}
 
 
-	private void cargarReservas() throws SQLException {
+	private void cargarReservas(VerticalLayout reservasLayout) throws SQLException {
 
 		ReservaSubasta r2;
 		
@@ -234,7 +252,7 @@ public class DetalleResidenciaView extends Composite implements View {
 		} else {
 			tablaSemanas.setItems(resSinReservar);
 			tablaSemanas.setVisible(true);
-			tablaSemanas.setColumns("fechaInicio", "fechaFin");
+			tablaSemanas.setColumns("fechaFin", "fechaReserva");
 			
 			tablaSemanas.addColumn(Reserva::getEstadoComoString)
 			.setCaption("Estado (Tipo)");
@@ -255,13 +273,15 @@ public class DetalleResidenciaView extends Composite implements View {
 				}
 			}
 			
+			reservasLayout.setVisible(true);
+			
 			//habilito y configuro la tabla de reservas (admin)
 			if (resReservadas.isEmpty()) {			
 				msjReservas.setVisible(true);
 			} else {				
 				tablaReservas.setItems(reservas);
 				tablaReservas.setVisible(true);
-				tablaReservas.setColumns("fechaInicio", "usuario");
+				tablaReservas.setColumns("fechaInicio", "fechaReserva", "usuario");
 				
 				tablaReservas.addColumn(Reserva::getMonto,
 						new NumberRenderer(new DecimalFormat("¤#######.##")))

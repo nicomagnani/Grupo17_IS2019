@@ -88,6 +88,11 @@ import java.time.LocalDate;
 		return fechaInicio.plusYears(1);
 	}
 	
+	//la fecha en que comienza a reservarse la residencia
+	public LocalDate getFechaReserva() {
+		return this.getFechasTiempoCompartido()[0];
+	}
+	
 	//el rango de fechas en que se hace la reserva (de lunes a domingo)
 	public LocalDate[] getFechasTiempoCompartido() {
 		

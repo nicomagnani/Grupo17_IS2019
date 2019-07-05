@@ -56,7 +56,7 @@ public class ReservaSubasta extends Reserva {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
 		
 		if ( LocalDate.now().isBefore(this.getFechaFinSubasta()) ) {
-			return this.getFechaInicioSubasta().plusDays(3).atStartOfDay().format(formatter);
+			return this.getFechaInicioSubasta().plusDays(3).atStartOfDay().format(formatter) + " hs.";
 		} else
 			return "Finalizada";
 	}

@@ -48,6 +48,34 @@ public class ConnectionBD {
 
 	}
 
+	
+	public Propiedad buscarPropiedad(String titulo, String localidad) throws SQLException {
+
+		Propiedad propiedad = new Propiedad();
+		
+		String query = "SELECT * FROM propiedad WHERE titulo = '"+titulo+"' AND localidad = '"+localidad+"'";
+		ResultSet rs = stmt.executeQuery(query);
+		
+		if (rs.next()) {
+			propiedad.setTitulo(rs.getString("titulo"));
+			propiedad.setPais(rs.getString("pais"));
+			propiedad.setProvincia(rs.getString("provincia"));
+			propiedad.setLocalidad(rs.getString("localidad"));
+			propiedad.setDomicilio(rs.getString("domicilio"));
+			propiedad.setDescripcion(rs.getString("descripcion"));
+			propiedad.setMontoBase(rs.getFloat("monto"));
+			
+			propiedad.setFoto1(rs.getBytes("foto1"));
+			propiedad.setFoto2(rs.getBytes("foto2"));
+			propiedad.setFoto3(rs.getBytes("foto3"));
+			propiedad.setFoto4(rs.getBytes("foto4"));
+			propiedad.setFoto5(rs.getBytes("foto5"));
+		}
+		
+		return propiedad;
+	}	
+	
+	
 	public ArrayList<Propiedad> listaPropiedadesSinFotos() throws SQLException {
 
 		ArrayList<Propiedad> propiedades = new ArrayList<Propiedad>();
@@ -61,8 +89,8 @@ public class ConnectionBD {
 			propiedad.setProvincia(rs.getString("provincia"));
 			propiedad.setLocalidad(rs.getString("localidad"));
 			propiedad.setDomicilio(rs.getString("domicilio"));
-			propiedad.setDescripción(rs.getString("descripcion"));
-			propiedad.setMontoBase(rs.getInt("monto"));
+			propiedad.setDescripcion(rs.getString("descripcion"));
+			propiedad.setMontoBase(rs.getFloat("monto"));
 			propiedades.add(propiedad);
 	      }
 		return propiedades;
@@ -85,8 +113,8 @@ public class ConnectionBD {
 			propiedad.setProvincia(rs.getString("provincia"));
 			propiedad.setLocalidad(rs.getString("localidad"));
 			propiedad.setDomicilio(rs.getString("domicilio"));
-			propiedad.setDescripción(rs.getString("descripcion"));
-			propiedad.setMontoBase(rs.getInt("monto"));
+			propiedad.setDescripcion(rs.getString("descripcion"));
+			propiedad.setMontoBase(rs.getFloat("monto"));
 			
 			propiedad.setFoto1(rs.getBytes("foto1"));
 			propiedad.setFoto2(rs.getBytes("foto2"));
@@ -139,8 +167,8 @@ public class ConnectionBD {
 			propiedad.setProvincia(rs.getString("provincia"));
 			propiedad.setLocalidad(rs.getString("localidad"));
 			propiedad.setDomicilio(rs.getString("domicilio"));
-			propiedad.setDescripción(rs.getString("descripcion"));
-			propiedad.setMontoBase(rs.getInt("monto"));
+			propiedad.setDescripcion(rs.getString("descripcion"));
+			propiedad.setMontoBase(rs.getFloat("monto"));
 			
 			propiedad.setFoto1(rs.getBytes("foto1"));				
 
@@ -176,8 +204,8 @@ public class ConnectionBD {
 			propiedad.setProvincia(rs.getString("provincia"));
 			propiedad.setLocalidad(rs.getString("localidad"));
 			propiedad.setDomicilio(rs.getString("domicilio"));
-			propiedad.setDescripción(rs.getString("descripcion"));
-			propiedad.setMontoBase(rs.getInt("monto"));
+			propiedad.setDescripcion(rs.getString("descripcion"));
+			propiedad.setMontoBase(rs.getFloat("monto"));
 			
 			propiedad.setFoto1(rs.getBytes("foto1"));
 			
@@ -612,7 +640,7 @@ public class ConnectionBD {
 		int col = 3;
 
 		String query = "UPDATE propiedad"
-				+ " descripcion = ?,"
+				+ " SET descripcion = ?,"
 				+ " monto = ?,"
 				+ " foto1 = ?,"
 				+ " foto2 = ?,"

@@ -35,7 +35,7 @@ import homeSwitchHome.UsuarioAdministrador;
 import homeSwitchHome.UsuarioComun;
 
 
-public class RegistrarView extends Composite implements View {
+public class RegistrarUsuarioView extends Composite implements View {
 	
 	Label cabecera = new Label("Registrar usuario");
 	Label labelParte1 = new Label("<span style=\"text-align: left; font-weight: bold; text-decoration: underline; font-size: 120%;\">Datos generales</span>", ContentMode.HTML);
@@ -59,7 +59,7 @@ public class RegistrarView extends Composite implements View {
 	Notification notification = new Notification("asd");	
 	
 	
-	public RegistrarView(MyUI interfaz) {
+	public RegistrarUsuarioView(MyUI interfaz) {
 		
 		cabecera.addStyleName(ValoTheme.MENU_TITLE);
 				

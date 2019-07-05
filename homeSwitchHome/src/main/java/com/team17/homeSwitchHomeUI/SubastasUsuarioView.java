@@ -1,7 +1,6 @@
 package com.team17.homeSwitchHomeUI;
 
 import java.sql.SQLException;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import com.vaadin.navigator.View;
@@ -17,7 +16,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import homeSwitchHome.ReservaSubasta;
 
-public class SubastasUsuarioView extends Composite implements View {  //.necesita composite y view para funcionar correctamente
+public class SubastasUsuarioView extends Composite implements View { // necesita composite y view para funcionar correctamente
 
 	private ArrayList<ReservaSubasta> subastas;
 	private ConnectionBD conexion = new ConnectionBD();
@@ -28,6 +27,7 @@ public class SubastasUsuarioView extends Composite implements View {  //.necesit
 	private VerticalLayout subastasLayout = new VerticalLayout();
 	private Panel panel = new Panel();
 	
+	
 	public SubastasUsuarioView() {
 		cabecera.addStyleName(ValoTheme.MENU_TITLE);
 		panel.setVisible(false);
@@ -36,11 +36,11 @@ public class SubastasUsuarioView extends Composite implements View {  //.necesit
 		subastasLayout = new VerticalLayout();
 		subastasLayout.setSizeUndefined();
 		
-		//coloco el layout con las propiedades dentro del panel para poder scrollear
+		//coloco el layout con las propiedades dentro del panel para poder scrollear	
 		panel.setContent(subastasLayout);
-		panel.setHeight("750");
-		panel.setWidth("550");
-		panel.addStyleName("scrollable");	
+		panel.setHeight("600");
+		panel.setWidth("750");
+		panel.addStyleName("scrollable");
 		
 		this.cargarSubastas();
 
@@ -52,6 +52,7 @@ public class SubastasUsuarioView extends Composite implements View {  //.necesit
         setCompositionRoot(mainLayout);
     }
 	
+	
 	private void cargarSubastas() {
 		
 		try {
@@ -61,43 +62,48 @@ public class SubastasUsuarioView extends Composite implements View {  //.necesit
 		}
 		
 		if (!subastas.isEmpty()) {
-			panel.setVisible(true);
-			for (int i=0; i < subastas.size(); i++) {
-				this.añadirSubastas(subastas.get(i));
+			panel.setVisible(true);			
+			for (ReservaSubasta subasta : subastas) {				
+				//muestra solo subastas en curso
+				if (!subasta.getFechaFinSubastaString().equals("Finalizada"))				
+					this.añadirSubasta(subasta);
 			}
-		} else {
-			msjResultado.setVisible(true);
-		}
-		
+		} else
+			msjResultado.setVisible(true);		
 	}
+	
 
-	private void añadirSubastas(ReservaSubasta unaSubasta) {
+	private void añadirSubasta(ReservaSubasta unaSubasta) {
 		
 		// para mostrar tiempo restante
 		//long tiempo1 = Duration.between(LocalDateTime.now(), unaSubasta.getFechaInicioSubasta().plusDays(3).atStartOfDay()).toMillis();
 		//String tiempo2 = DurationFormatUtils.formatDuration(tiempo1, "H horas, mm minutos", true);
-		
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
-		String fechaFinSubasta = unaSubasta.getFechaInicioSubasta().plusDays(3).atStartOfDay().format(formatter);
-		
+				
 		Label titulo = new Label("<p><span style=\"text-align: left; font-weight: bold; font-size: 120%;\">Título:</span>"
 				+ " <span style=\"font-size: 120%;\">"+unaSubasta.getPropiedad()+"</span></p>", ContentMode.HTML);
 		Label localidad = new Label("<span style=\"font-weight: bold;\">Localidad:</span> " + unaSubasta.getLocalidad(), ContentMode.HTML);	
-		Label tiempoRestante = new Label("<span style=\"font-weight: bold;\">Finaliza:</span> " + fechaFinSubasta + " hs.", ContentMode.HTML);	
+		Label tiempoRestante = new Label("<span style=\"font-weight: bold;\">Finaliza:</span> " + unaSubasta.getFechaFinSubastaString(), ContentMode.HTML);	
 		Label monto = new Label("<span style=\"font-weight: bold;\">Monto actual:</span> " + unaSubasta.getMontos().get(0), ContentMode.HTML);
 		
-		Button pujar = new Button("Pujar", e -> this.pujar());
-		
-		Label separador = MyUI.separador();
-		
-		FormLayout subastaLayout = new FormLayout(titulo,localidad,tiempoRestante,monto,pujar,separador);
-		subastaLayout.setWidth("600");
-		subastaLayout.setSizeFull();
-		subastaLayout.setComponentAlignment(separador, Alignment.MIDDLE_CENTER);		
+		Button pujar = new Button("Pujar", e -> this.pujar());		
+				
+		FormLayout subastaLayout = new FormLayout(titulo,localidad,tiempoRestante,monto,pujar);
+		subastaLayout.setSizeUndefined();
+		subastaLayout.setWidth("500");
+		subastaLayout.addStyleName("layout-with-border");
+		subastaLayout.setComponentAlignment(titulo, Alignment.MIDDLE_CENTER);
+		subastaLayout.setComponentAlignment(localidad, Alignment.MIDDLE_CENTER);
+		subastaLayout.setComponentAlignment(tiempoRestante, Alignment.MIDDLE_CENTER);
+		subastaLayout.setComponentAlignment(monto, Alignment.MIDDLE_CENTER);
+		subastaLayout.setComponentAlignment(pujar, Alignment.MIDDLE_CENTER);
 		
 		subastasLayout.addComponent(subastaLayout);
-		subastasLayout.setComponentAlignment(subastaLayout, Alignment.MIDDLE_CENTER);		
+		subastasLayout.setComponentAlignment(subastaLayout, Alignment.MIDDLE_CENTER);
 	}
 	
-	private void pujar() {} //TODO
+	
+	private void pujar() {
+		//TODO
+	}
+	
 }

@@ -32,8 +32,13 @@ public class ResidenciasUsuarioView extends Composite implements View {
 	private Grid<Propiedad> tabla = new Grid<>(Propiedad.class);
 	private ArrayList<Propiedad> propiedades;
 	private ArrayList<Propiedad> propiedades2 = new ArrayList<>();
+	
+	private MyUI interfaz;
+	
 		
-	public ResidenciasUsuarioView(boolean mostrarCabecera) throws SQLException {
+	public ResidenciasUsuarioView(boolean mostrarCabecera, MyUI interfaz) throws SQLException {
+		
+		this.interfaz = interfaz;
 		
 		cabecera.addStyleName(ValoTheme.MENU_TITLE);
 		
@@ -45,8 +50,7 @@ public class ResidenciasUsuarioView extends Composite implements View {
 				u.getApellido()+"</strong>.</p>");
 		msjBienvenida.setContentMode(ContentMode.HTML);
 		msjBienvenida.setVisible(mostrarCabecera);
-		cabecera.setVisible(!mostrarCabecera);
-		
+		cabecera.setVisible(!mostrarCabecera);		
 		
 		msjResultado.setVisible(false);
 		
@@ -98,6 +102,12 @@ public class ResidenciasUsuarioView extends Composite implements View {
 			
 			BlobImageRenderer<Propiedad> blobRenderer5 = new BlobImageRenderer<>(-1, 100);			
 			tabla.addColumn(Propiedad::getFoto5, blobRenderer5).setCaption("Foto 5");
+			
+			tabla.addItemClickListener( event -> {
+				HomeSwitchHome.setPropiedadActual(event.getItem());
+				interfaz.vistaUsuarioConNuevaVista("detalleResidenciaNormal");
+			});
+			
 		}
 		
 		VerticalLayout mainLayout = new VerticalLayout(cabecera, msjBienvenida, msjResultado, tabla);

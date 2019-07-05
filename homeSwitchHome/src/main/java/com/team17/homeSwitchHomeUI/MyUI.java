@@ -88,6 +88,23 @@ public class MyUI extends UI {
         navigator.navigateTo(unaVista);
     }
     
+    //crea la sesión de usuario y agrega nuevas vistas una vez que se asignó una residencia actual
+    public void vistaUsuarioConNuevaVista(String vista) {
+        
+    	this.mostrarLogo();
+        this.botonesUsuario();
+        this.mostrarLayout();
+        this.navigatorUsuario();
+        if (vista.equals("detalleResidenciaNormal")) {
+        	navigator.addView("detalleResidenciaNormal", new DetalleResidenciaView("usuario"));
+        	navigator.navigateTo("detalleResidenciaNormal");
+        } else
+        	if (vista.equals("detalleResidenciaPorFechas")) {
+        		navigator.addView("detalleResidenciaPorFechas", new DetalleResidenciaView("busqueda"));
+            	navigator.navigateTo("detalleResidenciaPorFechas");
+            }
+    }
+    
     public void vistaAdmin(String unaVista) {
         
     	this.mostrarLogo();
@@ -97,7 +114,7 @@ public class MyUI extends UI {
         navigator.navigateTo(unaVista);
     }
     
-    //crea la sesión de admin  una vez que se asignó una residencia actual 
+    //crea la sesión de admin y agrega nuevas vistas una vez que se asignó una residencia actual
     public void vistaAdminConNuevaVista(String vista) {
         
     	this.mostrarLogo();
@@ -129,7 +146,7 @@ public class MyUI extends UI {
     private void mostrarLayout() {
         mainLayout = new HorizontalLayout(menu, viewContainer);
         mainLayout.setSizeFull();
-        mainLayout.setExpandRatio(viewContainer, 2);
+        mainLayout.setExpandRatio(viewContainer, 3);
         mainLayout.setExpandRatio(menu, 1);
         setContent(mainLayout);
 
@@ -174,17 +191,15 @@ public class MyUI extends UI {
     	navigator = new Navigator(this, viewContainer);
         
     	try {
-			navigator.addView("", new ResidenciasUsuarioView(true));
-			navigator.addView("residencias", new ResidenciasUsuarioView(false));
+			navigator.addView("", new ResidenciasUsuarioView(true,this));
+			navigator.addView("residencias", new ResidenciasUsuarioView(false,this));
 		} catch (SQLException e1) {
 			e1.printStackTrace();
-		}
-//    	navigator.addView("detalleResidenciaUsuario", new DetalleResidenciaView("usuario"));
-//    	navigator.addView("detalleResidenciaBusqueda", new DetalleResidenciaView("busqueda"));    	
+		}	
     	navigator.addView("subastas", new SubastasUsuarioView());
     	navigator.addView("misSubastas", new MisSubastasView());
-        navigator.addView("buscarFecha", new BuscarFechaView());
-        navigator.addView("buscarLugar", new BuscarLugarView());
+        navigator.addView("buscarFecha", new BuscarFechaView(this));
+        navigator.addView("buscarLugar", new BuscarLugarView(this));
         navigator.addView("miPerfil", new MiPerfilView(navigator));
         navigator.addView("modificarPerfil", new ModificarPerfilView(navigator,this));
         navigator.addView("modificarTarjeta", new ModificarTarjetaView(navigator,this));
@@ -224,7 +239,6 @@ public class MyUI extends UI {
         try {
 			navigator.addView("residenciasAdmin", new ResidenciasAdminView(this,navigator));
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         navigator.addView("subastasAdmin", new SubastasAdminView());
@@ -260,25 +274,21 @@ public class MyUI extends UI {
     	
     	try {
 			navigator.addView("", new ResidenciasVisitanteView());
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	try {
 			navigator.addView("residenciasVisitante", new ResidenciasVisitanteView());
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         navigator.addView("iniciarSesion", new IniciarSesionView(this));
-        navigator.addView("registrar", new RegistrarView(this));
+        navigator.addView("registrar", new RegistrarUsuarioView(this));
         navigator.addView("contactar", new ContactarView());    	
         navigator.addView("verFaq", new VerFaqView());    	
     }  
     
-    public static Label separador() {
-    	return new Label("____________________________________________________________________");
-    }
+
+    //reemplazado por estilo de bordes
+//    public static Label separador() {
+//    	return new Label("____________________________________________________________________");
+//    }
 
     public static DetalleResidenciaView getVistaDetalle() {
 		return vistaDetalle;

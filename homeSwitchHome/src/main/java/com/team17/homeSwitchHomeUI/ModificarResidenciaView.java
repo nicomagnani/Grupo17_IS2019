@@ -12,8 +12,8 @@ import org.vaadin.easyuploads.UploadField;
 import org.vaadin.ui.NumberField;
 
 import com.vaadin.data.Binder;
-import com.vaadin.data.ValidationException;
 import com.vaadin.data.converter.StringToFloatConverter;
+import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.navigator.View;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
@@ -52,7 +52,7 @@ public class ModificarResidenciaView extends Composite implements View {
 	private Notification msjResultado = new Notification(" ");
 
 	//el binder asocia los campos del formulario con los de un objeto Propiedad
-	private Binder<Propiedad> binder = new Binder<>(Propiedad.class);
+//	private Binder<Propiedad> binder = new Binder<>(Propiedad.class);
 
 	private Label labelTipoCarga = new Label("Seleccionar tipo de carga de imágenes");
 	private RadioButtonGroup<String> tipoCargaRadioButton = new RadioButtonGroup<>();
@@ -61,11 +61,11 @@ public class ModificarResidenciaView extends Composite implements View {
 	private Button agregarFotoButton = new Button("Agregar foto");
 	private Button mostrarFotosFinalesButton = new Button("Ver fotos agregadas");
 	private Label msjFoto = new Label();
-	private Image imageFinal1 = new Image("Foto 1");
-	private Image imageFinal2 = new Image("Foto 2");
-	private Image imageFinal3 = new Image("Foto 3");
-	private Image imageFinal4 = new Image("Foto 4");
-	private Image imageFinal5 = new Image("Foto 5");
+	private Image image1 = new Image("Foto 1");
+	private Image image2 = new Image("Foto 2");
+	private Image image3 = new Image("Foto 3");
+	private Image image4 = new Image("Foto 4");
+	private Image image5 = new Image("Foto 5");
 
 	private FormLayout formulario;
 	private HorizontalLayout verFotosLayout;
@@ -73,11 +73,11 @@ public class ModificarResidenciaView extends Composite implements View {
 	private VerticalLayout mainLayout;
 
 	private Propiedad propiedad;
+	private Propiedad propiedad2;
 	private ArrayList<Reserva> reservas = new ArrayList<Reserva>();
 	private String op;
 	private byte[][] fotos = new byte[5][]; // las 5 fotos
 	private byte[] preFoto;
-	private int tot = 0;
 	private boolean enSubasta;
 
 	private ConnectionBD conexion;
@@ -90,7 +90,7 @@ public class ModificarResidenciaView extends Composite implements View {
 		propiedad = HomeSwitchHome.getPropiedadActual();
 		enSubasta = this.seEncuentraEnSubasta();
 
-		this.inicializarBinder();
+//		this.inicializarBinder();
 		this.inicializarComponentes();
 		this.inicializarLayouts();
 
@@ -116,32 +116,41 @@ public class ModificarResidenciaView extends Composite implements View {
 		return false;
 	}
 
-
-	private void inicializarBinder() {
-
-		binder.readBean(propiedad);
-		binder.bind(descripcion, Propiedad::getDescripcion, Propiedad::setDescripcion);
-		binder.forField(monto)
-				.withConverter(new StringToFloatConverter(""))
-				.bind(Propiedad::getMontoBase, Propiedad::setMontoBase);
-
-		if (!enSubasta) {
-			binder.bind(titulo, Propiedad::getTitulo, Propiedad::setTitulo);
-			binder.bind(pais, Propiedad::getPais, Propiedad::setPais);
-			binder.bind(provincia, Propiedad::getProvincia, Propiedad::setProvincia);
-			binder.bind(localidad, Propiedad::getLocalidad, Propiedad::setLocalidad);
-			binder.bind(domicilio, Propiedad::getDomicilio, Propiedad::setDomicilio);
-		}
-	}
+//	private void inicializarBinder() {
+//
+//		binder.readBean(propiedad);
+//		binder.bind(descripcion, Propiedad::getDescripcion, Propiedad::setDescripcion);
+//		binder.forField(monto)
+//				.withConverter(new StringToFloatConverter(""))
+//				.bind(Propiedad::getMontoBase, Propiedad::setMontoBase);
+//
+//		if (!enSubasta) {
+//			binder.bind(titulo, Propiedad::getTitulo, Propiedad::setTitulo);
+//			binder.bind(pais, Propiedad::getPais, Propiedad::setPais);
+//			binder.bind(provincia, Propiedad::getProvincia, Propiedad::setProvincia);
+//			binder.bind(localidad, Propiedad::getLocalidad, Propiedad::setLocalidad);
+//			binder.bind(domicilio, Propiedad::getDomicilio, Propiedad::setDomicilio);
+//		}
+//	}
 
 
 	private void inicializarComponentes() {
 
 		cabecera.addStyleName(ValoTheme.MENU_TITLE);
 
-		descripcion.setValue(propiedad.getDescripción());
+		descripcion.setValue(propiedad.getDescripcion());
 		monto.setValue(String.valueOf(propiedad.getMontoBase()));
+		monto.setDecimalPrecision(2);
+		monto.setDecimalSeparator('.');
+		monto.setGroupingUsed(false);
+		
+		new Binder<Propiedad>().forField(monto)
+			    .withValidator(new RegexpValidator("", "[-+]?[0-9]*\\.?[0-9]+"))
+			    .withConverter(new StringToFloatConverter(""))
+			    .bind(Propiedad::getMontoBase, Propiedad::setMontoBase);
 
+		
+		
 		if (!enSubasta) {
 			cabecera.setValue("Modificar residencia (sin subasta activa)");
 			titulo.setValue(propiedad.getTitulo());
@@ -188,16 +197,16 @@ public class ModificarResidenciaView extends Composite implements View {
 		//configuro el boton que muestra las fotos cargadas
 		mostrarFotosFinalesButton.addClickListener( e -> mostrarFotosFinales() );
 
-		imageFinal1.setWidth(100, Unit.PIXELS);
-		imageFinal2.setWidth(100, Unit.PIXELS);
-		imageFinal3.setWidth(100, Unit.PIXELS);
-		imageFinal4.setWidth(100, Unit.PIXELS);
-		imageFinal5.setWidth(100, Unit.PIXELS);
-		imageFinal1.setVisible(false);
-		imageFinal2.setVisible(false);
-		imageFinal3.setVisible(false);
-		imageFinal4.setVisible(false);
-		imageFinal5.setVisible(false);
+		image1.setWidth(100, Unit.PIXELS);
+		image2.setWidth(100, Unit.PIXELS);
+		image3.setWidth(100, Unit.PIXELS);
+		image4.setWidth(100, Unit.PIXELS);
+		image5.setWidth(100, Unit.PIXELS);
+		image1.setVisible(false);
+		image2.setVisible(false);
+		image3.setVisible(false);
+		image4.setVisible(false);
+		image5.setVisible(false);
 		fotos[0] = propiedad.getFoto1();
 		fotos[1] = propiedad.getFoto2();
 		fotos[2] = propiedad.getFoto3();
@@ -222,7 +231,7 @@ public class ModificarResidenciaView extends Composite implements View {
 				monto, labelTipoCarga, tipoCargaRadioButton, uploadField, url, msjFoto,
 				agregarFotoButton, mostrarFotosFinalesButton);
 
-		verFotosLayout = new HorizontalLayout(imageFinal1, imageFinal2, imageFinal3, imageFinal4, imageFinal5);
+		verFotosLayout = new HorizontalLayout(image1, image2, image3, image4, image5);
 		verFotosLayout.setWidth("650");
 		verFotosLayout.addStyleName("scrollable");
 		formulario.addComponent(verFotosLayout);
@@ -241,30 +250,56 @@ public class ModificarResidenciaView extends Composite implements View {
 
 	private void mostrarFotosFinales() {
 
-		imageFinal1.setSource(null);
-		imageFinal2.setSource(null);
-		imageFinal3.setSource(null);
-		imageFinal4.setSource(null);
-		imageFinal5.setSource(null);
-		if (fotos[0] != null)
-			mostrarFotoCargada(fotos[0],imageFinal1);
-		if (fotos[1] != null)
-			mostrarFotoCargada(fotos[1],imageFinal2);
-		if (fotos[2] != null)
-			mostrarFotoCargada(fotos[2],imageFinal3);
-		if (fotos[3] != null)
-			mostrarFotoCargada(fotos[3],imageFinal4);
-		if (fotos[4] != null)
-			mostrarFotoCargada(fotos[4],imageFinal5);
+		image1.setSource(null);
+		image2.setSource(null);
+		image3.setSource(null);
+		image4.setSource(null);
+		image5.setSource(null);
+		
+		if (fotos[0] != null) {
+			mostrarFotoCargada(fotos[0],image1);
+			image1.setVisible(true);
+		}
+		if (fotos[1] != null) {
+			mostrarFotoCargada(fotos[1],image2);
+			image2.setVisible(true);
+		}
+		if (fotos[2] != null) {
+			mostrarFotoCargada(fotos[2],image3);
+			image3.setVisible(true);
+		}
+		if (fotos[3] != null) {
+			mostrarFotoCargada(fotos[3],image4);
+			image4.setVisible(true);			
+		}
+		if (fotos[4] != null) {
+			mostrarFotoCargada(fotos[4],image5);
+			image5.setVisible(true);			
+		}
+	}
+	
+	
+	private int cantidadFotosCargadas() {
+		
+		int cant = 0;
+		
+		for (byte[] foto : fotos) {
+			if (foto != null)
+				cant++;
+		}
+		
+		return cant;
 	}
 
 
 	private void agregarFoto() {
 
-		if (tot < 5) {
+		int cant = this.cantidadFotosCargadas();
+		
+		if (cant < 5) {
 			if (op == "Local") {
 				if (!uploadField.isEmpty()) {
-					fotos[tot++] = uploadField.getValue();
+					fotos[cant] = uploadField.getValue();
 					uploadField.setValue(uploadField.getEmptyValue());
 					msjFoto.setValue("Éxito");
 				} else
@@ -273,7 +308,7 @@ public class ModificarResidenciaView extends Composite implements View {
 				if (op == "URL") {
 					if (!url.isEmpty()) {
 						cargarDesdeURL(url.getValue());
-						fotos[tot++] = preFoto;
+						fotos[cant] = preFoto;
 						preFoto = null;
 						url.setValue(url.getEmptyValue());
 						msjFoto.setValue("Éxito");
@@ -335,37 +370,51 @@ public class ModificarResidenciaView extends Composite implements View {
 	private void aceptar() throws SQLException {
 
 		if ( !hayCamposVacios() ) {
-			try {
-				binder.writeBean(propiedad);
-			} catch (ValidationException e) {
-				e.printStackTrace();
-				mostrarNotificacion("Error al validar datos.", Notification.Type.ERROR_MESSAGE);
-			}
+			
+			float montoFinal = Float.parseFloat(monto.getValue());
+			
+			if ( esNroPositivo(montoFinal) ) {	
 
-			propiedad.setFotos(fotos);
-			Propiedad p2 = HomeSwitchHome.getPropiedadActual();
-
-			//si cumple todos los requisitos, actualizo la residencia y cargo una nueva sesión de admin
-			if ( !enSubasta && seHaModificadoTitulo(p2) && existePropiedad() ) {
-				mostrarNotificacion("Error: Ya existe una propiedad con el mismo título en esa localidad.", Notification.Type.ERROR_MESSAGE);
-			} else {
-				conexion = new ConnectionBD();				
-				if (enSubasta) {
-					conexion.modificarResidenciaEnSubasta(propiedad, p2.getTitulo(), p2.getLocalidad());
-				} else
-					conexion.modificarResidencia(propiedad, p2.getTitulo(), p2.getLocalidad());
+				propiedad = new Propiedad( titulo.getValue(), pais.getValue(), provincia.getValue(), localidad.getValue(),
+						domicilio.getValue(), descripcion.getValue(), montoFinal, fotos );
 				
-				mostrarNotificacion("Éxito.", Notification.Type.HUMANIZED_MESSAGE);
-				interfaz.vistaAdminConNuevaVista("detalleResidencia");
-			}
+				propiedad.setFotos(fotos);
+				propiedad2 = HomeSwitchHome.getPropiedadActual();
+		
+				//si cumple todos los requisitos, actualizo la residencia y cargo una nueva sesión de admin
+				if ( !enSubasta && seHaModificadoTitulo(propiedad2) && existePropiedad() ) {
+					mostrarNotificacion("Error: Ya existe una propiedad con el mismo título en esa localidad.", Notification.Type.ERROR_MESSAGE);
+				} else {
+					conexion = new ConnectionBD();
+					if (enSubasta) {
+						conexion.modificarResidenciaEnSubasta(propiedad, propiedad2.getTitulo(), propiedad2.getLocalidad());
+					} else {
+						conexion.modificarResidencia(propiedad, propiedad2.getTitulo(), propiedad2.getLocalidad());
+					}
+					
+					//actualizo la propiedad a mostrar en el detalle
+					conexion = new ConnectionBD();
+					propiedad2 = conexion.buscarPropiedad( propiedad2.getTitulo(), propiedad2.getLocalidad() );
+					HomeSwitchHome.setPropiedadActual(propiedad2);
+					
+					//muestro msj de éxito y muestro el detalle de la residencia actualizada
+					mostrarNotificacion("Éxito.", Notification.Type.HUMANIZED_MESSAGE);
+					interfaz.vistaAdminConNuevaVista("detalleResidencia");
+				}
+			} else mostrarNotificacion("Error: El monto debe ser mayor a 0.", Notification.Type.ERROR_MESSAGE);
 
 		} else mostrarNotificacion("Error: Al menos un campo se encuentra vacío.", Notification.Type.ERROR_MESSAGE);
 
 	}
 
 
-    private boolean seHaModificadoTitulo(Propiedad p2) {
-    	return ( propiedad.getTitulo() != p2.getTitulo() ) ? true : false;
+    private boolean esNroPositivo(float n) {
+    	return (n > 0);
+	}
+
+
+	private boolean seHaModificadoTitulo(Propiedad p2) {
+    	return ( !propiedad.getTitulo().equals(propiedad2.getTitulo()) );
 	}
 
 

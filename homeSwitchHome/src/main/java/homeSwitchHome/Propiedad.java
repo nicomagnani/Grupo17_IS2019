@@ -29,30 +29,31 @@ public class Propiedad {
 	}
 
 	public Propiedad(String titulo, String pais, String provincia, String localidad, String domicilio,
-			String descripción, float montoBase, byte[][] fotos) {
+			String descripcion, float montoBase, byte[][] fotos) {
 
 		this.titulo = titulo;
 		this.pais = pais;
 		this.provincia = provincia;
 		this.localidad = localidad;
 		this.domicilio = domicilio;
-		this.descripcion = descripción;
+		this.descripcion = descripcion;
 		this.montoBase = montoBase;
 		this.fotos = fotos;
 	}
 
-	public Propiedad(String titulo, String pais, String provincia, String localidad, String domicilio,
-			String descripcion, int montoBase, byte[][] fotos) {
-
-	 	this.titulo = titulo;
-	 	this.pais = pais;
-	 	this.provincia = provincia;
-	 	this.localidad = localidad;
-	 	this.domicilio = domicilio;
-	 	this.descripcion = descripcion;
-	 	this.montoBase = montoBase;
-	 	this.fotos = fotos;	 	 
-	}
+	//no recomendable usar ya que mostraria un monto erroneo
+//	public Propiedad(String titulo, String pais, String provincia, String localidad, String domicilio,
+//			String descripcion, int montoBase, byte[][] fotos) {
+//
+//	 	this.titulo = titulo;
+//	 	this.pais = pais;
+//	 	this.provincia = provincia;
+//	 	this.localidad = localidad;
+//	 	this.domicilio = domicilio;
+//	 	this.descripcion = descripcion;
+//	 	this.montoBase = montoBase;
+//	 	this.fotos = fotos;	 	 
+//	}
 	
 	public void reservarSemana (int unaSemana) {
 		
@@ -117,22 +118,12 @@ public class Propiedad {
 		this.domicilio = domicilio;
 	}
 
-
-	public String getDescripción() {
-		return descripcion;
-	}
-
-	public void setDescripción(String descripción) {
-		this.descripcion = descripción;
-	}
-
 	public String getDescripcion() {
 		return descripcion;
 	}
 
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
-
 	}
 
 	public float getMontoBase() {

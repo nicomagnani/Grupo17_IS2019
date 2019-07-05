@@ -9,7 +9,11 @@ public class Oferta {
 	private String localidad;
 	private LocalDate fechaReserva;
 	private String fechaFinSubasta;
+	
+	//precio actual
 	private Float precio;
+	
+	//mi mejor oferta
 	private Float monto;
 	
 	public Oferta(String propiedad, String localidad, LocalDate fechaReserva, String fechaFinSubasta,
@@ -75,16 +79,20 @@ public class Oferta {
 		this.monto = monto;
 	}
 	
+	
 	//incluye indicador de mejor oferta
 	public String getMontoString() {
-		if (esMayorOferta()) {
-			return Float.toString(monto) + " (mejor oferta)";
+		
+		if (0 == esMayorOferta()) {
+			String st = Float.toString(monto) + " (mejor oferta)";			
+			return st;
 		} else
 			return Float.toString(monto);
 	}
 	
-	public boolean esMayorOferta() {
-		return (precio == monto);
+	
+	public int esMayorOferta() {
+		return (Float.compare(precio, monto));
 	}
 	
 }
