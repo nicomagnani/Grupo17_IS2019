@@ -9,6 +9,7 @@ public final class HomeSwitchHome {
 	private static Propiedad propiedadActual;
 	private static LocalDate fechaInicioBuscada;
 	private static LocalDate fechaFinBuscada;
+	private static Reserva reservaActual;
 	
 //	private static ArrayList<Usuario> usuarios;
 //	private static ArrayList<UsuarioAdministrador> administradores;
@@ -51,6 +52,15 @@ public final class HomeSwitchHome {
 
 	public static void setFechaFinBuscada(LocalDate fechaFinBuscada) {
 		HomeSwitchHome.fechaFinBuscada = fechaFinBuscada;
+	}
+
+	public static Reserva getReservaActual() {
+		return reservaActual;
+	}
+
+
+	public static void setReservaActual(Reserva reservaActual) {
+		HomeSwitchHome.reservaActual = reservaActual;
 	}
 	
 //	public static boolean verificarMail(String email) {		//TODO

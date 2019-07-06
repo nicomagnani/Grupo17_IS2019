@@ -106,14 +106,18 @@ public abstract class Usuario {
 	}
 	//fin de getters y setters
 	
-	
-	public void realizarReserva(Propiedad unaPropiedad, int unaSemana) {
+	public boolean tieneReservaEnFecha(LocalDate fecha) {
 		
+		if (reservas != null) 
+			for (Reserva r : reservas) {
+				if ( fecha.isEqual(r.getFechaReserva()) ) {
+					return true;
+				}
+			}
+		
+		return false;
 	}
 	
-	public List<Propiedad> verResidencias() {
-		return null;
-	}
 	
 	public void ofertarSubasta(ReservaSubasta unaSubasta, int unaCantidad) {
 		
