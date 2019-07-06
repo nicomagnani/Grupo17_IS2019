@@ -88,7 +88,7 @@ public class BuscarFechaView extends Composite implements View {  //necesita com
 			propiedades = new ArrayList<Propiedad>();
 			
 			try {
-				propiedades = conectar.listaPropiedadesPorFecha(fechaInicio, fechaFin);
+				propiedades = conectar.listaResidenciasPorFecha(fechaInicio, fechaFin);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}

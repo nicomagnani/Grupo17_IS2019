@@ -394,7 +394,7 @@ public class ModificarResidenciaView extends Composite implements View {
 					
 					//actualizo la propiedad a mostrar en el detalle
 					conexion = new ConnectionBD();
-					propiedad2 = conexion.buscarPropiedad( propiedad2.getTitulo(), propiedad2.getLocalidad() );
+					propiedad2 = conexion.buscarResidencia( propiedad2.getTitulo(), propiedad2.getLocalidad() );
 					HomeSwitchHome.setPropiedadActual(propiedad2);
 					
 					//muestro msj de éxito y muestro el detalle de la residencia actualizada
@@ -421,7 +421,7 @@ public class ModificarResidenciaView extends Composite implements View {
 	private boolean existePropiedad() throws SQLException {
 
 		conexion = new ConnectionBD();
-    	ArrayList<Propiedad> propiedades = conexion.listaPropiedadesSinFotos();
+    	ArrayList<Propiedad> propiedades = conexion.listaResidenciasSinFotos();
 
     	for (Propiedad p : propiedades) {
     		if ( (p.getTitulo().equals(propiedad.getTitulo())) && (p.getLocalidad().equals(propiedad.getLocalidad())) )

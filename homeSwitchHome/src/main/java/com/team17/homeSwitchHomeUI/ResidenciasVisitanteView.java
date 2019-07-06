@@ -38,7 +38,7 @@ public class ResidenciasVisitanteView extends Composite implements View {
 		img.setSource(new ThemeResource("logo.png"));
 
 		ConnectionBD conectar = new ConnectionBD();
-		ArrayList<Propiedad> propiedades = conectar.listaPropiedadesVisitante();		
+		ArrayList<Propiedad> propiedades = conectar.listaResidenciasVisitante();		
 		
 //		propiedades = new ArrayList<>();   <-- para chequear cuando no hay residencias cargadas
 		if ( propiedades.size() == 0 )

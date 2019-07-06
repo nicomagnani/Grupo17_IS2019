@@ -27,6 +27,10 @@ INSERT INTO subastas ( propiedad, localidad, fecha_inicio)
    VALUES
    ( 'prueba1', 'lp', '2019-06-17');
 
+INSERT INTO canceladas ( propiedad, localidad, usuario, tipo, fecha_inicio, estado, monto )
+   VALUES
+   ( 'tit234', 'La Plata', 'juan@mail.com' , 'hotsale', '2018-12-25', 'CANCELADA', 10000);  
+   
 ------------------------------------
 ## SELECCIONAR (SINTAXIS EN GENERAL) ##
 SELECT column_1, column_2, ...
@@ -105,15 +109,12 @@ SET
     condition];
 
 Ejemplos:
-UPDATE usuarios
-SET 
-    nombre = 'juan' /* nuevo nombre */
-WHERE mail = 'asd@mail.com'; /* buscar fila segun mail indicado */
+l.
 
 UPDATE propiedad
 SET 
     titulo = 'prueba1' /* nuevo nombre */
-WHERE titulo = 'prueba2'; /* buscar fila segun mail indicado */
+WHERE titulo = 'prueba2' AND localidad = ''; /* buscar fila segun mail indicado */
 
 UPDATE reservas
 SET

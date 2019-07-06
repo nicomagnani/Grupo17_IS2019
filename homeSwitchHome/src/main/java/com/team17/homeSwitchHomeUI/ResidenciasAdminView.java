@@ -114,7 +114,7 @@ public class ResidenciasAdminView extends Composite implements View {
 
 	private void cargarResidencias() throws SQLException {		
 		
-		propiedades = conexion.listaPropiedadesConFotos();
+		propiedades = conexion.listaResidenciasConFotos();
 		
 		if (!propiedades.isEmpty()) {
 			panel.setVisible(true);
@@ -257,7 +257,7 @@ public class ResidenciasAdminView extends Composite implements View {
 				if ( (reserva.getEstado() == EstadoDeReserva.DISPONIBLE_DIRECTA) && 
 						(!reserva.getFechaInicio().isAfter(hace6meses)) &&
 						(!reserva.getFechaInicio().isBefore(hace6meses.minusDays(3))) ) {					
-					conexion.comenzarReservaSubasta(reserva);
+					conexion.abrirSubasta(reserva);
 					n1++;
 					//TODO: guardar informacion de la reserva/residencia) para mostrarla en la notificacion					
 				}

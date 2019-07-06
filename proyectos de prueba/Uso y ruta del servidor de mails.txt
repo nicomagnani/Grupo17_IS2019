@@ -1,0 +1,7 @@
+
+Ruta: C:\Users\%USERNAME%\.m2\repository\com\github\tntim96\fakesmtp\2.0\fakesmtp-2.0.jar
+
+Abrir "fakesmtp-2.0.jar" (desde el explorador de Windows), en "Listening port" colocar "9090" y hacer click en "Start server". Los mails que se manden dentro del sistema se van a mostrar en el programa
+
+Los emails también se guardan en la carpeta "received-emails".
+Para que funcione correctamente el mail debe tener un formato válido (algo@algo.algo).

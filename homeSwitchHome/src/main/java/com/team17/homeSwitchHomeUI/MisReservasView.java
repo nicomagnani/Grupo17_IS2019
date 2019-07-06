@@ -81,7 +81,7 @@ public class MisReservasView extends Composite implements View {
 		} else {				
 			tabla.setItems(reservasUsuario);
 			tabla.setVisible(true);
-			tabla.setColumns("fechaInicio", "fechaFin", "fechaReserva");
+			tabla.setColumns("propiedad", "localidad", "fechaFin", "fechaReserva");
 			
 			tabla.addColumn(Reserva::getMonto,
 					new NumberRenderer(new DecimalFormat("¤#######.##")))

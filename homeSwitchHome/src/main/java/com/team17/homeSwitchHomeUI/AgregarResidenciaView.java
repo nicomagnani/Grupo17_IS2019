@@ -291,7 +291,7 @@ public class AgregarResidenciaView extends Composite implements View {  //.neces
 	
     private boolean existePropiedad() throws SQLException {
     	ConnectionBD con = new ConnectionBD();
-    	 ArrayList<Propiedad> propiedades = con.listaPropiedadesSinFotos();
+    	 ArrayList<Propiedad> propiedades = con.listaResidenciasSinFotos();
     	 
     	 boolean existe = false;
     	 for (int i = 0; ( (i < propiedades.size()) && !existe ); i++) {

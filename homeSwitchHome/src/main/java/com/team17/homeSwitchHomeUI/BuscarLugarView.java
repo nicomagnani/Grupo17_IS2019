@@ -70,7 +70,7 @@ public class BuscarLugarView extends Composite implements View {  //.necesita co
 			propiedades = new ArrayList<Propiedad>();
 			
 			try {
-				propiedades = conectar.listaPropiedadesPorLugar(textoBuscar.getValue());
+				propiedades = conectar.listaResidenciasPorLugar(textoBuscar.getValue());
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}

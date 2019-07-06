@@ -59,7 +59,7 @@ public class ResidenciasUsuarioView extends Composite implements View {
 		tabla.setBodyRowHeight(100);
 				
 		conectar = new ConnectionBD();
-		propiedades = conectar.listaPropiedadesConFotos();		
+		propiedades = conectar.listaResidenciasConFotos();		
 		
 		for (Propiedad p : propiedades) {
 			p.setReservas(conectar.listaReservasPorPropiedad(p.getTitulo(), p.getLocalidad()));

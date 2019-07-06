@@ -60,7 +60,7 @@ public class ReservarDirectaView extends Composite implements View {
 	
 	public ReservarDirectaView(MyUI interfaz) {		
 		
-		this.interfaz = interfaz;
+		this.interfaz = interfaz;		
 		
 		this.cargarDatosDeSesion();
 		this.inicializarComponentes();
@@ -100,7 +100,7 @@ public class ReservarDirectaView extends Composite implements View {
 		botonConfirmar.addClickListener(e -> {
 			try {
 				this.reservar();
-			} catch (SQLException e1) {
+			} catch (SQLException | EmailException e1) {
 				e1.printStackTrace();
 			}
 		} );		
@@ -118,23 +118,35 @@ public class ReservarDirectaView extends Composite implements View {
 	}
 
 
-	private void reservar() throws SQLException {
+	private void reservar() throws SQLException, EmailException {
+		
+		String mail = usuario.getMail();
 		
 		//se chequea: 1) falta de créditos 2) reserva ya hecha en misma semana
 		if (usuario.getCreditos() > 0) {
 			conexion = new ConnectionBD();
-			usuario.setReservas( conexion.listaReservasPorUsuario(usuario.getMail()) );
+			usuario.setReservas( conexion.listaReservasPorUsuario(mail) );
 			
 			if (!usuario.tieneReservaEnFecha(reserva.getFechaReserva()) ) {
-				conexion.modificarCreditos(usuario.getMail(), "-", 1);
-				//TODO: actualizar estado de reserva + informar via mail
-//				conexion.realizarReserva(reserva);
-//				email.send();
-				HomeSwitchHome.setUsuarioActual( conexion.buscarUsuario(usuario.getMail()) );
 				
+				//cierro ventana de confirmacion e indico éxito
+				ventanaConfirmacion.close();
+				mostrarNotificacion("Éxito. Redirigiendo...", Notification.Type.HUMANIZED_MESSAGE);
+								
+				//modifico creditos y reserva
+				conexion.modificarCreditos(mail, "-", 1);				
+				reserva.setUsuario(mail);
+				conexion.realizarReservaDirecta(reserva);
 				
-				mostrarNotificacion("Éxito. Redirigiendo...", Notification.Type.HUMANIZED_MESSAGE);	
+				//envio mail
+				this.inicializarEmail();
+				this.agregarReceptorDeEmail(mail);
+				email.send();
+				
+				//actualizo sesión y redirijo a vista de reservas
+				HomeSwitchHome.setUsuarioActual( conexion.buscarUsuario(mail) );
 				interfaz.vistaUsuario("misReservas");
+				
 			} else
 				this.mostrarNotificacion("Error: Solo puede realizarse una reserva para la misma semana.", Notification.Type.ERROR_MESSAGE);
 		} else
@@ -178,13 +190,38 @@ public class ReservarDirectaView extends Composite implements View {
 		email.setSmtpPort(9090);
 		email.setAuthentication("homeswitchhome@outlook.com.ar", "1234");		
 		email.setFrom("homeswitchhome@outlook.com.ar");
-		email.setSubject("Propiedad eliminada");
+		email.setSubject("Reserva realizada");
 		
-		String mensaje = "<p>Estimado usuario, la propiedad que se encontraba en subasta"
-				+ " y en la cual usted había ofertado ha sido eliminada. Sepa disculpar las molestias.</p><p>Atte. Staff"
-				+ " de <span style=\"text-decoration: underline;\">HomeSwitchHome</span></p>";
-		email.setHtmlMsg(mensaje);
+		String mensaje = "<p>Estimado usuario, su reserva ha sido realizada con éxito. Detalle:</p>"
+				
+				+"<p><span style=\"text-align: left; font-weight: bold;\">Título:</span> "
+				+propiedad.getTitulo()+"</p>"
+				
+				+"<p><span style=\"font-weight: bold;\">Ubicación:</span> "+propiedad.getPais()+", "
+				+propiedad.getProvincia()+", "+propiedad.getLocalidad()+"</p>"
+				
+				+"<p><span style=\"font-weight: bold;\">Monto base:</span> "				
+				+String.valueOf(reserva.getMonto())+"</p>"		
+				
+				+"<p><span style=\"font-weight: bold;\">Fecha de reserva:</span> "
+				+reserva.getFechaReserva().toString()+"</p>"
+				
+				+ "<p>Atte. Staff de <span style=\"text-decoration: underline;\">HomeSwitchHome</span></p>";
 		
+		email.setHtmlMsg(mensaje);		
+	}
+
+
+	private boolean agregarReceptorDeEmail (String mail) {
+		
+		try {
+			email.addTo(mail);
+			return true;
+		} catch (EmailException e) {
+			e.printStackTrace();
+		}
+		
+		return false;
 	}
 	
 

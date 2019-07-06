@@ -48,8 +48,171 @@ public class ConnectionBD {
 
 	}
 
+	// Agrupaciones de los métodos (no es 100% preciso)
+	//  por tablas	---> por acción	
+	// 1) propiedad	| 1) agregar
+	// 2) reservas	| 2) modificar
+	// 3) subastas	| 3) eliminar
+	// 4) admins	| 4) buscar
+	// 5) usuarios	| 5) listar
 	
-	public Propiedad buscarPropiedad(String titulo, String localidad) throws SQLException {
+
+	public void agregarResidencia(Propiedad p) throws SQLException {
+		byte[][] fotos = p.getFotos();
+		ByteArrayInputStream bais;
+		int col = 8;
+
+		String query = "INSERT INTO propiedad (titulo,descripcion,pais,provincia,localidad,domicilio,monto,foto1,foto2,foto3,foto4,foto5)"
+				+" VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+
+		ps = (PreparedStatement) con.prepareStatement(query);
+
+		ps.setString(1,p.getTitulo());
+		ps.setString(2,p.getDescripcion());
+		ps.setString(3,p.getPais());
+		ps.setString(4,p.getProvincia());
+		ps.setString(5,p.getLocalidad());
+		ps.setString(6,p.getDomicilio());
+		ps.setFloat(7,p.getMontoBase());
+
+		for (byte[] foto : fotos) {
+			if (foto != null) {
+				bais = new ByteArrayInputStream(foto);
+				ps.setBinaryStream(col, bais);
+			} else
+				ps.setNull(col, Types.BLOB);
+			col++; //incrementa fuera del if-else para asegurar que se guarde en la pos correcta
+		}
+
+		ps.executeUpdate();
+		ps.close();
+	}	
+
+
+	public void modificarResidencia(Propiedad p, String titulo, String localidad) throws SQLException{
+		
+		byte[][] fotos = p.getFotos();
+		ByteArrayInputStream bais;
+		int col = 8;
+
+		String query = "UPDATE propiedad"
+				+ " SET titulo = ?,"
+				+ " descripcion = ?,"
+				+ " pais = ?,"
+				+ " provincia = ?,"
+				+ " localidad = ?,"
+				+ " domicilio = ?,"
+				+ " monto = ?,"
+				+ " foto1 = ?,"
+				+ " foto2 = ?,"
+				+ " foto3 = ?,"
+				+ " foto4 = ?,"
+				+ " foto5 = ?"
+				+ " WHERE titulo = '"+titulo+"' AND localidad = '"+localidad+"'";
+
+		ps = (PreparedStatement) con.prepareStatement(query);
+
+		ps.setString(1,p.getTitulo());
+		ps.setString(2,p.getDescripcion());
+		ps.setString(3,p.getPais());
+		ps.setString(4,p.getProvincia());
+		ps.setString(5,p.getLocalidad());
+		ps.setString(6,p.getDomicilio());
+		ps.setFloat(7,p.getMontoBase());
+
+		for (byte[] foto : fotos) {
+			if (foto != null) {
+				bais = new ByteArrayInputStream(foto);
+				ps.setBinaryStream(col, bais);
+			} else
+				ps.setNull(col, Types.BLOB);
+			col++; //incrementa fuera del if-else para asegurar que se guarde en la pos correcta
+		}
+
+		ps.executeUpdate();
+		ps.close();
+		
+		//TODO: en caso de haber reservas y/o subastas asociadas a la residencias, las modifico
+
+	}
+
+
+	public void modificarResidenciaEnSubasta(Propiedad p, String titulo, String localidad) throws SQLException{
+		
+		byte[][] fotos = p.getFotos();
+		ByteArrayInputStream bais;
+		int col = 3;
+
+		String query = "UPDATE propiedad"
+				+ " SET descripcion = ?,"
+				+ " monto = ?,"
+				+ " foto1 = ?,"
+				+ " foto2 = ?,"
+				+ " foto3 = ?,"
+				+ " foto4 = ?,"
+				+ " foto5 = ?"
+				+ " WHERE titulo = '"+titulo+"' AND localidad = '"+localidad+"'";
+
+		ps = (PreparedStatement) con.prepareStatement(query);
+
+		ps.setString(1,p.getDescripcion());
+		ps.setFloat(2,p.getMontoBase());
+
+		for (byte[] foto : fotos) {
+			if (foto != null) {
+				bais = new ByteArrayInputStream(foto);
+				ps.setBinaryStream(col, bais);
+			} else
+				ps.setNull(col, Types.BLOB);
+			col++; //incrementa fuera del if-else para asegurar que se guarde en la pos correcta
+		}
+		
+		ps.executeUpdate();
+		ps.close();	
+		
+		//TODO: en caso de haber reservas y/o subastas asociadas a la residencias, las modifico
+	
+	}
+	
+
+    public void eliminarResidencia(Propiedad unaResidencia) throws SQLException {
+    	
+    	String query ="DELETE FROM propiedad WHERE titulo = ? AND localidad = ?";
+    	ps = (PreparedStatement) con.prepareStatement(query);
+    	
+    	ps.setString(1, unaResidencia.getTitulo());
+    	ps.setString(2, unaResidencia.getLocalidad());
+    	
+    	ps.executeUpdate(); 
+    	ps.close();
+    	
+    	//en caso de haber reservas y/o subastas asociadas a la residencias, las elimino 
+    	if ( !unaResidencia.getReservas().isEmpty() ) {    		
+    		
+    		//elimino reservas
+    		query ="DELETE FROM reservas WHERE propiedad = ? AND localidad = ?";
+    		ps = (PreparedStatement) con.prepareStatement(query);
+        	
+        	ps.setString(1, unaResidencia.getTitulo());
+        	ps.setString(2, unaResidencia.getLocalidad());
+        	
+        	ps.executeUpdate(); 
+        	ps.close();
+        	
+        	//elimino subastas
+        	query ="DELETE FROM subastas WHERE propiedad = ? AND localidad = ?";
+    		ps = (PreparedStatement) con.prepareStatement(query);
+        	
+        	ps.setString(1, unaResidencia.getTitulo());
+        	ps.setString(2, unaResidencia.getLocalidad());
+        	
+        	ps.executeUpdate(); 
+        	ps.close();        	
+    	}
+    }
+
+	
+	public Propiedad buscarResidencia(String titulo, String localidad) throws SQLException {
 
 		Propiedad propiedad = new Propiedad();
 		
@@ -76,7 +239,7 @@ public class ConnectionBD {
 	}	
 	
 	
-	public ArrayList<Propiedad> listaPropiedadesSinFotos() throws SQLException {
+	public ArrayList<Propiedad> listaResidenciasSinFotos() throws SQLException {
 
 		ArrayList<Propiedad> propiedades = new ArrayList<Propiedad>();
 
@@ -97,7 +260,7 @@ public class ConnectionBD {
 	}
 
 	
-	public ArrayList<Propiedad> listaPropiedadesConFotos() throws SQLException {
+	public ArrayList<Propiedad> listaResidenciasConFotos() throws SQLException {
 
 		Propiedad propiedad;
 
@@ -130,7 +293,7 @@ public class ConnectionBD {
 	
 
 	//devuelve 5 propiedades al azar
-	public ArrayList<Propiedad> listaPropiedadesVisitante() throws SQLException {
+	public ArrayList<Propiedad> listaResidenciasVisitante() throws SQLException {
 		
 		ArrayList<Propiedad> propiedades = new ArrayList<Propiedad>();
 		Propiedad propiedad;
@@ -151,7 +314,7 @@ public class ConnectionBD {
 	}
 	
 	
-	public ArrayList<Propiedad> listaPropiedadesPorLugar(String st) throws SQLException {
+	public ArrayList<Propiedad> listaResidenciasPorLugar(String st) throws SQLException {
 		
 		ArrayList<Propiedad> propiedades = new ArrayList<Propiedad>();
 		ArrayList<Propiedad> propiedades2 = new ArrayList<Propiedad>();
@@ -188,7 +351,7 @@ public class ConnectionBD {
 	}
 	
 	
-	public ArrayList<Propiedad> listaPropiedadesPorFecha(LocalDate fecha1, LocalDate fecha2) throws SQLException {
+	public ArrayList<Propiedad> listaResidenciasPorFecha(LocalDate fecha1, LocalDate fecha2) throws SQLException {
 		
 		ArrayList<Propiedad> propiedades = new ArrayList<Propiedad>();
 		ArrayList<Propiedad> propiedades2 = new ArrayList<Propiedad>();
@@ -221,6 +384,27 @@ public class ConnectionBD {
 		}
 		
 		return propiedades2;
+	}
+	
+	
+	public void realizarReservaDirecta(Reserva r) throws SQLException {		
+		
+		//parte 1, se actualiza tipo de reserva
+		String query = "UPDATE reservas"
+				+" SET usuario = ?, tipo = ?, estado = ?"
+				+" WHERE propiedad = ? AND localidad = ? AND fecha_inicio = ?";
+			
+		ps = (PreparedStatement) con.prepareStatement(query);
+		
+		ps.setString(1,r.getUsuario());
+		ps.setString(2,"directa");
+		ps.setString(3,"RESERVADA");
+		ps.setString(4,r.getPropiedad());
+		ps.setString(5,r.getLocalidad());
+		ps.setDate(6, Date.valueOf(r.getFechaInicio()));		
+		
+		ps.executeUpdate();
+		ps.close();
 	}
 	
 	
@@ -441,7 +625,7 @@ public class ConnectionBD {
 	}
 	
 	
-	public void comenzarReservaSubasta(Reserva r) throws SQLException {		
+	public void abrirSubasta(Reserva r) throws SQLException {		
 		
 		//parte 1, se actualiza tipo de reserva
 		String query = "UPDATE reservas"
@@ -475,43 +659,6 @@ public class ConnectionBD {
 		ps.close();
 		con.close();		
 	}
-	
-	
-	public ArrayList<ReservaSubasta> listaSubastas() throws SQLException {
-
-		ArrayList<ReservaSubasta> reservas = new ArrayList<>();
-		ReservaSubasta reserva;
-		String[] preMontos;
-		String preUsuarios;
-		ArrayList<Float> montos;
-		
-		String query = "SELECT * FROM subastas";
-		ResultSet rs = stmt.executeQuery(query);
-		
-		while (rs.next()) {
-			reserva = new ReservaSubasta();
-			montos = new ArrayList<>();
-			
-			reserva.setPropiedad(rs.getString("propiedad"));
-			reserva.setLocalidad(rs.getString("localidad"));
-			reserva.setFechaInicio(rs.getDate("fecha_inicio").toLocalDate());
-			reserva.setFechaInicioSubasta(rs.getDate("fecha_subasta").toLocalDate());
-						
-			preMontos = (rs.getString("montos").split("\\s+"));
-			for (String st : preMontos)
-				montos.add(Float.parseFloat(st));
-			reserva.setMontos(montos);			
-			
-			preUsuarios = rs.getString("usuarios");
-			if (preUsuarios != null) {
-				reserva.setUsuarios( new ArrayList<>(Arrays.asList(rs.getString("usuarios").split("\\s+"))) );
-			} //usuarios se inicializa como null, en caso de no haber ofertas no hace falta asignarlo				
-			
-			reservas.add(reserva);
-		}
-		
-		return reservas;
-	}	
 
 
 	public ReservaSubasta buscarSubasta(String propiedad, String localidad, LocalDate fechaInicio, EstadoDeReserva estado) throws SQLException {
@@ -550,76 +697,43 @@ public class ConnectionBD {
 		return reserva;
 	}
 	
+	
+	public ArrayList<ReservaSubasta> listaSubastas() throws SQLException {
 
-	public Usuario buscarUsuario(String mail) throws SQLException {
+		ArrayList<ReservaSubasta> reservas = new ArrayList<>();
+		ReservaSubasta reserva;
+		String[] preMontos;
+		String preUsuarios;
+		ArrayList<Float> montos;
 		
-		String query = "SELECT * FROM usuarios WHERE mail = '"+mail+"'";
+		String query = "SELECT * FROM subastas";
 		ResultSet rs = stmt.executeQuery(query);
 		
-		Usuario usuario = null;
-		Tarjeta tarjeta = new Tarjeta();
-
 		while (rs.next()) {
-			if (rs.getBoolean("premium")) {
-				usuario = new UsuarioPremium();
-			} else {
-				usuario = new UsuarioComun();
-			}
-			usuario.setMail(rs.getString("mail"));
-			usuario.setContraseña(rs.getString("contraseña"));
-			usuario.setNombre(rs.getString("nombre"));
-			usuario.setApellido(rs.getString("apellido"));
-			usuario.setfNac((rs.getDate("f_nac").toLocalDate()));
-			usuario.setCreditos(rs.getShort("creditos"));
-
-			tarjeta.setNumero(rs.getLong("nro_tarj"));
-			tarjeta.setMarca(rs.getString("marca_tarj"));
-			tarjeta.setTitular(rs.getString("titu_tarj"));
-			tarjeta.setfVenc(rs.getDate("venc_tarj").toLocalDate());
-			tarjeta.setCodigo(rs.getShort("cod_tarj"));
-			usuario.setTarjeta(tarjeta);
+			reserva = new ReservaSubasta();
+			montos = new ArrayList<>();
+			
+			reserva.setPropiedad(rs.getString("propiedad"));
+			reserva.setLocalidad(rs.getString("localidad"));
+			reserva.setFechaInicio(rs.getDate("fecha_inicio").toLocalDate());
+			reserva.setFechaInicioSubasta(rs.getDate("fecha_subasta").toLocalDate());
+						
+			preMontos = (rs.getString("montos").split("\\s+"));
+			for (String st : preMontos)
+				montos.add(Float.parseFloat(st));
+			reserva.setMontos(montos);			
+			
+			preUsuarios = rs.getString("usuarios");
+			if (preUsuarios != null) {
+				reserva.setUsuarios( new ArrayList<>(Arrays.asList(rs.getString("usuarios").split("\\s+"))) );
+			} //usuarios se inicializa como null, en caso de no haber ofertas no hace falta asignarlo				
+			
+			reservas.add(reserva);
 		}
-
-		return usuario;
-	}		
+		
+		return reservas;
+	}	
 	
-	
-	//metodo que devuelve los usuarios comunes+premium de la bd
-	public ArrayList<Usuario> listaUsuarios() throws SQLException {
-
-		String query = "SELECT * FROM usuarios";
-		ResultSet rs = stmt.executeQuery(query);
-
-		ArrayList<Usuario> usuarios = new ArrayList<Usuario>();
-		Usuario usuario;
-		Tarjeta tarjeta = new Tarjeta();
-
-		while (rs.next()) {
-			if (!rs.getBoolean("premium")) {
-				usuario = new UsuarioComun();
-			} else {
-				usuario = new UsuarioPremium();
-			}
-			usuario.setMail(rs.getString("mail"));
-			usuario.setContraseña(rs.getString("contraseña"));
-			usuario.setNombre(rs.getString("nombre"));
-			usuario.setApellido(rs.getString("apellido"));
-			usuario.setfNac((rs.getDate("f_nac").toLocalDate()));
-			usuario.setCreditos(rs.getShort("creditos"));
-
-			tarjeta.setNumero(rs.getLong("nro_tarj"));
-			tarjeta.setMarca(rs.getString("marca_tarj"));
-			tarjeta.setTitular(rs.getString("titu_tarj"));
-			tarjeta.setfVenc(rs.getDate("venc_tarj").toLocalDate());
-			tarjeta.setCodigo(rs.getShort("cod_tarj"));
-			usuario.setTarjeta(tarjeta);
-
-			usuarios.add(usuario);
-		}
-
-		return usuarios;
-	}
-
 
 	//metodo que devuelve los admins de la bd
 	public ArrayList<UsuarioAdministrador> listaAdmins() throws SQLException {
@@ -637,163 +751,8 @@ public class ConnectionBD {
 	     }		
 		return admins;
 	}
-    
-
-	public void agregarResidencia(Propiedad p) throws SQLException {
-		byte[][] fotos = p.getFotos();
-		ByteArrayInputStream bais;
-		int col = 8;
-
-		String query = "INSERT INTO propiedad (titulo,descripcion,pais,provincia,localidad,domicilio,monto,foto1,foto2,foto3,foto4,foto5)"
-				+" VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
-
-		ps = (PreparedStatement) con.prepareStatement(query);
-
-		ps.setString(1,p.getTitulo());
-		ps.setString(2,p.getDescripcion());
-		ps.setString(3,p.getPais());
-		ps.setString(4,p.getProvincia());
-		ps.setString(5,p.getLocalidad());
-		ps.setString(6,p.getDomicilio());
-		ps.setFloat(7,p.getMontoBase());
-
-		for (byte[] foto : fotos) {
-			if (foto != null) {
-				bais = new ByteArrayInputStream(foto);
-				ps.setBinaryStream(col, bais);
-			} else
-				ps.setNull(col, Types.BLOB);
-			col++; //incrementa fuera del if-else para asegurar que se guarde en la pos correcta
-		}
-
-		ps.executeUpdate();
-		ps.close();
-	}	
 
 
-	public void modificarResidencia(Propiedad p, String titulo, String localidad) throws SQLException{
-		
-		byte[][] fotos = p.getFotos();
-		ByteArrayInputStream bais;
-		int col = 8;
-
-		String query = "UPDATE propiedad"
-				+ " SET titulo = ?,"
-				+ " descripcion = ?,"
-				+ " pais = ?,"
-				+ " provincia = ?,"
-				+ " localidad = ?,"
-				+ " domicilio = ?,"
-				+ " monto = ?,"
-				+ " foto1 = ?,"
-				+ " foto2 = ?,"
-				+ " foto3 = ?,"
-				+ " foto4 = ?,"
-				+ " foto5 = ?"
-				+ " WHERE titulo = '"+titulo+"' AND localidad = '"+localidad+"'";
-
-		ps = (PreparedStatement) con.prepareStatement(query);
-
-		ps.setString(1,p.getTitulo());
-		ps.setString(2,p.getDescripcion());
-		ps.setString(3,p.getPais());
-		ps.setString(4,p.getProvincia());
-		ps.setString(5,p.getLocalidad());
-		ps.setString(6,p.getDomicilio());
-		ps.setFloat(7,p.getMontoBase());
-
-		for (byte[] foto : fotos) {
-			if (foto != null) {
-				bais = new ByteArrayInputStream(foto);
-				ps.setBinaryStream(col, bais);
-			} else
-				ps.setNull(col, Types.BLOB);
-			col++; //incrementa fuera del if-else para asegurar que se guarde en la pos correcta
-		}
-
-		ps.executeUpdate();
-		ps.close();
-		
-		//TODO: en caso de haber reservas y/o subastas asociadas a la residencias, las modifico
-
-	}
-
-
-	public void modificarResidenciaEnSubasta(Propiedad p, String titulo, String localidad) throws SQLException{
-		
-		byte[][] fotos = p.getFotos();
-		ByteArrayInputStream bais;
-		int col = 3;
-
-		String query = "UPDATE propiedad"
-				+ " SET descripcion = ?,"
-				+ " monto = ?,"
-				+ " foto1 = ?,"
-				+ " foto2 = ?,"
-				+ " foto3 = ?,"
-				+ " foto4 = ?,"
-				+ " foto5 = ?"
-				+ " WHERE titulo = '"+titulo+"' AND localidad = '"+localidad+"'";
-
-		ps = (PreparedStatement) con.prepareStatement(query);
-
-		ps.setString(1,p.getDescripcion());
-		ps.setFloat(2,p.getMontoBase());
-
-		for (byte[] foto : fotos) {
-			if (foto != null) {
-				bais = new ByteArrayInputStream(foto);
-				ps.setBinaryStream(col, bais);
-			} else
-				ps.setNull(col, Types.BLOB);
-			col++; //incrementa fuera del if-else para asegurar que se guarde en la pos correcta
-		}
-		
-		ps.executeUpdate();
-		ps.close();	
-		
-		//TODO: en caso de haber reservas y/o subastas asociadas a la residencias, las modifico
-	
-	}
-	
-
-    public void eliminarResidencia(Propiedad unaResidencia) throws SQLException {
-    	
-    	String query ="DELETE FROM propiedad WHERE titulo = ? AND localidad = ?";
-    	ps = (PreparedStatement) con.prepareStatement(query);
-    	
-    	ps.setString(1, unaResidencia.getTitulo());
-    	ps.setString(2, unaResidencia.getLocalidad());
-    	
-    	ps.executeUpdate(); 
-    	ps.close();
-    	
-    	//en caso de haber reservas y/o subastas asociadas a la residencias, las elimino 
-    	if ( !unaResidencia.getReservas().isEmpty() ) {    		
-    		
-    		//elimino reservas
-    		query ="DELETE FROM reservas WHERE propiedad = ? AND localidad = ?";
-    		ps = (PreparedStatement) con.prepareStatement(query);
-        	
-        	ps.setString(1, unaResidencia.getTitulo());
-        	ps.setString(2, unaResidencia.getLocalidad());
-        	
-        	ps.executeUpdate(); 
-        	ps.close();
-        	
-        	//elimino subastas
-        	query ="DELETE FROM subastas WHERE propiedad = ? AND localidad = ?";
-    		ps = (PreparedStatement) con.prepareStatement(query);
-        	
-        	ps.setString(1, unaResidencia.getTitulo());
-        	ps.setString(2, unaResidencia.getLocalidad());
-        	
-        	ps.executeUpdate(); 
-        	ps.close();        	
-    	}
-    }
-    
-    
 	public void agregarUsuario(UsuarioComun uc) throws SQLException {
 		Tarjeta tarjeta = uc.getTarjeta();
 
@@ -854,7 +813,7 @@ public class ConnectionBD {
 	}
 
 
-	public void cambiarContraseña(String mail, String value) throws SQLException {		
+	public void modificarContraseña(String mail, String value) throws SQLException {		
 		
 		String query ="UPDATE usuarios "
 				+ "SET contraseña = ? "
@@ -866,7 +825,7 @@ public class ConnectionBD {
 		ps.executeUpdate();
 	}
 	
-	//
+	
 	public void modificarCreditos(String mail, String operacion, int cantidad) throws SQLException {		
 		
 		String modificador = operacion +" "+cantidad;
@@ -879,6 +838,74 @@ public class ConnectionBD {
 		
 		ps.executeUpdate();
 	}
+    
+	
+	public Usuario buscarUsuario(String mail) throws SQLException {
+		
+		String query = "SELECT * FROM usuarios WHERE mail = '"+mail+"'";
+		ResultSet rs = stmt.executeQuery(query);
+		
+		Usuario usuario = null;
+		Tarjeta tarjeta = new Tarjeta();
 
+		while (rs.next()) {
+			if (rs.getBoolean("premium")) {
+				usuario = new UsuarioPremium();
+			} else {
+				usuario = new UsuarioComun();
+			}
+			usuario.setMail(rs.getString("mail"));
+			usuario.setContraseña(rs.getString("contraseña"));
+			usuario.setNombre(rs.getString("nombre"));
+			usuario.setApellido(rs.getString("apellido"));
+			usuario.setfNac((rs.getDate("f_nac").toLocalDate()));
+			usuario.setCreditos(rs.getShort("creditos"));
+
+			tarjeta.setNumero(rs.getLong("nro_tarj"));
+			tarjeta.setMarca(rs.getString("marca_tarj"));
+			tarjeta.setTitular(rs.getString("titu_tarj"));
+			tarjeta.setfVenc(rs.getDate("venc_tarj").toLocalDate());
+			tarjeta.setCodigo(rs.getShort("cod_tarj"));
+			usuario.setTarjeta(tarjeta);
+		}
+
+		return usuario;
+	}		
+	
+	
+	public ArrayList<Usuario> listaUsuarios() throws SQLException {
+
+		String query = "SELECT * FROM usuarios";
+		ResultSet rs = stmt.executeQuery(query);
+
+		ArrayList<Usuario> usuarios = new ArrayList<Usuario>();
+		Usuario usuario;
+		Tarjeta tarjeta = new Tarjeta();
+
+		while (rs.next()) {
+			if (!rs.getBoolean("premium")) {
+				usuario = new UsuarioComun();
+			} else {
+				usuario = new UsuarioPremium();
+			}
+			usuario.setMail(rs.getString("mail"));
+			usuario.setContraseña(rs.getString("contraseña"));
+			usuario.setNombre(rs.getString("nombre"));
+			usuario.setApellido(rs.getString("apellido"));
+			usuario.setfNac((rs.getDate("f_nac").toLocalDate()));
+			usuario.setCreditos(rs.getShort("creditos"));
+
+			tarjeta.setNumero(rs.getLong("nro_tarj"));
+			tarjeta.setMarca(rs.getString("marca_tarj"));
+			tarjeta.setTitular(rs.getString("titu_tarj"));
+			tarjeta.setfVenc(rs.getDate("venc_tarj").toLocalDate());
+			tarjeta.setCodigo(rs.getShort("cod_tarj"));
+			usuario.setTarjeta(tarjeta);
+
+			usuarios.add(usuario);
+		}
+
+		return usuarios;
+	}
 }
 
