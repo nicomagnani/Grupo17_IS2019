@@ -35,6 +35,7 @@ public class MyUI extends UI {
 	Label title;
 	
 	Button residenciasButton;
+	Button misReservasButton;
 	Button subastasButton;
 	Button misSubastasButton;
 	Button buscarFechaButton;
@@ -96,13 +97,17 @@ public class MyUI extends UI {
         this.mostrarLayout();
         this.navigatorUsuario();
         if (vista.equals("detalleResidenciaNormal")) {
-        	navigator.addView("detalleResidenciaNormal", new DetalleResidenciaView("usuario"));
+        	navigator.addView("detalleResidenciaNormal", new DetalleResidenciaView("usuario",this));
         	navigator.navigateTo("detalleResidenciaNormal");
         } else
         	if (vista.equals("detalleResidenciaPorFechas")) {
-        		navigator.addView("detalleResidenciaPorFechas", new DetalleResidenciaView("busqueda"));
+        		navigator.addView("detalleResidenciaPorFechas", new DetalleResidenciaView("busqueda",this));
             	navigator.navigateTo("detalleResidenciaPorFechas");
-            }
+            } else
+            	if (vista.equals("reservarDirecta")) {
+            		navigator.addView("reservarDirecta", new ReservarDirectaView(this));
+                	navigator.navigateTo("reservarDirecta");
+                }
     }
     
     public void vistaAdmin(String unaVista) {
@@ -122,7 +127,7 @@ public class MyUI extends UI {
         this.mostrarLayout();
         this.navigatorAdmin();
         if (vista.equals("detalleResidencia")) {
-        	navigator.addView("detalleResidencia", new DetalleResidenciaView("admin"));
+        	navigator.addView("detalleResidencia", new DetalleResidenciaView("admin",this));
         	navigator.navigateTo("detalleResidencia");
         } else
         	if (vista.equals("modificarResidencia")) {
@@ -155,6 +160,9 @@ public class MyUI extends UI {
     private void botonesUsuario() {
     	residenciasButton = new Button("Residencias", e -> getNavigator().navigateTo("residencias"));
         residenciasButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
+
+        misReservasButton = new Button("Mis reservas", e -> getNavigator().navigateTo("misReservas")); 
+        misReservasButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
         
         subastasButton = new Button("Subastas", e -> getNavigator().navigateTo("subastas"));
         subastasButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);        
@@ -180,7 +188,7 @@ public class MyUI extends UI {
         cerrarSesionButton = new Button("Cerrar Sesión", e -> vistaVisitante());
         cerrarSesionButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
         
-        menu = new CssLayout(img, title, residenciasButton, subastasButton, misSubastasButton, buscarFechaButton,
+        menu = new CssLayout(img, title, residenciasButton, misReservasButton, subastasButton, misSubastasButton, buscarFechaButton,
         		buscarLugarButton, miPerfilButton, contactarButton, verFaqButton, cerrarSesionButton);
         
         menu.addStyleName(ValoTheme.MENU_ROOT);
@@ -196,6 +204,7 @@ public class MyUI extends UI {
 		} catch (SQLException e1) {
 			e1.printStackTrace();
 		}	
+    	navigator.addView("misReservas", new MisReservasView());
     	navigator.addView("subastas", new SubastasUsuarioView());
     	navigator.addView("misSubastas", new MisSubastasView());
         navigator.addView("buscarFecha", new BuscarFechaView(this));

@@ -76,7 +76,6 @@ public class ResidenciasAdminView extends Composite implements View {
 			try {
 				this.subastarTodo();
 			} catch (SQLException e2) {
-				// TODO Auto-generated catch block
 				e2.printStackTrace();
 			}
 		});
@@ -134,6 +133,7 @@ public class ResidenciasAdminView extends Composite implements View {
 		
 		Label titulo = new Label("<p><span style=\"text-align: left; font-weight: bold; font-size: 120%;\">Título:</span> <span style=\"font-size: 120%;\">"
 						+propiedad.getTitulo()+"</span></p>", ContentMode.HTML);
+		
 		Label ubicacion = new Label("<span style=\"font-weight: bold;\">Ubicación:</span> " + propiedad.getPais() + ", " +
 						propiedad.getProvincia() + ", " + propiedad.getLocalidad(), ContentMode.HTML);	
 				
@@ -141,14 +141,17 @@ public class ResidenciasAdminView extends Composite implements View {
 		Label montoBase = new Label("<span style=\"font-weight: bold;\">Monto base:</span> " + String.valueOf(propiedad.getMontoBase()), ContentMode.HTML);
 		
 		Button verFotos = new Button("Ver Fotos");
+		
 		Button verDetalle = new Button("Ver Detalle", e -> {
 			HomeSwitchHome.setPropiedadActual(propiedad);			
 			interfaz.vistaAdminConNuevaVista("detalleResidencia");
 		});
+		
 		Button modificar = new Button("Modificar", e -> {
 			HomeSwitchHome.setPropiedadActual(propiedad);			
 			interfaz.vistaAdminConNuevaVista("modificarResidencia");
-		});		
+		});
+		
 		Button eliminar = new Button("Eliminar");
 	
     	Image foto1 = new Image("Foto 1");
@@ -219,7 +222,6 @@ public class ResidenciasAdminView extends Composite implements View {
 			try {
 				this.eliminar(propiedad, propiedadLayout);
 			} catch (SQLException | EmailException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		});
@@ -242,8 +244,8 @@ public class ResidenciasAdminView extends Composite implements View {
 	//devuelve true si la subasta fue un exito
 	private void subastarTodo() throws SQLException {
 		
-		int n1 = 0;
-		LocalDate hace6meses = LocalDate.now().minusMonths(6);
+		int n1 = 0; //subastas abiertas
+		LocalDate hace6meses = LocalDate.now().minusMonths(6);		
 		
 		reservas = conexion.listaReservas();
 		
@@ -257,8 +259,8 @@ public class ResidenciasAdminView extends Composite implements View {
 						(!reserva.getFechaInicio().isBefore(hace6meses.minusDays(3))) ) {					
 					conexion.comenzarReservaSubasta(reserva);
 					n1++;
-					//TODO: guardar informacion de la reserva/residencia) para mostrarla en la notifiacion					
-				} //fin chequeo
+					//TODO: guardar informacion de la reserva/residencia) para mostrarla en la notificacion					
+				}
 			}
 			if (n1 > 0) {
 				//TODO: mostrar informacion de las subastas abiertas
@@ -275,7 +277,7 @@ public class ResidenciasAdminView extends Composite implements View {
 	
 	private void eliminar(Propiedad propiedad, FormLayout propiedadLayout) throws SQLException, EmailException {		
 		
-		int n = 0; //cantidad de ofertantes informados o reservas eliminadas 
+		int n = 0; //cantidad de ofertantes informados
 		
 		propiedad.setReservas( conexion.listaReservasPorPropiedad(propiedad.getTitulo(), propiedad.getLocalidad()) );
 		
@@ -304,7 +306,7 @@ public class ResidenciasAdminView extends Composite implements View {
 			//devolver creditos de reservas directas
 			for (Reserva r : propiedad.getReservas()) { 
 				if ( (r instanceof ReservaDirecta) && (r.getEstado() == EstadoDeReserva.RESERVADA) )
-					conexion.agregarCredito(r.getUsuario());
+					conexion.modificarCreditos(r.getUsuario(), "+", 1);
 			}
 			
 			mostrarNotificacion("Residencia con "+propiedad.getReservas().size()+" reservas borrada con éxito.", Notification.Type.ERROR_MESSAGE);			

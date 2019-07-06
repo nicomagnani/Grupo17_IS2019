@@ -14,21 +14,26 @@ import com.vaadin.ui.renderers.NumberRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 
 import homeSwitchHome.EstadoDeReserva;
+import homeSwitchHome.HomeSwitchHome;
 import homeSwitchHome.Reserva;
+import homeSwitchHome.Usuario;
 
-public class ReservasAdminView extends Composite implements View {
+public class MisReservasView extends Composite implements View {
 	
-	private Label cabecera = new Label("Ver listado de reservas");
-	private Label msj = new Label("No se han encontrado reservas.");
+	private Label cabecera = new Label("Mi historial de reservas");
+	private Label msj = new Label("No se han realizado reservas.");
 	private Grid<Reserva> tabla = new Grid<>(Reserva.class);
 	
 	private ArrayList<Reserva> reservas = new ArrayList<>();
-	private ArrayList<Reserva> resReservadas = new ArrayList<>();
+	private ArrayList<Reserva> canceladas = new ArrayList<>();
+	private ArrayList<Reserva> reservasUsuario = new ArrayList<>();
 	
 	private ConnectionBD conexion = new ConnectionBD();
 	
+	private Usuario usuario = HomeSwitchHome.getUsuarioActual();
 	
-	public ReservasAdminView() {
+	
+	public MisReservasView() {
 		
 		this.cargarReservas();
 		this.inicializarComponentes();
@@ -39,7 +44,8 @@ public class ReservasAdminView extends Composite implements View {
 	private void cargarReservas() {
 
 		try {
-			reservas = conexion.listaReservas();
+			reservas = conexion.listaReservasPorUsuario(usuario.getMail());
+			canceladas = conexion.listaCanceladasPorUsuario(usuario.getMail());
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -50,9 +56,15 @@ public class ReservasAdminView extends Composite implements View {
 			//chequeo que esté reservada (haya finalizado o no)
 			if ( ((r.getEstado() == EstadoDeReserva.FINALIZADA) && (r.getUsuario() != null))
 					|| (r.getEstado() == EstadoDeReserva.RESERVADA) ) {
-				resReservadas.add(r);
+				reservasUsuario.add(r);
 			}
 		}
+		
+		for (Reserva r : canceladas) {
+			reservasUsuario.add(r);
+		}
+		
+		
 	}
 
 
@@ -64,12 +76,12 @@ public class ReservasAdminView extends Composite implements View {
 		tabla.setVisible(false);
 				
 		//configuro la tabla de reservas (admin)
-		if (resReservadas.isEmpty()) {			
+		if (reservasUsuario.isEmpty()) {			
 			msj.setVisible(true);
 		} else {				
-			tabla.setItems(resReservadas);
+			tabla.setItems(reservasUsuario);
 			tabla.setVisible(true);
-			tabla.setColumns("fechaInicio", "fechaFin", "fechaReserva", "usuario");
+			tabla.setColumns("fechaInicio", "fechaFin", "fechaReserva");
 			
 			tabla.addColumn(Reserva::getMonto,
 					new NumberRenderer(new DecimalFormat("¤#######.##")))
@@ -77,6 +89,9 @@ public class ReservasAdminView extends Composite implements View {
 			
 			tabla.addColumn(Reserva::getTipo)
 					.setCaption("Tipo");
+			
+			tabla.addColumn(Reserva::getEstadoComoString)
+					.setCaption("Estado");
 			
 			tabla.setWidth("650");
 		}

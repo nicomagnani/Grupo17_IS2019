@@ -26,7 +26,10 @@ import homeSwitchHome.EstadoDeReserva;
 import homeSwitchHome.HomeSwitchHome;
 import homeSwitchHome.Propiedad;
 import homeSwitchHome.Reserva;
+import homeSwitchHome.ReservaDirecta;
 import homeSwitchHome.ReservaSubasta;
+import homeSwitchHome.Usuario;
+import homeSwitchHome.UsuarioPremium;
 
 public class DetalleResidenciaView extends Composite implements View {
 	
@@ -35,6 +38,8 @@ public class DetalleResidenciaView extends Composite implements View {
 	private Label cabeceraSemanas = new Label("Semanas");
 	private Label cabeceraReservas = new Label("Reservas");
 	
+	private Label ayuda1 = new Label("Para realizar una reserva directa, haga click sobre la semana deseada.");
+	private Label ayuda2 = new Label("Nota: Las reserva directas requieren estado de usuario premium.");
 	private Label msjSemanas = new Label("Esta residencia no posee semanas disponibles.");
 	private Label msjReservas = new Label("Esta residencia no posee reservas realizadas.");
 	private Grid<Reserva> tablaSemanas = new Grid<>(Reserva.class);
@@ -42,7 +47,7 @@ public class DetalleResidenciaView extends Composite implements View {
 		
 	private Label titulo = new Label();
 	private Label descripcion = new Label();
-	private Label ubicacion = new Label();	
+	private Label ubicacion = new Label();
 	private Button verFotos = new Button("Ver Fotos");
 	
 	private Image foto1 = new Image("Foto 1");
@@ -56,26 +61,34 @@ public class DetalleResidenciaView extends Composite implements View {
 	private ConnectionBD conexion = new ConnectionBD();
 	
 	private Propiedad propiedad;
+	private Usuario usuario;
 	private ArrayList<Reserva> reservas = new ArrayList<>();
 	private ArrayList<Reserva> resSinReservar = new ArrayList<>();
 	private ArrayList<Reserva> resReservadas = new ArrayList<>();
 	private String tipo;
+	private MyUI interfaz;
 	
 	
-	public DetalleResidenciaView(String tipo) {		
+	public DetalleResidenciaView(String tipo, MyUI interfaz) {		
+		
+		this.interfaz = interfaz;
+		this.tipo = tipo;
+		this.propiedad = HomeSwitchHome.getPropiedadActual();
+		this.usuario = HomeSwitchHome.getUsuarioActual();
+		
 		
 		cabeceraPrincipal.addStyleName(ValoTheme.MENU_TITLE);
 		cabeceraDatos.addStyleName(ValoTheme.MENU_TITLE);
 		cabeceraSemanas.addStyleName(ValoTheme.MENU_TITLE);
 		cabeceraReservas.addStyleName(ValoTheme.MENU_TITLE);		
 		
-		this.tipo = tipo;
-		this.propiedad = HomeSwitchHome.getPropiedadActual();
 		
 		this.inicializarDatosResidencia();		
 		
 		this.inicializarFotos();
 
+		ayuda1.setVisible(false);
+		ayuda2.setVisible(false);
 		msjSemanas.setVisible(false);
 		msjReservas.setVisible(false);
 		tablaSemanas.setVisible(false);
@@ -92,7 +105,10 @@ public class DetalleResidenciaView extends Composite implements View {
 		propiedadLayout.setComponentAlignment(fotosLayout, Alignment.MIDDLE_CENTER);
 		propiedadLayout.addStyleName("layout-with-border");
 		
-		VerticalLayout semanasLayout = new VerticalLayout (cabeceraSemanas, tablaSemanas, msjSemanas);
+		VerticalLayout semanasLayout = new VerticalLayout (cabeceraSemanas, ayuda1, ayuda2, tablaSemanas, msjSemanas);
+		semanasLayout.setComponentAlignment(cabeceraSemanas, Alignment.MIDDLE_CENTER);
+		semanasLayout.setComponentAlignment(ayuda1, Alignment.MIDDLE_CENTER);
+		semanasLayout.setComponentAlignment(ayuda2, Alignment.MIDDLE_CENTER);
 		semanasLayout.setComponentAlignment(tablaSemanas, Alignment.MIDDLE_CENTER);
 		semanasLayout.setComponentAlignment(msjSemanas, Alignment.MIDDLE_CENTER);
 		semanasLayout.addStyleName("layout-with-border");		
@@ -149,9 +165,11 @@ public class DetalleResidenciaView extends Composite implements View {
 		
 		titulo = new Label("<p><span style=\"text-align: left; font-weight: bold; font-size: 110%;\">Título:</span> <span style=\"font-size: 110%;\">"
 				+propiedad.getTitulo()+"</span></p>", ContentMode.HTML);
+		
 		ubicacion = new Label("<span style=\"font-weight: bold;\">Ubicación:</span> " + propiedad.getPais() + ", " +
-				propiedad.getProvincia() + ", " + propiedad.getLocalidad(), ContentMode.HTML);			
-		descripcion = new Label("<span style=\"font-weight: bold;\">Descripción:</span> " + propiedad.getDescripcion(), ContentMode.HTML);		
+				propiedad.getProvincia() + ", " + propiedad.getLocalidad(), ContentMode.HTML);
+		
+		descripcion = new Label("<span style=\"font-weight: bold;\">Descripción:</span> " + propiedad.getDescripcion(), ContentMode.HTML);
 	}
 
 
@@ -194,7 +212,7 @@ public class DetalleResidenciaView extends Composite implements View {
 					foto5.setVisible(true);
 				}
 			});
-		}		
+		}
 	}
 
 
@@ -205,8 +223,8 @@ public class DetalleResidenciaView extends Composite implements View {
 		reservas = conexion.listaReservasPorPropiedad(propiedad.getTitulo(), propiedad.getLocalidad());
 		
 		//crea la lista de semanas de acuerdo al tipo
-		if (tipo.equals("admin")) {			
-			for (Reserva r : reservas) {				
+		if (tipo.equals("admin")) {
+			for (Reserva r : reservas) {
 				//chequea que la semana no lleve un año publicada ni esté reservada
 				if ( (r.getEstado() != EstadoDeReserva.FINALIZADA) && (r.getEstado() != EstadoDeReserva.RESERVADA) ) {					
 					//si es una subasta, carga sus datos desde la tabla 'subastas'
@@ -250,6 +268,10 @@ public class DetalleResidenciaView extends Composite implements View {
 		if (resSinReservar.isEmpty()) {
 			msjSemanas.setVisible(true);
 		} else {
+			if (!tipo.equals("admin")) {
+				ayuda1.setVisible(true);
+				ayuda2.setVisible(true);
+			}
 			tablaSemanas.setItems(resSinReservar);
 			tablaSemanas.setVisible(true);
 			tablaSemanas.setColumns("fechaFin", "fechaReserva");
@@ -260,6 +282,15 @@ public class DetalleResidenciaView extends Composite implements View {
 			tablaSemanas.addColumn(Reserva::getMonto,
 					new NumberRenderer(new DecimalFormat("¤#######.##")))
 					.setCaption("Precio actual");
+
+			tablaSemanas.addItemClickListener( event -> {
+				if ( (event.getItem() instanceof ReservaDirecta) && (usuario instanceof UsuarioPremium) ) {
+						HomeSwitchHome.setReservaActual(event.getItem());
+						interfaz.vistaUsuarioConNuevaVista("reservarDirecta");
+				}
+			});
+			
+			
 		}
 		
 		if (tipo.equals("admin")) {

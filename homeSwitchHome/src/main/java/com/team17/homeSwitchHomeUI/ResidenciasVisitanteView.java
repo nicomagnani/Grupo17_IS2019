@@ -22,7 +22,7 @@ public class ResidenciasVisitanteView extends Composite implements View {
 		
 	private Image img = new Image();
 	private Label cabecera = new Label("<p style=\"text-align: center; font-weight: bold;"
-			+ " text-decoration: underline; font-size: 200%;\">Bienvenido a HomeSwitchHome</p>", ContentMode.HTML);
+			+ " text-decoration: underline; font-size: 150%;\">Bienvenido a HomeSwitchHome</p>", ContentMode.HTML);
 	
 	private Label descripcion = new Label("<p style=\"text-align: center; font-size: 120%;\">A través de este servicio"
 			+ " los usuarios podrán realizar reservas a residencias.</p><p style=\"text-align: center; font-size: 120%;\">Para"
@@ -46,17 +46,17 @@ public class ResidenciasVisitanteView extends Composite implements View {
 		else {
 			msj.setVisible(false);
 			tabla.setItems(propiedades);
-			tabla.setWidth("750");
-			tabla.setBodyRowHeight(100);
+			tabla.setWidth("700");
+			tabla.setBodyRowHeight(75);
 			tabla.setColumns("titulo", "localidad");
 			
-			BlobImageRenderer<Propiedad> blobRenderer = new BlobImageRenderer<>(-1, 100);
+			BlobImageRenderer<Propiedad> blobRenderer = new BlobImageRenderer<>(-1, 75);
 			tabla.addColumn(Propiedad::getFoto1, blobRenderer).setCaption("Foto");
 			tabla.getColumn("titulo").setWidth(300);
-			tabla.getColumn("localidad").setWidth(300);			
+			tabla.getColumn("localidad").setWidth(250);
 		}
 		
-		img.setHeight("250");	
+		img.setHeight("200");	
 	
 		VerticalLayout mainLayout = new VerticalLayout(img, cabecera, descripcion, tabla, msj);	
 		mainLayout.setComponentAlignment(img, Alignment.MIDDLE_CENTER);
