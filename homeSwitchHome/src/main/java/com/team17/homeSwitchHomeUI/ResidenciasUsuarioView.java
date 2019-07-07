@@ -4,17 +4,24 @@ package com.team17.homeSwitchHomeUI;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Optional;
+import java.util.Set;
 
 import org.vaadin.grid.cellrenderers.view.BlobImageRenderer;
 
+import com.vaadin.annotations.Title;
+import com.vaadin.event.selection.SingleSelectionEvent;
 import com.vaadin.navigator.View;
+import com.vaadin.server.Page;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Composite;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.components.grid.SingleSelectionModel;
 import com.vaadin.ui.renderers.NumberRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -22,16 +29,18 @@ import homeSwitchHome.HomeSwitchHome;
 import homeSwitchHome.Propiedad;
 import homeSwitchHome.Usuario;
 
-
+@Title("Residencias - HomeSwitchHome")
 public class ResidenciasUsuarioView extends Composite implements View {
 	
-	private Usuario u;
-	private Label cabecera = new Label("Lista de residencias");;
+	private Label cabecera = new Label("Lista de residencias");
 	private Label msjBienvenida = new Label();
+	private Label msjAyuda = new Label("Seleccione una residencia para ver sus semanas disponibles.");
 	private Label msjResultado = new Label("No hay residencias disponibles.");
 	private Grid<Propiedad> tabla = new Grid<>(Propiedad.class);
+	
 	private ArrayList<Propiedad> propiedades;
 	private ArrayList<Propiedad> propiedades2 = new ArrayList<>();	
+	private Usuario u;
 	
 		
 	public ResidenciasUsuarioView(boolean mostrarCabecera, MyUI interfaz) throws SQLException {
@@ -49,7 +58,7 @@ public class ResidenciasUsuarioView extends Composite implements View {
 		cabecera.setVisible(!mostrarCabecera);		
 		
 		msjResultado.setVisible(false);
-		
+		msjAyuda.setVisible(false);
 		tabla.setVisible(false);
 		tabla.setWidth("750");
 		tabla.setBodyRowHeight(100);
@@ -70,6 +79,7 @@ public class ResidenciasUsuarioView extends Composite implements View {
 			msjResultado.setVisible(true);
 		} else {
 			tabla.setVisible(true);
+			msjAyuda.setVisible(true);
 			msjResultado.setVisible(false);
 			tabla.setItems(propiedades);
 			tabla.setColumns("titulo", "provincia", "localidad", "domicilio");
@@ -99,16 +109,25 @@ public class ResidenciasUsuarioView extends Composite implements View {
 			BlobImageRenderer<Propiedad> blobRenderer5 = new BlobImageRenderer<>(-1, 100);			
 			tabla.addColumn(Propiedad::getFoto5, blobRenderer5).setCaption("Foto 5");
 			
-			tabla.addItemClickListener( event -> {
-				HomeSwitchHome.setPropiedadActual(event.getItem());
+//			tabla.addItemClickListener( event -> {
+//				HomeSwitchHome.setPropiedadActual(event.getItem());
+//				interfaz.vistaUsuarioConNuevaVista("detalleResidenciaNormal");
+//			});
+						
+			//habilita selección con teclado, se puede reemplazar por addItemClickListener
+			tabla.addSelectionListener(event -> {
+			    Optional<Propiedad> selected = ((SingleSelectionEvent<Propiedad>) event).getSelectedItem();
+			    HomeSwitchHome.setPropiedadActual(selected.get());
 				interfaz.vistaUsuarioConNuevaVista("detalleResidenciaNormal");
 			});
 			
 		}
 		
-		VerticalLayout mainLayout = new VerticalLayout(cabecera, msjBienvenida, msjResultado, tabla);
+		VerticalLayout mainLayout = new VerticalLayout(cabecera, msjBienvenida, msjAyuda, msjResultado, tabla);
 		mainLayout.setComponentAlignment(cabecera, Alignment.MIDDLE_CENTER);
 		mainLayout.setComponentAlignment(msjBienvenida, Alignment.MIDDLE_CENTER);
+		mainLayout.setComponentAlignment(msjAyuda, Alignment.MIDDLE_CENTER);
+		mainLayout.setComponentAlignment(msjResultado, Alignment.MIDDLE_CENTER);
 		mainLayout.setComponentAlignment(tabla, Alignment.MIDDLE_LEFT);
 		
 		setCompositionRoot(mainLayout);

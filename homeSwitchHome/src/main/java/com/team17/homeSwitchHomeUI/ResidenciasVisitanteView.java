@@ -5,7 +5,9 @@ import java.util.ArrayList;
 
 import org.vaadin.grid.cellrenderers.view.BlobImageRenderer;
 
+import com.vaadin.annotations.Title;
 import com.vaadin.navigator.View;
+import com.vaadin.server.Page;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -17,9 +19,10 @@ import com.vaadin.ui.VerticalLayout;
 
 import homeSwitchHome.Propiedad;
 
-
+@Title("HomeSwitchHome")
 public class ResidenciasVisitanteView extends Composite implements View {
 		
+	
 	private Image img = new Image();
 	private Label cabecera = new Label("<p style=\"text-align: center; font-weight: bold;"
 			+ " text-decoration: underline; font-size: 150%;\">Bienvenido a HomeSwitchHome</p>", ContentMode.HTML);
@@ -34,9 +37,8 @@ public class ResidenciasVisitanteView extends Composite implements View {
 	
 	public ResidenciasVisitanteView() throws SQLException {
 		
-		
 		img.setSource(new ThemeResource("logo.png"));
-
+		
 		ConnectionBD conectar = new ConnectionBD();
 		ArrayList<Propiedad> propiedades = conectar.listaResidenciasVisitante();		
 		

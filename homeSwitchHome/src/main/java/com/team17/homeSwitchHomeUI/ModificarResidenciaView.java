@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import org.vaadin.easyuploads.UploadField;
 import org.vaadin.ui.NumberField;
 
+import com.vaadin.annotations.Title;
 import com.vaadin.data.Binder;
 import com.vaadin.data.converter.StringToFloatConverter;
 import com.vaadin.data.validator.RegexpValidator;
@@ -37,9 +38,10 @@ import homeSwitchHome.HomeSwitchHome;
 import homeSwitchHome.Propiedad;
 import homeSwitchHome.Reserva;
 
+@Title("Modificar residencia - HomeSwitchHome")
 public class ModificarResidenciaView extends Composite implements View {
 
-	private Label cabecera = new Label();
+	private Label cabecera = new Label("Modificar residencia");
 
 	private TextField titulo = new TextField("Título");
 	private TextArea descripcion = new TextArea("Descripción");
@@ -50,9 +52,6 @@ public class ModificarResidenciaView extends Composite implements View {
 	private NumberField monto = new NumberField("Monto base");
 	private Button aceptarButton = new Button("Aceptar");
 	private Notification msjResultado = new Notification(" ");
-
-	//el binder asocia los campos del formulario con los de un objeto Propiedad
-//	private Binder<Propiedad> binder = new Binder<>(Propiedad.class);
 
 	private Label labelTipoCarga = new Label("Seleccionar tipo de carga de imágenes");
 	private RadioButtonGroup<String> tipoCargaRadioButton = new RadioButtonGroup<>();
@@ -116,25 +115,7 @@ public class ModificarResidenciaView extends Composite implements View {
 		return false;
 	}
 
-//	private void inicializarBinder() {
-//
-//		binder.readBean(propiedad);
-//		binder.bind(descripcion, Propiedad::getDescripcion, Propiedad::setDescripcion);
-//		binder.forField(monto)
-//				.withConverter(new StringToFloatConverter(""))
-//				.bind(Propiedad::getMontoBase, Propiedad::setMontoBase);
-//
-//		if (!enSubasta) {
-//			binder.bind(titulo, Propiedad::getTitulo, Propiedad::setTitulo);
-//			binder.bind(pais, Propiedad::getPais, Propiedad::setPais);
-//			binder.bind(provincia, Propiedad::getProvincia, Propiedad::setProvincia);
-//			binder.bind(localidad, Propiedad::getLocalidad, Propiedad::setLocalidad);
-//			binder.bind(domicilio, Propiedad::getDomicilio, Propiedad::setDomicilio);
-//		}
-//	}
-
-
-	private void inicializarComponentes() {
+	private void inicializarComponentes() {		
 
 		cabecera.addStyleName(ValoTheme.MENU_TITLE);
 
@@ -148,8 +129,6 @@ public class ModificarResidenciaView extends Composite implements View {
 			    .withValidator(new RegexpValidator("", "[-+]?[0-9]*\\.?[0-9]+"))
 			    .withConverter(new StringToFloatConverter(""))
 			    .bind(Propiedad::getMontoBase, Propiedad::setMontoBase);
-
-		
 		
 		if (!enSubasta) {
 			cabecera.setValue("Modificar residencia (sin subasta activa)");
@@ -166,7 +145,7 @@ public class ModificarResidenciaView extends Composite implements View {
 			localidad.setVisible(false);
 			domicilio.setVisible(false);
 		}
-
+		
 		//configuro el radiobox para elegir el tipo de foto
 		tipoCargaRadioButton.addStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
 		tipoCargaRadioButton.setItems("Local", "URL");

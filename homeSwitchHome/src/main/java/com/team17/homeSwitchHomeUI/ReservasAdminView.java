@@ -4,7 +4,9 @@ import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
+import com.vaadin.annotations.Title;
 import com.vaadin.navigator.View;
+import com.vaadin.server.Page;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Composite;
 import com.vaadin.ui.Grid;
@@ -16,6 +18,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import homeSwitchHome.EstadoDeReserva;
 import homeSwitchHome.Reserva;
 
+@Title("Reservas - HomeSwitchHome")
 public class ReservasAdminView extends Composite implements View {
 	
 	private Label cabecera = new Label("Ver listado de reservas");

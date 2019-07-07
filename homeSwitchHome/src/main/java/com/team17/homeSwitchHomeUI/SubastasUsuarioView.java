@@ -3,7 +3,9 @@ package com.team17.homeSwitchHomeUI;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import com.vaadin.annotations.Title;
 import com.vaadin.navigator.View;
+import com.vaadin.server.Page;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -16,24 +18,26 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import homeSwitchHome.ReservaSubasta;
 
+@Title("Subastas - HomeSwitchHome")
 public class SubastasUsuarioView extends Composite implements View { // necesita composite y view para funcionar correctamente
 
-	private ArrayList<ReservaSubasta> subastas;
-	private ConnectionBD conexion = new ConnectionBD();
-	
 	private Label cabecera = new Label("Lista de subastas");
 	private Label msjResultado = new Label("No hay subastas disponibles.");
 	
 	private VerticalLayout subastasLayout = new VerticalLayout();
 	private Panel panel = new Panel();
 	
+	private ArrayList<ReservaSubasta> subastas;
+	private ConnectionBD conexion = new ConnectionBD();
+	
 	
 	public SubastasUsuarioView() {
+		
 		cabecera.addStyleName(ValoTheme.MENU_TITLE);
+		
 		panel.setVisible(false);
 		msjResultado.setVisible(false);	
 		
-		subastasLayout = new VerticalLayout();
 		subastasLayout.setSizeUndefined();
 		
 		//coloco el layout con las propiedades dentro del panel para poder scrollear	
@@ -61,15 +65,23 @@ public class SubastasUsuarioView extends Composite implements View { // necesita
 			e.printStackTrace();
 		}
 		
-		if (!subastas.isEmpty()) {
-			panel.setVisible(true);			
+		int n = 0;
+		
+		if (!subastas.isEmpty()) {			
 			for (ReservaSubasta subasta : subastas) {				
+				
 				//muestra solo subastas en curso
-				if (!subasta.getFechaFinSubastaString().equals("Finalizada"))				
+				if (!subasta.getFechaFinSubastaString().equals("Finalizada")) {
 					this.añadirSubasta(subasta);
-			}
+					n++;
+				}
+			}			
+		}
+		
+		if (n > 0) {
+			panel.setVisible(true);
 		} else
-			msjResultado.setVisible(true);		
+			msjResultado.setVisible(true);
 	}
 	
 

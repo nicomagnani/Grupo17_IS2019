@@ -3,6 +3,7 @@ package com.team17.homeSwitchHomeUI;
 import java.sql.SQLException;
 
 import com.vaadin.annotations.Theme;
+import com.vaadin.annotations.Title;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.server.Page;
@@ -29,6 +30,7 @@ import homeSwitchHome.UsuarioComun;
 import homeSwitchHome.UsuarioPremium;
 
 @Theme("hometheme")
+@Title("Mi perfil - HomeSwitchHome")
 public class MiPerfilView extends Composite implements View {  //.necesita composite y view para funcionar correctamente
 	
 	private Label cabecera = new Label("Perfil de usuario");
@@ -54,8 +56,9 @@ public class MiPerfilView extends Composite implements View {  //.necesita compo
 	
 	public MiPerfilView(Navigator navigator) {		
 		
-		cabecera.addStyleName(ValoTheme.MENU_TITLE);
 		usuario = HomeSwitchHome.getUsuarioActual();
+		
+		cabecera.addStyleName(ValoTheme.MENU_TITLE);
 		
 		Label labelParte1 = new Label("<span style=\"text-align: left; font-weight: bold; text-decoration: underline; font-size: 120%;\">Datos generales</span>", ContentMode.HTML);
 		Label labelMail = new Label("<span style=\"font-weight: bold;\">Email:</span> " + usuario.getMail(), ContentMode.HTML);	

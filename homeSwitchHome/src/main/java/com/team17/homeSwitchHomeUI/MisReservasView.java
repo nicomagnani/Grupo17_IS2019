@@ -4,7 +4,9 @@ import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
+import com.vaadin.annotations.Title;
 import com.vaadin.navigator.View;
+import com.vaadin.server.Page;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Composite;
 import com.vaadin.ui.Grid;
@@ -18,6 +20,7 @@ import homeSwitchHome.HomeSwitchHome;
 import homeSwitchHome.Reserva;
 import homeSwitchHome.Usuario;
 
+@Title("Mis reservas - HomeSwitchHome")
 public class MisReservasView extends Composite implements View {
 	
 	private Label cabecera = new Label("Mi historial de reservas");
@@ -34,6 +37,7 @@ public class MisReservasView extends Composite implements View {
 	
 	
 	public MisReservasView() {
+		
 		
 		this.cargarReservas();
 		this.inicializarComponentes();
@@ -62,9 +66,7 @@ public class MisReservasView extends Composite implements View {
 		
 		for (Reserva r : canceladas) {
 			reservasUsuario.add(r);
-		}
-		
-		
+		}		
 	}
 
 

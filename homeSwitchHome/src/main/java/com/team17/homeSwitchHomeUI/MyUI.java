@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import javax.servlet.annotation.WebServlet;
 
 import com.vaadin.annotations.Theme;
+import com.vaadin.annotations.Title;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.ThemeResource;
@@ -28,7 +29,9 @@ import com.vaadin.ui.themes.ValoTheme;
  * The UI is initialized using {@link #init(VaadinRequest)}. This method is intended to be 
  * overridden to add component to the user interface and initialize non-component functionality.
  */
+
 @Theme("hometheme")
+@Title("HomeSwitchHome")
 public class MyUI extends UI {
 	
 	Image img;

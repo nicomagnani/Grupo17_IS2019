@@ -4,7 +4,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import com.vaadin.annotations.Theme;
+import com.vaadin.annotations.Title;
 import com.vaadin.navigator.View;
+import com.vaadin.server.Page;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Composite;
@@ -20,6 +22,7 @@ import homeSwitchHome.UsuarioAdministrador;
 
 
 @Theme("hometheme")
+@Title("Iniciar sesión - HomeSwitchHome")
 public class IniciarSesionView extends Composite implements View {  //.necesita composite y view para funcionar correctamente
 	
 	Label cabecera = new Label("Iniciar Sesión");
@@ -27,6 +30,7 @@ public class IniciarSesionView extends Composite implements View {  //.necesita 
 	PasswordField textoContraseña = new PasswordField("Contraseña:");
 	Button login = new Button("Iniciar Sesión");
 	Label msj = new Label();
+	
 		
 	public IniciarSesionView(MyUI interfaz) {		
 		

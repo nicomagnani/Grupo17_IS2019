@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+import com.vaadin.annotations.Title;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.server.Page;
@@ -18,13 +19,15 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
 
 import homeSwitchHome.HomeSwitchHome;
 import homeSwitchHome.Usuario;
 
+@Title("Modificar cuenta - HomeSwitchHome")
 public class ModificarPerfilView extends Composite implements View {  //.necesita composite y view para funcionar correctamente
 	
-	Label cabecera = new Label("Modificar datos");
+	Label cabecera = new Label("Modificar datos generales");
 	Label labelParte1 = new Label("<span style=\"text-align: left; font-weight: bold; text-decoration: underline; font-size: 120%;\">Datos generales</span>", ContentMode.HTML);
 	TextField textoEmail = new TextField("Email:");	
 	TextField textoNombre = new TextField("Nombre:");
@@ -41,6 +44,8 @@ public class ModificarPerfilView extends Composite implements View {  //.necesit
 	public ModificarPerfilView(Navigator navigator, MyUI interfaz) {
 
 		usuario = HomeSwitchHome.getUsuarioActual();
+		
+		cabecera.addStyleName(ValoTheme.MENU_TITLE);
 	   
 		textoEmail.setValue(usuario.getMail());
 		textoNombre.setValue(usuario.getNombre());

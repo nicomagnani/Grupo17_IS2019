@@ -7,7 +7,9 @@ import java.util.ArrayList;
 
 import org.vaadin.grid.cellrenderers.view.BlobImageRenderer;
 
+import com.vaadin.annotations.Title;
 import com.vaadin.navigator.View;
+import com.vaadin.server.Page;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Composite;
@@ -22,12 +24,13 @@ import com.vaadin.ui.themes.ValoTheme;
 import homeSwitchHome.HomeSwitchHome;
 import homeSwitchHome.Propiedad;
 
-
+@Title("Búsqueda por lugar - HomeSwitchHome")
 public class BuscarLugarView extends Composite implements View {  //.necesita composite y view para funcionar correctamente
 
 	Label cabecera = new Label("Buscar residencias por lugar");
 	TextField textoBuscar = new TextField("Ingrese una localidad");
 	Button botonBuscar = new Button("Buscar");
+	Label msjAyuda = new Label("Seleccione una residencia para ver sus semanas disponibles.");
 	Label msjResultado = new Label();
 	Grid<Propiedad> tabla = new Grid<>(Propiedad.class);
 
@@ -44,17 +47,17 @@ public class BuscarLugarView extends Composite implements View {  //.necesita co
 		
 		botonBuscar.addClickListener(e -> buscar());
 		
+		msjResultado.setVisible(false);
+		msjAyuda.setVisible(false);
+		tabla.setVisible(false);
 		tabla.setWidth("750");
-		tabla.setBodyRowHeight(100);
+		tabla.setBodyRowHeight(100);		
 		
 		
-		tabla.setVisible(false);		
-		
-		
-		VerticalLayout mainLayout = new VerticalLayout(cabecera, textoBuscar, botonBuscar, msjResultado, tabla);
-		
+		VerticalLayout mainLayout = new VerticalLayout(cabecera, textoBuscar, botonBuscar, msjAyuda, msjResultado, tabla);
 		mainLayout.setComponentAlignment(textoBuscar, Alignment.MIDDLE_CENTER);
 		mainLayout.setComponentAlignment(botonBuscar, Alignment.MIDDLE_CENTER);
+		mainLayout.setComponentAlignment(msjAyuda, Alignment.MIDDLE_CENTER);
 		mainLayout.setComponentAlignment(msjResultado, Alignment.MIDDLE_CENTER);
 		mainLayout.setComponentAlignment(tabla, Alignment.MIDDLE_LEFT);
 		
@@ -80,8 +83,8 @@ public class BuscarLugarView extends Composite implements View {  //.necesita co
 				tabla.setVisible(false);
 				msjResultado.setValue("No se encontraron residencias disponibles en esa localidad.");
 			} else {
+				msjAyuda.setVisible(true);
 				tabla.setVisible(true);
-				msjResultado.setValue("Éxito.");
 				tabla.setItems(propiedades);				
 				tabla.setColumns("titulo", "domicilio");
 				

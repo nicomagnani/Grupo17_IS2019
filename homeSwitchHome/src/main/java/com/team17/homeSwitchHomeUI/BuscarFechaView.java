@@ -8,7 +8,9 @@ import java.util.ArrayList;
 
 import org.vaadin.grid.cellrenderers.view.BlobImageRenderer;
 
+import com.vaadin.annotations.Title;
 import com.vaadin.navigator.View;
+import com.vaadin.server.Page;
 import com.vaadin.shared.ui.datefield.DateResolution;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -25,11 +27,13 @@ import com.vaadin.ui.themes.ValoTheme;
 import homeSwitchHome.HomeSwitchHome;
 import homeSwitchHome.Propiedad;
 
+@Title("Búsqueda por fecha - HomeSwitchHome")
 public class BuscarFechaView extends Composite implements View {  //necesita composite y view para funcionar correctamente
 
 	private Label cabecera = new Label("Buscar residencias por fecha");
 	private DateField campoFechaIncio = new DateField("Fecha inicio",LocalDate.now().plusMonths(6));
 	private DateField campoFechaFin = new DateField("Fecha fin",LocalDate.now().plusMonths(8));
+	private Label msjAyuda = new Label("Seleccione una residencia para ver sus semanas disponibles.");
 	private Label msjResultado = new Label();
 	private Button botonBuscar = new Button("Buscar");	
 	private Grid<Propiedad> tabla = new Grid<>(Propiedad.class);
@@ -39,7 +43,7 @@ public class BuscarFechaView extends Composite implements View {  //necesita com
 	private MyUI interfaz;
 	
 	
-	public BuscarFechaView(MyUI interfaz) {		
+	public BuscarFechaView(MyUI interfaz) {				
 		
 		this.interfaz = interfaz;
 		
@@ -53,18 +57,21 @@ public class BuscarFechaView extends Composite implements View {  //necesita com
 		campoFechaFin.setResolution(DateResolution.DAY);
 		campoFechaFin.setRangeStart(LocalDate.now().plusMonths(6));
 				
-		tabla.setVisible(false);
-		
 		botonBuscar.addClickListener(e -> buscar());
 		
+		msjResultado.setVisible(false);
+		msjAyuda.setVisible(false);
+		tabla.setVisible(false);		
 		tabla.setWidth("750");
 		tabla.setBodyRowHeight(100);
 		
-		HorizontalLayout fechas = new HorizontalLayout(campoFechaIncio, campoFechaFin);
-		VerticalLayout mainLayout = new VerticalLayout(cabecera, fechas, botonBuscar, msjResultado, tabla);
 		
-		mainLayout.setComponentAlignment(botonBuscar, Alignment.MIDDLE_CENTER);
+		HorizontalLayout fechas = new HorizontalLayout(campoFechaIncio, campoFechaFin);
+		
+		VerticalLayout mainLayout = new VerticalLayout(cabecera, fechas, botonBuscar, msjAyuda, msjResultado, tabla);
 		mainLayout.setComponentAlignment(fechas, Alignment.MIDDLE_CENTER);
+		mainLayout.setComponentAlignment(botonBuscar, Alignment.MIDDLE_CENTER);
+		mainLayout.setComponentAlignment(msjAyuda, Alignment.MIDDLE_CENTER);
 		mainLayout.setComponentAlignment(msjResultado, Alignment.MIDDLE_CENTER);
 		mainLayout.setComponentAlignment(tabla, Alignment.MIDDLE_LEFT);
 		
@@ -98,8 +105,8 @@ public class BuscarFechaView extends Composite implements View {  //necesita com
 				tabla.setVisible(false);
 				msjResultado.setValue("No se encontraron residencias en ese rango de fechas.");
 			} else {
+				msjAyuda.setVisible(true);
 				tabla.setVisible(true);
-				msjResultado.setValue("Éxito.");				
 				tabla.setItems(propiedades);
 				tabla.setColumns("titulo", "provincia", "localidad", "domicilio");
 				

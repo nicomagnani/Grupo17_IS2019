@@ -6,7 +6,9 @@ import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
+import com.vaadin.annotations.Title;
 import com.vaadin.navigator.View;
+import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -31,6 +33,7 @@ import homeSwitchHome.ReservaSubasta;
 import homeSwitchHome.Usuario;
 import homeSwitchHome.UsuarioPremium;
 
+@Title("Detalle de residencia - HomeSwitchHome")
 public class DetalleResidenciaView extends Composite implements View {
 	
 	private Label cabeceraPrincipal = new Label("Detalle de residencia");
@@ -75,7 +78,6 @@ public class DetalleResidenciaView extends Composite implements View {
 		this.tipo = tipo;
 		this.propiedad = HomeSwitchHome.getPropiedadActual();
 		this.usuario = HomeSwitchHome.getUsuarioActual();
-		
 		
 		cabeceraPrincipal.addStyleName(ValoTheme.MENU_TITLE);
 		cabeceraDatos.addStyleName(ValoTheme.MENU_TITLE);

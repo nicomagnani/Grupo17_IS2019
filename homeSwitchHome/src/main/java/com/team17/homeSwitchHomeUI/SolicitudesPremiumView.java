@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 
+import com.vaadin.annotations.Title;
 import com.vaadin.navigator.View;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.ContentMode;
@@ -22,6 +23,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import homeSwitchHome.Solicitud;
 
+@Title("Solicitudes de Premium - HomeSwitchHome")
 public class SolicitudesPremiumView extends Composite implements View {
 	
 	private Label cabecera = new Label("Solicitudes de alta/baja de premium");

@@ -5,6 +5,7 @@ import java.time.LocalDate;
 
 import org.vaadin.ui.NumberField;
 
+import com.vaadin.annotations.Title;
 import com.vaadin.data.Binder;
 import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.navigator.Navigator;
@@ -31,8 +32,10 @@ import homeSwitchHome.StringToShortConverter;
 import homeSwitchHome.Tarjeta;
 import homeSwitchHome.Usuario;
 
+@Title("Modificar cuenta - HomeSwitchHome")
 public class ModificarTarjetaView extends Composite implements View {
 
+	Label cabecera = new Label("Modificar datos de tarjeta");
 	Label labelParte2 = new Label(
 			"<span style=\"text-align: left; font-weight: bold; text-decoration: underline; font-size: 120%;\">Datos de tarjeta</span>",
 			ContentMode.HTML);
@@ -50,6 +53,8 @@ public class ModificarTarjetaView extends Composite implements View {
 	public ModificarTarjetaView(Navigator navigator, MyUI interfaz) {
 		
 		usuario = HomeSwitchHome.getUsuarioActual();
+		
+		cabecera.addStyleName(ValoTheme.MENU_TITLE);
 
 		campoNroTarj.setMaxLength(16);
 		campoNroTarj.setDecimalAllowed(false);
@@ -76,7 +81,7 @@ public class ModificarTarjetaView extends Composite implements View {
 
 		FormLayout layout2 = new FormLayout(campoNroTarj, campoMarcaTarj, textoTitTarj, fechaVencTarj, nroSegTarj);
 		HorizontalLayout botonesLayout = new HorizontalLayout(botonAceptar, botonCancelar);
-		VerticalLayout mainLayout = new VerticalLayout(labelParte2, layout2, botonesLayout);
+		VerticalLayout mainLayout = new VerticalLayout(cabecera, labelParte2, layout2, botonesLayout);
 
 		mainLayout.setComponentAlignment(botonesLayout, Alignment.MIDDLE_CENTER);
 

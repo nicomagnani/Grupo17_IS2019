@@ -3,7 +3,9 @@ package com.team17.homeSwitchHomeUI;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import com.vaadin.annotations.Title;
 import com.vaadin.navigator.View;
+import com.vaadin.server.Page;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Composite;
 import com.vaadin.ui.Grid;
@@ -16,8 +18,8 @@ import homeSwitchHome.HomeSwitchHome;
 import homeSwitchHome.Oferta;
 import homeSwitchHome.ReservaSubasta;
 
-public class MisSubastasView extends Composite implements View {
-	
+@Title("Mis subastas - HomeSwitchHome")
+public class MisSubastasView extends Composite implements View {	
 	
 	private Label cabecera = new Label("Subastas en que participé");
 	private Label msjResultado = new Label("No se han hecho ofertas en subastas.");

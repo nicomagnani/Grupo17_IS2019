@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import org.vaadin.easyuploads.UploadField;
 import org.vaadin.ui.NumberField;
 
+import com.vaadin.annotations.Title;
 import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationException;
 import com.vaadin.data.converter.StringToFloatConverter;
@@ -36,8 +37,10 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import homeSwitchHome.Propiedad;
 
+@Title("Agregar residencia - HomeSwitchHome")
 public class AgregarResidenciaView extends Composite implements View {  //.necesita composite y view para funcionar correctamente	
 
+	Label cabecera = new Label("Agregar una residencia");
 	private FormLayout formulario = new FormLayout();
 	private TextField titulo = new TextField("Título");
 	private TextArea descripcion = new TextArea("Descripción");
@@ -73,9 +76,8 @@ public class AgregarResidenciaView extends Composite implements View {  //.neces
 	private int tot = 0;
 	
 	
-	public AgregarResidenciaView(MyUI interfaz) {
-		
-		Label cabecera = new Label("Agregar una residencia");
+	public AgregarResidenciaView(MyUI interfaz) {		
+			
 		cabecera.addStyleName(ValoTheme.MENU_TITLE);
 		
 		//el binder asocia escrito en el formulario a los campos de un objeto Propiedad 
@@ -87,7 +89,7 @@ public class AgregarResidenciaView extends Composite implements View {  //.neces
 		binder.bind(localidad, Propiedad::getLocalidad, Propiedad::setLocalidad);
 		binder.bind(domicilio, Propiedad::getDomicilio, Propiedad::setDomicilio);
 		binder.forField(monto).withConverter(new StringToFloatConverter("")).
-		bind(Propiedad::getMontoBase, Propiedad::setMontoBase);
+				bind(Propiedad::getMontoBase, Propiedad::setMontoBase);
 		
 		//configuro el radiobox para elegir el tipo de foto
 		single.addStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
@@ -259,7 +261,7 @@ public class AgregarResidenciaView extends Composite implements View {  //.neces
 	//chequea requisitos finales y sube la residencia a la base de datos
 	private void aceptar(MyUI interfaz) throws SQLException {		
 		
-		if ( !hayCamposVacios() ) {			
+		if (!this.hayCamposVacios()) {			
 			try {
 		        binder.writeBean(propiedad);        
 				} catch (ValidationException e) {
@@ -268,23 +270,26 @@ public class AgregarResidenciaView extends Composite implements View {  //.neces
 				}
 			propiedad.setFotos(fotos);			
 			
-			if ( !existePropiedad() ) {
-				//si cumple todos los requisitos, cargo la residencia y borro el formulario
-				ConnectionBD con = new ConnectionBD();
-				con.agregarResidencia(propiedad);
-				mostrarNotificacion("Éxito.", Notification.Type.HUMANIZED_MESSAGE);
+			float montoFinal = Float.parseFloat(monto.getValue());
+			if (montoFinal > 0) {
 				
-				//reinicio todos los campos
-				for ( Component comp : formulario ) {
-				    if (comp instanceof AbstractTextField) {
-				    	((AbstractTextField) comp).setValue(((AbstractTextField) comp).getEmptyValue());
-				    }
-				}
-				
-				//recarga la sesion de admin con la nueva residencia
-				interfaz.vistaAdmin("agregarResidencia");
-				
-			} else mostrarNotificacion("Error: Ya existe una propiedad con el mismo título en esa localidad.", Notification.Type.ERROR_MESSAGE);
+				if (!this.existePropiedad()) {
+					
+					//si cumple todos los requisitos, cargo la residencia y borro el formulario
+					ConnectionBD con = new ConnectionBD();
+					con.agregarResidencia(propiedad);
+					mostrarNotificacion("Éxito.", Notification.Type.HUMANIZED_MESSAGE);
+					
+					//reinicio todos los campos
+					for ( Component comp : formulario ) {
+					    if (comp instanceof AbstractTextField)
+					    	((AbstractTextField) comp).setValue(((AbstractTextField) comp).getEmptyValue());
+					}					
+					//recarga la sesion de admin con la nueva residencia
+					interfaz.vistaAdmin("agregarResidencia");
+					
+				} else mostrarNotificacion("Error: Ya existe una propiedad con el mismo título en esa localidad.", Notification.Type.ERROR_MESSAGE);
+			} else mostrarNotificacion("Error: El monto base debe ser mayor a 0.", Notification.Type.ERROR_MESSAGE);
 		} else mostrarNotificacion("Error: Al menos un campo se encuentra vacío.", Notification.Type.ERROR_MESSAGE);
 	}
 			

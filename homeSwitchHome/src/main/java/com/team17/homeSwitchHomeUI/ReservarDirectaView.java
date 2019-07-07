@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 
+import com.vaadin.annotations.Title;
 import com.vaadin.navigator.View;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.ContentMode;
@@ -25,6 +26,7 @@ import homeSwitchHome.Propiedad;
 import homeSwitchHome.ReservaDirecta;
 import homeSwitchHome.Usuario;
 
+@Title("Realizar reserva directa - HomeSwitchHome")
 public class ReservarDirectaView extends Composite implements View {
 	
 	private Label cabeceraPrincipal = new Label("Realizar reserva directa");

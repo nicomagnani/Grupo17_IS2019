@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 
+import com.vaadin.annotations.Title;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.server.Page;
@@ -33,6 +34,7 @@ import homeSwitchHome.Reserva;
 import homeSwitchHome.ReservaDirecta;
 import homeSwitchHome.ReservaSubasta;
 
+@Title("Residencias - HomeSwitchHome")
 public class ResidenciasAdminView extends Composite implements View {
 	
 	private Label cabecera = new Label("Lista de residencias (administrador)");

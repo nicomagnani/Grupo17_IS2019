@@ -8,6 +8,7 @@ import java.util.Objects;
 
 import org.vaadin.ui.NumberField;
 
+import com.vaadin.annotations.Title;
 import com.vaadin.data.Binder;
 import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.navigator.View;
@@ -34,7 +35,7 @@ import homeSwitchHome.Usuario;
 import homeSwitchHome.UsuarioAdministrador;
 import homeSwitchHome.UsuarioComun;
 
-
+@Title("Registro - HomeSwitchHome")
 public class RegistrarUsuarioView extends Composite implements View {
 	
 	Label cabecera = new Label("Registrar usuario");
