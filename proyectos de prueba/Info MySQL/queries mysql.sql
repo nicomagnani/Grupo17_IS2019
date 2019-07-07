@@ -70,12 +70,16 @@ Ejemplos:
 SELECT * FROM propiedad ORDER BY RAND() LIMIT 5;
 
 ---------------------------------
-## SELECCIONAR FILAS SEGUN SU EL VALOR DE SUS CAMPOS##
+## SELECCIONAR FILAS SEGUN SU EL VALOR DE SUS CAMPOS ##
 SELECT * FROM table_name WHERE [condition]
 
 Ejemplos:
 SELECT * FROM propiedad WHERE localidad = 'la plata'
 SELECT * FROM usuarios WHERE mail = '2'
+
+--------------------------------
+## ##
+
 
 ---------------------------
 ## BORRAR FILA ##

@@ -31,15 +31,11 @@ public class ResidenciasUsuarioView extends Composite implements View {
 	private Label msjResultado = new Label("No hay residencias disponibles.");
 	private Grid<Propiedad> tabla = new Grid<>(Propiedad.class);
 	private ArrayList<Propiedad> propiedades;
-	private ArrayList<Propiedad> propiedades2 = new ArrayList<>();
-	
-	private MyUI interfaz;
+	private ArrayList<Propiedad> propiedades2 = new ArrayList<>();	
 	
 		
 	public ResidenciasUsuarioView(boolean mostrarCabecera, MyUI interfaz) throws SQLException {
-		
-		this.interfaz = interfaz;
-		
+				
 		cabecera.addStyleName(ValoTheme.MENU_TITLE);
 		
 		ConnectionBD conectar = new ConnectionBD();

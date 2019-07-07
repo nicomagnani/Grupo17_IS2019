@@ -1,7 +1,6 @@
 package com.team17.homeSwitchHomeUI;
 
 import java.sql.SQLException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import org.apache.commons.mail.EmailException;
@@ -9,31 +8,19 @@ import org.apache.commons.mail.HtmlEmail;
 
 import com.vaadin.navigator.View;
 import com.vaadin.server.Page;
-import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Composite;
 import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.renderers.NumberRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 
-import homeSwitchHome.EstadoDeReserva;
-import homeSwitchHome.HomeSwitchHome;
-import homeSwitchHome.Propiedad;
-import homeSwitchHome.Reserva;
-import homeSwitchHome.ReservaDirecta;
-import homeSwitchHome.ReservaSubasta;
 import homeSwitchHome.Solicitud;
-import homeSwitchHome.Usuario;
-import homeSwitchHome.UsuarioPremium;
 
 public class SolicitudesPremiumView extends Composite implements View {
 	
@@ -101,12 +88,14 @@ public class SolicitudesPremiumView extends Composite implements View {
 					
 			Label labelTipoSolicitud = new Label("<span style=\"font-weight: bold;\">Tipo de solicitud:</span> " + this.obtenerTipoSolicitud(s.getTipo()), ContentMode.HTML);
 			
+			Label labelMotivo = new Label("<span style=\"font-weight: bold;\">Motivo:</span> " + s.getMotivo(), ContentMode.HTML);
+			
 			Button botonAceptar = new Button("Aceptar solicitud");
 			Button botonRechazar = new Button("Rechazar");
 			
 			HorizontalLayout botonesLayout = new HorizontalLayout(botonAceptar, botonRechazar);
 						
-			FormLayout solicitudLayout = new FormLayout(labelMail,labelTipoActual,labelTipoSolicitud,botonesLayout);
+			FormLayout solicitudLayout = new FormLayout(labelMail,labelTipoActual,labelTipoSolicitud,labelMotivo,botonesLayout);
 			solicitudLayout.setWidth("600");
 			solicitudLayout.setComponentAlignment(botonesLayout, Alignment.MIDDLE_CENTER);
 			solicitudLayout.addStyleName("layout-with-border");

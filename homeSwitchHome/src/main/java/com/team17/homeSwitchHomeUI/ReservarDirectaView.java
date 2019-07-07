@@ -230,7 +230,5 @@ public class ReservarDirectaView extends Composite implements View {
 		notifResultado = new Notification(st, tipo);
     	notifResultado.setDelayMsec(5000);
     	notifResultado.show(Page.getCurrent());
-    }
-	
-	
+    }	
 }

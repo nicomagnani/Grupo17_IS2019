@@ -878,26 +878,21 @@ public class ConnectionBD {
 
 		return usuarios;
 	}
-
 	
-	public ArrayList<Solicitud> listaSolicitudes() throws SQLException {
+	
+	public void agregarSolicitud(Solicitud s) throws SQLException {
 		
-		String query = "SELECT * FROM solicitudes";
-		ResultSet rs = stmt.executeQuery(query);
+		String query = "INSERT INTO solicitudes (usuario, tipo, motivo)"
+				+" VALUES (?,?,?)";
 
-		ArrayList<Solicitud> solicitudes = new ArrayList<>();
-		Solicitud solicitud;
+		ps = (PreparedStatement) con.prepareStatement(query);
 
-		while (rs.next()) {
-			
-			solicitud = new Solicitud();
-			solicitud.setMail(rs.getString("usuario"));
-			solicitud.setTipo(rs.getString("tipo"));
-			
-			solicitudes.add(solicitud);
-		}
+		ps.setString(1, s.getMail());
+		ps.setString(2, s.getTipo());
+		ps.setString(3, s.getMotivo());
 
-		return solicitudes;
+	    ps.executeUpdate();
+		ps.close();		
 	}
 	
 
@@ -912,6 +907,37 @@ public class ConnectionBD {
     	
     	ps.executeUpdate(); 
     	ps.close();		
+	}
+	
+	
+	public boolean existeSolicitud(String mail) throws SQLException {
+		
+		String query = "SELECT * FROM solicitudes WHERE usuario = '"+mail+"' LIMIT 1";
+		ResultSet rs = stmt.executeQuery(query);
+		
+		return rs.next();
+	}		
+
+
+	public ArrayList<Solicitud> listaSolicitudes() throws SQLException {
+		
+		String query = "SELECT * FROM solicitudes";
+		ResultSet rs = stmt.executeQuery(query);
+
+		ArrayList<Solicitud> solicitudes = new ArrayList<>();
+		Solicitud solicitud;
+
+		while (rs.next()) {
+			
+			solicitud = new Solicitud();
+			solicitud.setMail(rs.getString("usuario"));
+			solicitud.setTipo(rs.getString("tipo"));
+			solicitud.setMotivo(rs.getString("motivo"));
+			
+			solicitudes.add(solicitud);
+		}
+
+		return solicitudes;
 	}
 	
 }

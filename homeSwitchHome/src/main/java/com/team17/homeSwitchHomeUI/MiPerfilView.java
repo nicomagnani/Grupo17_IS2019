@@ -1,8 +1,11 @@
 package com.team17.homeSwitchHomeUI;
 
+import java.sql.SQLException;
+
 import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
+import com.vaadin.server.Page;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -10,25 +13,45 @@ import com.vaadin.ui.Composite;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.TextArea;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import homeSwitchHome.HomeSwitchHome;
+import homeSwitchHome.Solicitud;
 import homeSwitchHome.Tarjeta;
 import homeSwitchHome.Usuario;
+import homeSwitchHome.UsuarioComun;
 import homeSwitchHome.UsuarioPremium;
 
 @Theme("hometheme")
 public class MiPerfilView extends Composite implements View {  //.necesita composite y view para funcionar correctamente
 	
-	Label cabecera = new Label("Perfil de usuario");
+	private Label cabecera = new Label("Perfil de usuario");
 	
-	Button botonModificarDatos = new Button("Modificar mis datos");
-	Button botonModificarContraseña= new Button("Modificar Contraseña");
-	Button botonModificarTarjeta= new Button("Modificar Tarjeta");
-	Usuario usuario;
-	Tarjeta tarjeta;
+	private Button botonModificarDatos = new Button("Modificar mis datos");
+	private Button botonModificarContraseña = new Button("Modificar Contraseña");
+	private Button botonModificarTarjeta = new Button("Modificar Tarjeta");
+	private Button botonPremium = new Button();
+	
+	private Window ventanaConfirmacion = new Window("Confirmar solicitud");
+	private Label info = new Label("Indique un motivo (opcional):");
+	private TextArea motivo = new TextArea();
+	private Button botonConfirmar = new Button("Enviar");
+	private Button botonCancelar = new Button("Cancelar");
+	private Notification notifResultado;
+	private VerticalLayout ventanaLayout = new VerticalLayout();
+
+	private ConnectionBD conexion = new ConnectionBD();	
+	private Usuario usuario;
+	private Tarjeta tarjeta;
+	private Solicitud solicitud = new Solicitud();
 		
+	
 	public MiPerfilView(Navigator navigator) {		
 		
 		cabecera.addStyleName(ValoTheme.MENU_TITLE);
@@ -59,25 +82,92 @@ public class MiPerfilView extends Composite implements View {  //.necesita compo
 		botonModificarContraseña.addClickListener(e -> this.modificarContraseña(navigator));
 		botonModificarTarjeta.addClickListener(e -> this.mofificarTarjeta(navigator));
 		
+		botonPremium.addClickListener(e -> this.abrirVentanaConfirmacion());		
+		botonPremium.setCaption((usuario instanceof UsuarioComun) ? "Solicitar estado Premium" : "Dejar de ser Premium");
+		
+		botonConfirmar.addClickListener(e -> {
+			this.solicitarAltaBajaPremium(botonPremium);
+		} );		
+		botonCancelar.addClickListener(e -> ventanaConfirmacion.close() );
+
+		motivo.setWidth("400");
+		
+		ventanaConfirmacion.center();
+		ventanaConfirmacion.setWidth("500");
+		ventanaConfirmacion.setResizable(true);
+		ventanaConfirmacion.setModal(true);
+		
+		try {
+			if ( conexion.existeSolicitud(usuario.getMail()) ) {
+				botonPremium.setVisible(false);
+			}
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		
+		
 		FormLayout formLayout = new FormLayout(labelParte1, labelMail, labelNombre, labelApellido, labelFechaNac,
 				labelParte2, labelNroTarj, labelMarcaTarj, labelTitTarj , labelFVencTarj,
 				labelParte3, labelCreditos, labelFVencCred, labelTipoUsuario);
 		
-		HorizontalLayout botonesLayout = new HorizontalLayout(botonModificarDatos,botonModificarContraseña,botonModificarTarjeta);
+		HorizontalLayout botones1Layout = new HorizontalLayout(botonModificarDatos,botonModificarContraseña,botonModificarTarjeta,botonPremium);
 		
-		VerticalLayout mainLayout = new VerticalLayout(cabecera, formLayout, botonesLayout);
+		VerticalLayout contentLayout = new VerticalLayout(formLayout, botones1Layout);
+		contentLayout.setSizeUndefined();
+		contentLayout.setComponentAlignment(formLayout, Alignment.MIDDLE_CENTER);
+		contentLayout.setComponentAlignment(botones1Layout, Alignment.MIDDLE_CENTER);
+		
+		Panel panel = new Panel();
+		panel.setContent(contentLayout);
+		panel.setHeight("600");
+		panel.setWidth("700");
+		panel.addStyleName("scrollable");
+		
+		HorizontalLayout botones2Layout = new HorizontalLayout(botonConfirmar,botonCancelar);
+		
+		ventanaLayout = new VerticalLayout(info, motivo, botones2Layout);
+		ventanaLayout.setComponentAlignment(info, Alignment.MIDDLE_CENTER);
+		ventanaLayout.setComponentAlignment(motivo, Alignment.MIDDLE_CENTER);
+		ventanaLayout.setComponentAlignment(botones2Layout, Alignment.MIDDLE_CENTER);
+		
+		ventanaConfirmacion.setContent(ventanaLayout);
+		
+		VerticalLayout mainLayout = new VerticalLayout(cabecera,panel);
 		
 		mainLayout.setComponentAlignment(cabecera, Alignment.MIDDLE_CENTER);
-		mainLayout.setComponentAlignment(formLayout, Alignment.MIDDLE_CENTER);
-		mainLayout.setComponentAlignment(botonesLayout, Alignment.MIDDLE_CENTER);
+		mainLayout.setComponentAlignment(panel, Alignment.MIDDLE_CENTER);
 		
         setCompositionRoot(mainLayout);
 	}		
 	
 
-	private void mofificarTarjeta(Navigator navigator) {
-		navigator.navigateTo("modificarTarjeta");
+	private void solicitarAltaBajaPremium(Button boton) {		
+		
+		solicitud.setMail(usuario.getMail());
+		solicitud.setTipo((usuario instanceof UsuarioComun) ? "alta" : "baja");
+		solicitud.setMotivo(motivo.getValue());
+		
+		try {
+			conexion.agregarSolicitud(solicitud);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		this.mostrarNotificacion("<p style=\"text-align: center;\"><strong>Solicitud enviada.</strong></p>"
+				+"<p style=\"text-align: center;\">Para completar el pedido, comuníquese por teléfono con la empresa</p>"
+				+"<p style=\"text-align: center;\">o acérquese a una de nuestras oficinas.</p>", Notification.Type.HUMANIZED_MESSAGE);		
+		ventanaConfirmacion.close();
+		boton.setVisible(false);		
+	}
 	
+	
+	private void abrirVentanaConfirmacion() {
+		UI.getCurrent().addWindow(ventanaConfirmacion);		
+	}
+
+
+	private void mofificarTarjeta(Navigator navigator) {
+		navigator.navigateTo("modificarTarjeta");	
 	}
 
 
@@ -106,5 +196,14 @@ public class MiPerfilView extends Composite implements View {  //.necesita compo
 	private void modificarUsuario(Navigator navigator) {
 		navigator.navigateTo("modificarPerfil");
 	}
+	
+
+	private void mostrarNotificacion(String st, Notification.Type tipo) {
+    	
+		notifResultado = new Notification(st, tipo);
+		notifResultado.setHtmlContentAllowed(true);
+    	notifResultado.setDelayMsec(-1);;
+    	notifResultado.show(Page.getCurrent());
+    }
 	
 }
