@@ -47,6 +47,7 @@ public class MyUI extends UI {
 	Button registrarseButton;
 	Button reservasButton;
 	Button agregarResidenciaButton;
+	Button solicitudesButton;
 	Button cerrarSesionButton;
 	
 	CssLayout menu;
@@ -221,11 +222,8 @@ public class MyUI extends UI {
     
     private void botonesAdmin() {
     	
-    	residenciasButton = new Button("Residencias", e -> getNavigator().navigateTo("residenciasAdmin")); //boton para navegar a una view
+    	residenciasButton = new Button("Residencias", e -> getNavigator().navigateTo("residenciasAdmin"));
         residenciasButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
-        
-        subastasButton = new Button("Subastas", e -> getNavigator().navigateTo("subastasAdmin"));
-        subastasButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
         
         reservasButton = new Button("Reservas", e -> getNavigator().navigateTo("reservasAdmin"));
         reservasButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
@@ -233,10 +231,14 @@ public class MyUI extends UI {
         agregarResidenciaButton = new Button("Agregar residencia", e -> getNavigator().navigateTo("agregarResidencia"));
         agregarResidenciaButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
         
+        solicitudesButton = new Button("Solcitudes Premium", e -> getNavigator().navigateTo("solicitudesPremium"));
+        solicitudesButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
+        
         cerrarSesionButton = new Button("Cerrar Sesión", e -> vistaVisitante());
         cerrarSesionButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
         
-        menu = new CssLayout(img, title, residenciasButton, subastasButton, reservasButton, agregarResidenciaButton, cerrarSesionButton);
+        menu = new CssLayout(img, title, residenciasButton, reservasButton, agregarResidenciaButton,
+        		solicitudesButton, cerrarSesionButton);
         menu.addStyleName(ValoTheme.MENU_ROOT);
     	
     }
@@ -250,9 +252,10 @@ public class MyUI extends UI {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-        navigator.addView("subastasAdmin", new SubastasAdminView());
         navigator.addView("reservasAdmin", new ReservasAdminView());
         navigator.addView("agregarResidencia", new AgregarResidenciaView(this));
+        navigator.addView("solicitudesPremium", new SolicitudesPremiumView());
+
     }
     
     

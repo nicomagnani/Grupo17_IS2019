@@ -21,6 +21,7 @@ import homeSwitchHome.Reserva;
 import homeSwitchHome.ReservaDirecta;
 import homeSwitchHome.ReservaHotsale;
 import homeSwitchHome.ReservaSubasta;
+import homeSwitchHome.Solicitud;
 import homeSwitchHome.Tarjeta;
 import homeSwitchHome.Usuario;
 import homeSwitchHome.UsuarioAdministrador;
@@ -52,9 +53,11 @@ public class ConnectionBD {
 	//  por tablas	---> por acción	
 	// 1) propiedad	| 1) agregar
 	// 2) reservas	| 2) modificar
-	// 3) subastas	| 3) eliminar
-	// 4) admins	| 4) buscar
-	// 5) usuarios	| 5) listar
+	// 3) canceladas| 3) eliminar
+	// 4) subastas	| 4) buscar
+	// 5) admins	| 5) listar
+	// 6) usuarios
+	// 7) solicitudes
 	
 
 	public void agregarResidencia(Propiedad p) throws SQLException {
@@ -494,7 +497,7 @@ public class ConnectionBD {
 	}
 	
 	
-	public ArrayList<Reserva> listaCanceladasPorUsuario(String mail) throws SQLException {
+	public ArrayList<Reserva> listaReservasPorPropiedad(String titulo, String localidad) throws SQLException {
 		
 		ArrayList<Reserva> reservas = new ArrayList<Reserva>();
 		Reserva reserva = null;
@@ -502,7 +505,7 @@ public class ConnectionBD {
 		ReservaSubasta reservaSubasta;
 		ReservaHotsale reservaHotsale;
 		
-		String query = "SELECT * FROM canceladas WHERE usuario = '"+mail+"'";
+		String query = "SELECT * FROM reservas WHERE propiedad = '"+titulo+"' AND localidad = '"+localidad+"'";
 		ResultSet rs = stmt.executeQuery(query);
 		
 		while (rs.next()) {
@@ -510,7 +513,7 @@ public class ConnectionBD {
 			if (tipo.equals("directa")) {
 				reservaDirecta = new ReservaDirecta();
 				//asigno campos exclusivos de ReservaDirecta
-				reserva = reservaDirecta;
+				reserva = reservaDirecta;				
 			} else
 				if (tipo.equals("subasta")) {					
 					reservaSubasta = new ReservaSubasta();		
@@ -537,52 +540,7 @@ public class ConnectionBD {
 	}
 	
 	
-//	//No me funciona, solo esta implementado la parte de subasta.
-//	public ArrayList<Reserva> listaReservasPorEstado(EstadoDeReserva estado) throws SQLException {
-//		
-//		ArrayList<Reserva> reservas = new ArrayList<Reserva>();
-//		Reserva reserva = null;
-//		ReservaDirecta reservaDirecta;
-//		ReservaSubasta reservaSubasta;
-//		ReservaHotsale reservaHotsale;
-//		
-//		String query = "SELECT * FROM reservas WHERE estado = '"+estado.toString()+"'";
-//		ResultSet rs = stmt.executeQuery(query);
-//		
-//		while (rs.next()) {
-//			String tipo = rs.getString("tipo");
-//			if (tipo.equals("directa")) {
-//				reservaDirecta = new ReservaDirecta();
-//				//asigno campos exclusivos de ReservaDirecta
-//				reserva = reservaDirecta;
-//				
-//			} else
-//				if (tipo.equals("subasta")) {					
-//					reservaSubasta = new ReservaSubasta();		
-//					//asigno campos exclusivos de ReservaSubasta
-//					reserva = reservaSubasta;
-//				} else
-//					if (tipo.equals("hotsale")) {
-//						reservaHotsale = new ReservaHotsale();
-//						//asigno campos exclusivos de ReservaHotsale
-//						reserva = reservaHotsale;
-//					}			
-//					
-//			reserva.setPropiedad(rs.getString("propiedad"));
-//			reserva.setLocalidad(rs.getString("localidad"));
-//			reserva.setUsuario(rs.getString("usuario"));
-//			reserva.setFechaInicio(rs.getDate("fecha_inicio").toLocalDate());
-//			reserva.setEstado(EstadoDeReserva.valueOf(rs.getString("estado")));
-//			reserva.setMonto(rs.getFloat("monto"));
-//
-//			reservas.add(reserva);
-//		}
-//
-//		return reservas;
-//	}
-	
-	
-	public ArrayList<Reserva> listaReservasPorPropiedad(String titulo, String localidad) throws SQLException {
+	public ArrayList<Reserva> listaCanceladasPorUsuario(String mail) throws SQLException {
 		
 		ArrayList<Reserva> reservas = new ArrayList<Reserva>();
 		Reserva reserva = null;
@@ -590,7 +548,7 @@ public class ConnectionBD {
 		ReservaSubasta reservaSubasta;
 		ReservaHotsale reservaHotsale;
 		
-		String query = "SELECT * FROM reservas WHERE propiedad = '"+titulo+"' AND localidad = '"+localidad+"'";
+		String query = "SELECT * FROM canceladas WHERE usuario = '"+mail+"'";
 		ResultSet rs = stmt.executeQuery(query);
 		
 		while (rs.next()) {
@@ -598,7 +556,7 @@ public class ConnectionBD {
 			if (tipo.equals("directa")) {
 				reservaDirecta = new ReservaDirecta();
 				//asigno campos exclusivos de ReservaDirecta
-				reserva = reservaDirecta;				
+				reserva = reservaDirecta;
 			} else
 				if (tipo.equals("subasta")) {					
 					reservaSubasta = new ReservaSubasta();		
@@ -838,6 +796,19 @@ public class ConnectionBD {
 		
 		ps.executeUpdate();
 	}
+	
+
+	public void modificarTipoDeUsuario(String mail, String tipo) throws SQLException {
+		
+		boolean t2 = tipo.equals("alta");
+		
+		String query = "UPDATE usuarios"
+				+ " SET premium = "+t2
+				+ " WHERE mail = '"+mail+"'";
+		ps = (PreparedStatement) con.prepareStatement(query);
+		
+		ps.executeUpdate();
+	}
     
 	
 	public Usuario buscarUsuario(String mail) throws SQLException {
@@ -907,5 +878,41 @@ public class ConnectionBD {
 
 		return usuarios;
 	}
+
+	
+	public ArrayList<Solicitud> listaSolicitudes() throws SQLException {
+		
+		String query = "SELECT * FROM solicitudes";
+		ResultSet rs = stmt.executeQuery(query);
+
+		ArrayList<Solicitud> solicitudes = new ArrayList<>();
+		Solicitud solicitud;
+
+		while (rs.next()) {
+			
+			solicitud = new Solicitud();
+			solicitud.setMail(rs.getString("usuario"));
+			solicitud.setTipo(rs.getString("tipo"));
+			
+			solicitudes.add(solicitud);
+		}
+
+		return solicitudes;
+	}
+	
+
+	public void eliminarSolicitud(String mail) throws SQLException {
+		
+		String query ="DELETE FROM solicitudes"
+				+ " WHERE usuario = ?";
+		
+    	ps = (PreparedStatement) con.prepareStatement(query);
+    	
+    	ps.setString(1, mail);
+    	
+    	ps.executeUpdate(); 
+    	ps.close();		
+	}
+	
 }
 

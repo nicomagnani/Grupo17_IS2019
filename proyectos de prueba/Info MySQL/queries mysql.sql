@@ -31,6 +31,10 @@ INSERT INTO canceladas ( propiedad, localidad, usuario, tipo, fecha_inicio, esta
    VALUES
    ( 'tit234', 'La Plata', 'juan@mail.com' , 'hotsale', '2018-12-25', 'CANCELADA', 10000);  
    
+INSERT INTO solicitudes ( usuario, tipo )
+   VALUES
+   ( 'pedro@asd.com', 'baja');  
+   
 ------------------------------------
 ## SELECCIONAR (SINTAXIS EN GENERAL) ##
 SELECT column_1, column_2, ...
@@ -131,4 +135,9 @@ UPDATE usuarios
 SET 
     premium = 1
 WHERE mail = 'prueba_1';
+
+UPDATE solicitudes
+SET
+    usuario = 'juan2@mail.com'
+WHERE usuario = 'juan1@mail.com';
 ---------------------------
