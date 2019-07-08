@@ -209,7 +209,7 @@ public class MyUI extends UI {
 			e1.printStackTrace();
 		}	
     	navigator.addView("misReservas", new MisReservasView());
-    	navigator.addView("subastas", new SubastasUsuarioView());
+    	navigator.addView("subastas", new SubastasUsuarioView(this));
     	navigator.addView("misSubastas", new MisSubastasView());
         navigator.addView("buscarFecha", new BuscarFechaView(this));
         navigator.addView("buscarLugar", new BuscarLugarView(this));

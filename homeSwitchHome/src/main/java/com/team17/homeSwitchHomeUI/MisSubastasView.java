@@ -1,6 +1,7 @@
 package com.team17.homeSwitchHomeUI;
 
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import com.vaadin.annotations.Title;
@@ -12,10 +13,13 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Grid.Column;
+import com.vaadin.ui.renderers.NumberRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 
 import homeSwitchHome.HomeSwitchHome;
 import homeSwitchHome.Oferta;
+import homeSwitchHome.Propiedad;
 import homeSwitchHome.ReservaSubasta;
 
 @Title("Mis subastas - HomeSwitchHome")
@@ -67,6 +71,7 @@ public class MisSubastasView extends Composite implements View {
 
 	
 	private void cargarSubastas() {
+		
 		try {
 			subastas = conexion.listaSubastas();
 		} catch (SQLException e) {
@@ -76,22 +81,25 @@ public class MisSubastasView extends Composite implements View {
 		for (ReservaSubasta rs : subastas) {
 			if ( (rs.getUsuarios() != null) && (rs.getUsuarios().indexOf(mailActual) != -1) ) {
 				ofertas.add( new Oferta(rs.getPropiedad(), rs.getLocalidad(), rs.getFechasTiempoCompartido()[0],
-						rs.getFechaFinSubastaString(), rs.getMonto(), rs.getMontos().get(rs.getUsuarios().indexOf(mailActual))) );
+						rs.getFechaFinSubastaString(), rs.getMontos().get(0), rs.getMontos().get(rs.getUsuarios().indexOf(mailActual))) );
 			}
-		}
-		
+		}		
 	}
 	
 		
 	private void cargarTabla() {
 			
-		if ( ofertas.size() == 0 )
+		if ( ofertas.isEmpty() )
 			msjResultado.setVisible(true);
 		else {
 			panel.setVisible(true);
 			tabla.setItems(ofertas);
 			tabla.setWidth("700");
-			tabla.setColumns("propiedad", "localidad", "fechaReserva", "fechaFinSubasta", "precio");			
+			tabla.setColumns("propiedad", "localidad", "fechaReserva", "fechaFinSubasta");
+						
+			tabla.addColumn(Oferta::getPrecioString)
+			.setCaption("Monto actual");
+			
 			tabla.addColumn(Oferta::getMontoString)
 			.setCaption("Mi oferta");
 		}		

@@ -352,7 +352,7 @@ public class ModificarResidenciaView extends Composite implements View {
 			
 			float montoFinal = Float.parseFloat(monto.getValue());
 			
-			if ( esNroPositivo(montoFinal) ) {	
+			if (montoFinal > 0) {	
 
 				propiedad = new Propiedad( titulo.getValue(), pais.getValue(), provincia.getValue(), localidad.getValue(),
 						domicilio.getValue(), descripcion.getValue(), montoFinal, fotos );
@@ -384,11 +384,6 @@ public class ModificarResidenciaView extends Composite implements View {
 
 		} else mostrarNotificacion("Error: Al menos un campo se encuentra vacío.", Notification.Type.ERROR_MESSAGE);
 
-	}
-
-
-    private boolean esNroPositivo(float n) {
-    	return (n > 0);
 	}
 
 

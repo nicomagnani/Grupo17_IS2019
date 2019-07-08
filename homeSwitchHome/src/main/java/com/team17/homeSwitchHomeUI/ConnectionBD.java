@@ -619,6 +619,34 @@ public class ConnectionBD {
 	}
 
 
+	public void modificarSubasta(ReservaSubasta rs) throws SQLException {
+
+		String montosString = "", usuariosString = "";
+		
+		for ( Float m : rs.getMontos() )
+			montosString += String.valueOf(m) + " ";
+		
+		
+		for ( String u : rs.getUsuarios() )
+			usuariosString += u + " ";		
+		
+		String query = "UPDATE subastas"
+				+ " SET montos = ?, usuarios = ?"
+				+" WHERE propiedad = ? AND localidad = ? AND fecha_inicio = ?";
+			
+		ps = (PreparedStatement) con.prepareStatement(query);
+		
+		ps.setString(1,montosString);
+		ps.setString(2,usuariosString);
+		ps.setString(3,rs.getPropiedad());
+		ps.setString(4,rs.getLocalidad());
+		ps.setDate(5, Date.valueOf(rs.getFechaInicio()));		
+		
+		ps.executeUpdate();
+		ps.close();
+	}
+
+
 	public ReservaSubasta buscarSubasta(String propiedad, String localidad, LocalDate fechaInicio, EstadoDeReserva estado) throws SQLException {
 		
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-LL-dd");
