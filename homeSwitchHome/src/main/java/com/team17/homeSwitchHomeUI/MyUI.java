@@ -48,6 +48,7 @@ public class MyUI extends UI {
 	Button contactarButton;
 	Button verFaqButton;
 	Button registrarseButton;
+	Button semanasButton;
 	Button reservasButton;
 	Button agregarResidenciaButton;
 	Button solicitudesButton;
@@ -158,8 +159,8 @@ public class MyUI extends UI {
         mainLayout.setExpandRatio(viewContainer, 3);
         mainLayout.setExpandRatio(menu, 1);
         setContent(mainLayout);
-
     }
+    
     
     private void botonesUsuario() {
     	residenciasButton = new Button("Residencias", e -> getNavigator().navigateTo("residencias"));
@@ -198,8 +199,7 @@ public class MyUI extends UI {
         menu.addStyleName(ValoTheme.MENU_ROOT);
     }
     
- private void navigatorUsuario() {
-    	
+    private void navigatorUsuario() {    	
     	navigator = new Navigator(this, viewContainer);
         
     	try {
@@ -218,16 +218,18 @@ public class MyUI extends UI {
         navigator.addView("modificarTarjeta", new ModificarTarjetaView(navigator,this));
         navigator.addView("modificarContraseña", new ModificarContraseñaView(navigator,this));
         navigator.addView("contactar", new ContactarView());    	
-        navigator.addView("verFaq", new VerFaqView());
-        
+        navigator.addView("verFaq", new VerFaqView());        
     }
     
     
     private void botonesAdmin() {
     	
     	residenciasButton = new Button("Residencias", e -> getNavigator().navigateTo("residenciasAdmin"));
-        residenciasButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
+    	residenciasButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
         
+    	semanasButton = new Button("Semanas", e -> getNavigator().navigateTo("semanasAdmin"));
+    	semanasButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
+    	
         reservasButton = new Button("Reservas", e -> getNavigator().navigateTo("reservasAdmin"));
         reservasButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
         
@@ -242,23 +244,21 @@ public class MyUI extends UI {
         
         menu = new CssLayout(img, title, residenciasButton, reservasButton, agregarResidenciaButton,
         		solicitudesButton, cerrarSesionButton);
-        menu.addStyleName(ValoTheme.MENU_ROOT);
-    	
+        menu.addStyleName(ValoTheme.MENU_ROOT);    	
     }
     
-    public void navigatorAdmin() {
-        
+    public void navigatorAdmin() {        
     	navigator = new Navigator(this, viewContainer);
     	
         try {
-			navigator.addView("residenciasAdmin", new ResidenciasAdminView(this,navigator));
+			navigator.addView("residenciasAdmin", new ResidenciasAdminView(this));
+			navigator.addView("semanasAdmin", new SemanasAdminView(this));
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
         navigator.addView("reservasAdmin", new ReservasAdminView());
         navigator.addView("agregarResidencia", new AgregarResidenciaView(this));
         navigator.addView("solicitudesPremium", new SolicitudesPremiumView());
-
     }
     
     
@@ -299,7 +299,6 @@ public class MyUI extends UI {
         navigator.addView("verFaq", new VerFaqView());    	
     }  
     
-
     //reemplazado por estilo de bordes
 //    public static Label separador() {
 //    	return new Label("____________________________________________________________________");

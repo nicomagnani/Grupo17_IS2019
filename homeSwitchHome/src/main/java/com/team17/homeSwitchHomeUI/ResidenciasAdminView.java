@@ -10,7 +10,6 @@ import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 
 import com.vaadin.annotations.Title;
-import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
@@ -55,7 +54,7 @@ public class ResidenciasAdminView extends Composite implements View {
 	private MyUI interfaz;
 	
 
-	public ResidenciasAdminView(MyUI interfaz, Navigator navigator) throws SQLException {
+	public ResidenciasAdminView(MyUI interfaz) throws SQLException {
 		
 		this.interfaz = interfaz;
 		
@@ -109,8 +108,7 @@ public class ResidenciasAdminView extends Composite implements View {
 		String mensaje = "<p>Estimado usuario, la propiedad que se encontraba en subasta"
 				+ " y en la cual usted había ofertado ha sido eliminada. Sepa disculpar las molestias.</p><p>Atte. Staff"
 				+ " de <span style=\"text-decoration: underline;\">HomeSwitchHome</span></p>";
-		email.setHtmlMsg(mensaje);
-		
+		email.setHtmlMsg(mensaje);		
 	}
 
 
@@ -126,8 +124,7 @@ public class ResidenciasAdminView extends Composite implements View {
 		} else {
 			msjResultado.setVisible(true);
 			botonSubastar.setVisible(false);
-		}
-		
+		}		
 	}
 	
 	
@@ -218,7 +215,7 @@ public class ResidenciasAdminView extends Composite implements View {
 		propiedadLayout.addStyleName("layout-with-border");
 		
 		propiedadesLayout.addComponent(propiedadLayout);
-		propiedadesLayout.setComponentAlignment(propiedadLayout, Alignment.MIDDLE_CENTER);		
+		propiedadesLayout.setComponentAlignment(propiedadLayout, Alignment.MIDDLE_CENTER);
 		
 		eliminar.addClickListener(e -> {
 			try {
@@ -226,8 +223,7 @@ public class ResidenciasAdminView extends Composite implements View {
 			} catch (SQLException | EmailException e1) {
 				e1.printStackTrace();
 			}
-		});
-		
+		});		
 	}
 	
 	

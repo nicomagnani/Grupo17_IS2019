@@ -16,6 +16,11 @@ public class Oferta {
 	//mi mejor oferta
 	private Float monto;
 	
+	
+	public Oferta() {
+		
+	}			
+	
 	public Oferta(String propiedad, String localidad, LocalDate fechaReserva, String fechaFinSubasta,
 			Float precio, Float monto) {
 		this.propiedad = propiedad;

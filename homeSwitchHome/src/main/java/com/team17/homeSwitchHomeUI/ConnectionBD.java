@@ -375,7 +375,7 @@ public class ConnectionBD {
 			
 			propiedad.setFoto1(rs.getBytes("foto1"));
 			
-			propiedades.add(propiedad);					
+			propiedades.add(propiedad);
 		}			
 
 		//filtro propiedades sin reservas disponibles			
@@ -451,6 +451,12 @@ public class ConnectionBD {
 		}
 
 		return reservas;
+	}
+
+	
+	public ArrayList<Reserva> listaReservasEnCursoSinDueño() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 	
@@ -617,7 +623,14 @@ public class ConnectionBD {
 		ps.close();
 		con.close();		
 	}
-
+	
+	
+	public void cerrarSubasta(ReservaSubasta r) {
+		// TODO Auto-generated method stub
+		
+		
+	}
+	
 
 	public void modificarSubasta(ReservaSubasta rs) throws SQLException {
 
@@ -869,7 +882,7 @@ public class ConnectionBD {
 		}
 
 		return usuario;
-	}		
+	}
 	
 	
 	public ArrayList<Usuario> listaUsuarios() throws SQLException {
@@ -967,6 +980,6 @@ public class ConnectionBD {
 
 		return solicitudes;
 	}
-	
+
 }
 

@@ -49,6 +49,7 @@ public class ModificarTarjetaView extends Composite implements View {
 	Usuario usuario;
 	ConnectionBD conectar;
 	Notification notification = new Notification("sd");
+	
 
 	public ModificarTarjetaView(Navigator navigator, MyUI interfaz) {
 		
