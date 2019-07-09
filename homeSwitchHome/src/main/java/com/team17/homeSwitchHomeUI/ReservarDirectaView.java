@@ -49,7 +49,8 @@ public class ReservarDirectaView extends Composite implements View {
 	private Notification notifResultado;
 	
 	private FormLayout informacionLayout;
-	private VerticalLayout ventanaLayout = new VerticalLayout();
+	private VerticalLayout ventanaLayout = new VerticalLayout();	
+	@SuppressWarnings("unused")
 	private HorizontalLayout botonesLayout;
 	private VerticalLayout mainLayout;
 	

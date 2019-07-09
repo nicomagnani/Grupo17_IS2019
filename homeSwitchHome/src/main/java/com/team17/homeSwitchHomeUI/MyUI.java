@@ -242,7 +242,7 @@ public class MyUI extends UI {
         cerrarSesionButton = new Button("Cerrar Sesión", e -> vistaVisitante());
         cerrarSesionButton.addStyleNames(ValoTheme.BUTTON_LINK, ValoTheme.MENU_ITEM);
         
-        menu = new CssLayout(img, title, residenciasButton, reservasButton, agregarResidenciaButton,
+        menu = new CssLayout(img, title, residenciasButton, semanasButton, reservasButton, agregarResidenciaButton,
         		solicitudesButton, cerrarSesionButton);
         menu.addStyleName(ValoTheme.MENU_ROOT);    	
     }

@@ -7,7 +7,6 @@ import org.vaadin.grid.cellrenderers.view.BlobImageRenderer;
 
 import com.vaadin.annotations.Title;
 import com.vaadin.navigator.View;
-import com.vaadin.server.Page;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;

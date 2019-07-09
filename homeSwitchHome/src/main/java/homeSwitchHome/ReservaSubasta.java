@@ -38,6 +38,10 @@ public class ReservaSubasta extends Reserva {
 	public void setUsuarios(ArrayList<String> usuarios) {
 		this.usuarios = usuarios;
 	}
+	
+	public void getUsuarioGanador(ArrayList<String> usuarios) {
+		this.usuarios = usuarios;
+	}
 
 	public LocalDate getFechaInicioSubasta() {
 		return fechaInicioSubasta;
@@ -72,5 +76,19 @@ public class ReservaSubasta extends Reserva {
 		} else
 			return super.getMonto();		
 	}
+
+	//debe verificarse previamente que cumpla los requisitos 
+	public String getOfertaGanadora() {
+		if (montos.size() > 1) {
+			return usuarios.get(0)+" ($"+montos.get(0)+")";
+		} else
+			return "Sin ofertas";
+	}
+	
+	//elimina una oferta de la subasta (por ejemplo, si fue cancelada por el usuario o porque no es válida)
+	public void eliminarOferta(int pos) {
+		montos.remove(pos);
+		usuarios.remove(pos);
+	}	
 
 }

@@ -9,7 +9,6 @@ import org.vaadin.grid.cellrenderers.view.BlobImageRenderer;
 
 import com.vaadin.annotations.Title;
 import com.vaadin.navigator.View;
-import com.vaadin.server.Page;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Composite;

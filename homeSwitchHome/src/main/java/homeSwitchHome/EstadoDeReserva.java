@@ -1,7 +1,7 @@
 package homeSwitchHome;
 
 public enum EstadoDeReserva {
-	NO_DISPONIBLE("En espera"), //aguardando Hotsale
+	EN_ESPERA("En espera"), //aguardando Hotsale
 	DISPONIBLE_DIRECTA("Disponible (Reserva directa)"), // disponible para reserva directa
 	DISPONIBLE_HOTSALE("Disponible (Hotsale)"), // disponible para reserva hotsale
 	DISPONIBLE_SUBASTA("Disponible (En subasta)"), // subasta en curso

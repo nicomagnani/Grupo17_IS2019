@@ -3,7 +3,6 @@ package com.team17.homeSwitchHomeUI;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 
 import org.apache.commons.mail.EmailException;
@@ -38,19 +37,14 @@ public class ResidenciasAdminView extends Composite implements View {
 	
 	private Label cabecera = new Label("Lista de residencias (administrador)");
 	private Label msjResultado = new Label("No hay residencias cargadas.");	
-	
-	private VerticalLayout propiedadesLayout = new VerticalLayout();
-	private Panel panel = new Panel();
-	private Button botonSubastar = new Button("Abrir Subastas");	
 	private Notification notifResultado = new Notification("Residencia borrada con éxito.");
 	
-	private ConnectionBD conexion = new ConnectionBD();
-
-	private ArrayList<Propiedad> propiedades = new ArrayList<>();
-	private ArrayList<Reserva> reservas = new ArrayList<>();
+	private VerticalLayout propiedadesLayout = new VerticalLayout();
+	private Panel panel = new Panel();	
 	
+	private ArrayList<Propiedad> propiedades = new ArrayList<>();	
 	private HtmlEmail email = new HtmlEmail();
-	
+	private ConnectionBD conexion = new ConnectionBD();	
 	private MyUI interfaz;
 	
 
@@ -72,14 +66,6 @@ public class ResidenciasAdminView extends Composite implements View {
 		panel.setHeight("600");
 		panel.setWidth("750");
 		panel.addStyleName("scrollable");
-
-		botonSubastar.addClickListener(e -> {
-			try {
-				this.subastarTodo();
-			} catch (SQLException e2) {
-				e2.printStackTrace();
-			}
-		});
 		
 		try {
 			this.inicializarEmail();
@@ -87,10 +73,9 @@ public class ResidenciasAdminView extends Composite implements View {
 			e1.printStackTrace();
 		}
 		
-		VerticalLayout mainLayout = new VerticalLayout(cabecera, panel, botonSubastar, msjResultado);
+		VerticalLayout mainLayout = new VerticalLayout(cabecera, panel, msjResultado);
 		mainLayout.setComponentAlignment(cabecera, Alignment.MIDDLE_CENTER);
 		mainLayout.setComponentAlignment(panel, Alignment.MIDDLE_CENTER);
-		mainLayout.setComponentAlignment(botonSubastar, Alignment.MIDDLE_CENTER);
 		mainLayout.setComponentAlignment(msjResultado, Alignment.MIDDLE_CENTER);
 		
         setCompositionRoot(mainLayout);
@@ -123,7 +108,6 @@ public class ResidenciasAdminView extends Composite implements View {
 			}
 		} else {
 			msjResultado.setVisible(true);
-			botonSubastar.setVisible(false);
 		}		
 	}
 	
@@ -236,41 +220,7 @@ public class ResidenciasAdminView extends Composite implements View {
 	                }
 	            }, "filename.png");
 	    image.setSource(resource);
-	}
-	
-	
-	//devuelve true si la subasta fue un exito
-	private void subastarTodo() throws SQLException {
-		
-		int n1 = 0; //subastas abiertas
-		LocalDate hace6meses = LocalDate.now().minusMonths(6);		
-		
-		reservas = conexion.listaReservas();
-		
-		if (!reservas.isEmpty()) {			
-			//recorre la lista de reservas
-			for (Reserva reserva : reservas) {
-				
-				//chequea si cumple requisitos para iniciar subasta
-				if ( (reserva.getEstado() == EstadoDeReserva.DISPONIBLE_DIRECTA) && 
-						(!reserva.getFechaInicio().isAfter(hace6meses)) &&
-						(!reserva.getFechaInicio().isBefore(hace6meses.minusDays(3))) ) {					
-					conexion.abrirSubasta(reserva);
-					n1++;
-					//TODO: guardar informacion de la reserva/residencia) para mostrarla en la notificacion					
-				}
-			}
-			if (n1 > 0) {
-				//TODO: mostrar informacion de las subastas abiertas
-				mostrarNotificacion("Se abrieron "+n1+" subastas.", Notification.Type.HUMANIZED_MESSAGE);
-				interfaz.vistaAdmin("residenciasAdmin");
-			} else {
-				mostrarNotificacion("No se abrió ninguna subasta.", Notification.Type.HUMANIZED_MESSAGE);
-			}
-		} else 
-			mostrarNotificacion("No hay reservas cargadas.", Notification.Type.HUMANIZED_MESSAGE);
-		
-	}
+	}	
 		
 	
 	private void eliminar(Propiedad propiedad, FormLayout propiedadLayout) throws SQLException, EmailException {		

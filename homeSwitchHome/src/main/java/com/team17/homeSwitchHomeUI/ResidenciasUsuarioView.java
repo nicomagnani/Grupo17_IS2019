@@ -5,23 +5,19 @@ import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Optional;
-import java.util.Set;
 
 import org.vaadin.grid.cellrenderers.view.BlobImageRenderer;
 
 import com.vaadin.annotations.Title;
 import com.vaadin.event.selection.SingleSelectionEvent;
 import com.vaadin.navigator.View;
-import com.vaadin.server.Page;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Composite;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.components.grid.SingleSelectionModel;
 import com.vaadin.ui.renderers.NumberRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 

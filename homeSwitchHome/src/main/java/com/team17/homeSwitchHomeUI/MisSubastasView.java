@@ -1,25 +1,20 @@
 package com.team17.homeSwitchHomeUI;
 
 import java.sql.SQLException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import com.vaadin.annotations.Title;
 import com.vaadin.navigator.View;
-import com.vaadin.server.Page;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Composite;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Grid.Column;
-import com.vaadin.ui.renderers.NumberRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 
 import homeSwitchHome.HomeSwitchHome;
 import homeSwitchHome.Oferta;
-import homeSwitchHome.Propiedad;
 import homeSwitchHome.ReservaSubasta;
 
 @Title("Mis subastas - HomeSwitchHome")

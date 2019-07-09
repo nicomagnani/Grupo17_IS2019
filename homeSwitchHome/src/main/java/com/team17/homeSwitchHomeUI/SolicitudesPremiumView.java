@@ -177,7 +177,7 @@ public class SolicitudesPremiumView extends Composite implements View {
 		email = new HtmlEmail();
 		this.inicializarEmail(tipo, accion);
 		email.addTo(mail);
-		email.send();		
+		email.send();
 	}
 	
 	

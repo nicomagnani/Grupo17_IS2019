@@ -454,12 +454,6 @@ public class ConnectionBD {
 	}
 
 	
-	public ArrayList<Reserva> listaReservasEnCursoSinDueño() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	
 	public ArrayList<Reserva> listaReservasPorUsuario(String mail) throws SQLException {
 		
 		ArrayList<Reserva> reservas = new ArrayList<Reserva>();

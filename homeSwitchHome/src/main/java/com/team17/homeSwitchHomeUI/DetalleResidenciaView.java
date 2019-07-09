@@ -8,7 +8,6 @@ import java.util.ArrayList;
 
 import com.vaadin.annotations.Title;
 import com.vaadin.navigator.View;
-import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
