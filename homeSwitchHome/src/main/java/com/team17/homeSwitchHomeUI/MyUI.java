@@ -250,12 +250,8 @@ public class MyUI extends UI {
     public void navigatorAdmin() {        
     	navigator = new Navigator(this, viewContainer);
     	
-        try {
-			navigator.addView("residenciasAdmin", new ResidenciasAdminView(this));
-			navigator.addView("semanasAdmin", new SemanasAdminView(this));
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+        navigator.addView("residenciasAdmin", new ResidenciasAdminView(this));
+		navigator.addView("semanasAdmin", new SemanasAdminView(this));
         navigator.addView("reservasAdmin", new ReservasAdminView());
         navigator.addView("agregarResidencia", new AgregarResidenciaView(this));
         navigator.addView("solicitudesPremium", new SolicitudesPremiumView());

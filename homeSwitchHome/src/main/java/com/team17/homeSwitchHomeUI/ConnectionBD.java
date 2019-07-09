@@ -299,7 +299,7 @@ public class ConnectionBD {
     	ps.executeUpdate(); 
     	ps.close();
     	
-    	//en caso de haber reservas y/o subastas asociadas a la residencias, las elimino 
+    	//en caso de haber reservas y/o subastas asociadas a la residencias, las elimino
     	if ( !unaResidencia.getReservas().isEmpty() ) {    		
     		
     		//elimino reservas
@@ -309,7 +309,7 @@ public class ConnectionBD {
         	ps.setString(1, unaResidencia.getTitulo());
         	ps.setString(2, unaResidencia.getLocalidad());
         	
-        	ps.executeUpdate(); 
+        	ps.executeUpdate();
         	ps.close();
         	
         	//elimino subastas
@@ -320,7 +320,7 @@ public class ConnectionBD {
         	ps.setString(2, unaResidencia.getLocalidad());
         	
         	ps.executeUpdate(); 
-        	ps.close();        	
+        	ps.close();
     	}
     }
 

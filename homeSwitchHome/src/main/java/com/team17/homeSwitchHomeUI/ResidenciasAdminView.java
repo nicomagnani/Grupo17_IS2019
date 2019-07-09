@@ -22,7 +22,9 @@ import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import homeSwitchHome.EstadoDeReserva;
@@ -36,51 +38,84 @@ import homeSwitchHome.ReservaSubasta;
 public class ResidenciasAdminView extends Composite implements View {
 	
 	private Label cabecera = new Label("Lista de residencias (administrador)");
-	private Label msjResultado = new Label("No hay residencias cargadas.");	
+	private Label msjResultado = new Label("No hay residencias cargadas.");
+	
 	private Notification notifResultado = new Notification("Residencia borrada con éxito.");
+	private Window ventanaConfirmacion = new Window("Confirmar eliminación");
+	private Label info = new Label("¿Está seguro que desea eliminar la residencia?");
+	private Button botonConfirmar = new Button("Confirmar");
+	private Button botonCancelar = new Button("Cancelar");
+	private HtmlEmail email = new HtmlEmail();
 	
 	private VerticalLayout propiedadesLayout = new VerticalLayout();
-	private Panel panel = new Panel();	
+	private Panel panel = new Panel();
+	private VerticalLayout ventanaLayout = new VerticalLayout();
+	
 	
 	private ArrayList<Propiedad> propiedades = new ArrayList<>();	
-	private HtmlEmail email = new HtmlEmail();
+	private Propiedad propActual;
+	private FormLayout layoutActual;
+	
 	private ConnectionBD conexion = new ConnectionBD();	
 	private MyUI interfaz;
 	
 
-	public ResidenciasAdminView(MyUI interfaz) throws SQLException {
+	public ResidenciasAdminView(MyUI interfaz) {
 		
-		this.interfaz = interfaz;
+		this.interfaz = interfaz;		
+
+		this.cargarResidencias();
+		this.inicializarComponentes();
+		this.inicializarLayouts();
+	}	
+
+
+	private void cargarResidencias() {		
 		
+		try {
+			propiedades = conexion.listaResidenciasConFotos();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+
+	private void inicializarComponentes() {
+
 		cabecera.addStyleName(ValoTheme.MENU_TITLE);
 		
 		panel.setVisible(false);
 		msjResultado.setVisible(false);
-		
-		propiedadesLayout.setSizeUndefined();
-		
-		cargarResidencias();
-		
-		//coloco el layout con las propiedades dentro del panel para poder scrollear
-		panel.setContent(propiedadesLayout);
-		panel.setHeight("600");
-		panel.setWidth("750");
-		panel.addStyleName("scrollable");
+				
+		if (!propiedades.isEmpty()) {
+			panel.setVisible(true);			
+			for (Propiedad p : propiedades)
+				this.añadirResidencia(p);
+		} else
+			msjResultado.setVisible(true);
 		
 		try {
 			this.inicializarEmail();
 		} catch (EmailException e1) {
 			e1.printStackTrace();
 		}
+
+		botonConfirmar.addClickListener(e -> {
+			try {
+				this.eliminar(propActual, layoutActual);
+			} catch (SQLException | EmailException e1) {
+				e1.printStackTrace();
+			}
+		} );
 		
-		VerticalLayout mainLayout = new VerticalLayout(cabecera, panel, msjResultado);
-		mainLayout.setComponentAlignment(cabecera, Alignment.MIDDLE_CENTER);
-		mainLayout.setComponentAlignment(panel, Alignment.MIDDLE_CENTER);
-		mainLayout.setComponentAlignment(msjResultado, Alignment.MIDDLE_CENTER);
-		
-        setCompositionRoot(mainLayout);
+		botonCancelar.addClickListener(e -> ventanaConfirmacion.close() );		
+					
+		ventanaConfirmacion.center();
+		ventanaConfirmacion.setWidth("500");
+		ventanaConfirmacion.setResizable(true);
+		ventanaConfirmacion.setModal(true);
 	}
-	
+
 
 	private void inicializarEmail() throws EmailException {
 
@@ -93,23 +128,9 @@ public class ResidenciasAdminView extends Composite implements View {
 		String mensaje = "<p>Estimado usuario, la propiedad que se encontraba en subasta"
 				+ " y en la cual usted había ofertado ha sido eliminada. Sepa disculpar las molestias.</p><p>Atte. Staff"
 				+ " de <span style=\"text-decoration: underline;\">HomeSwitchHome</span></p>";
-		email.setHtmlMsg(mensaje);		
+		email.setHtmlMsg(mensaje);
 	}
 
-
-	private void cargarResidencias() throws SQLException {		
-		
-		propiedades = conexion.listaResidenciasConFotos();
-		
-		if (!propiedades.isEmpty()) {
-			panel.setVisible(true);
-			for (int i=0; i < propiedades.size(); i++) {
-				this.añadirResidencia(propiedades.get(i));
-			}
-		} else {
-			msjResultado.setVisible(true);
-		}		
-	}
 	
 	
 	private void añadirResidencia(Propiedad propiedad) {
@@ -130,12 +151,12 @@ public class ResidenciasAdminView extends Composite implements View {
 			interfaz.vistaAdminConNuevaVista("detalleResidencia");
 		});
 		
-		Button modificar = new Button("Modificar", e -> {
+		Button botonModificar = new Button("Modificar", e -> {
 			HomeSwitchHome.setPropiedadActual(propiedad);			
 			interfaz.vistaAdminConNuevaVista("modificarResidencia");
 		});
 		
-		Button eliminar = new Button("Eliminar");
+		Button botonEliminar = new Button("Eliminar");
 	
     	Image foto1 = new Image("Foto 1");
     	Image foto2 = new Image("Foto 2");
@@ -186,7 +207,7 @@ public class ResidenciasAdminView extends Composite implements View {
     		});
     	}
 
-    	HorizontalLayout botonesLayout = new HorizontalLayout(verFotos, verDetalle, modificar, eliminar);
+    	HorizontalLayout botonesLayout = new HorizontalLayout(verFotos, verDetalle, botonModificar, botonEliminar);
     	
     	HorizontalLayout fotosLayout = new HorizontalLayout(foto1,foto2,foto3,foto4,foto5);
     	fotosLayout.setWidth("650");
@@ -199,15 +220,9 @@ public class ResidenciasAdminView extends Composite implements View {
 		propiedadLayout.addStyleName("layout-with-border");
 		
 		propiedadesLayout.addComponent(propiedadLayout);
-		propiedadesLayout.setComponentAlignment(propiedadLayout, Alignment.MIDDLE_CENTER);
+		propiedadesLayout.setComponentAlignment(propiedadLayout, Alignment.MIDDLE_CENTER);		
 		
-		eliminar.addClickListener(e -> {
-			try {
-				this.eliminar(propiedad, propiedadLayout);
-			} catch (SQLException | EmailException e1) {
-				e1.printStackTrace();
-			}
-		});		
+		botonEliminar.addClickListener(e -> this.abrirVentanaConfirmacion(propiedad, propiedadLayout) );
 	}
 	
 	
@@ -221,7 +236,46 @@ public class ResidenciasAdminView extends Composite implements View {
 	                }
 	            }, "filename.png");
 	    image.setSource(resource);
-	}	
+	}
+	
+
+	private void inicializarLayouts() {
+
+		propiedadesLayout.setSizeUndefined();
+		
+		panel.setContent(propiedadesLayout);
+		panel.setHeight("600");
+		panel.setWidth("750");
+		panel.addStyleName("scrollable");
+		
+		HorizontalLayout botones2Layout = new HorizontalLayout(botonConfirmar,botonCancelar);
+
+		ventanaLayout = new VerticalLayout(info, botones2Layout);
+		ventanaLayout.setComponentAlignment(info, Alignment.MIDDLE_CENTER);
+		ventanaLayout.setComponentAlignment(botones2Layout, Alignment.MIDDLE_CENTER);
+
+		ventanaConfirmacion.setContent(ventanaLayout);
+		
+		VerticalLayout mainLayout = new VerticalLayout(cabecera, panel, msjResultado);
+		mainLayout.setComponentAlignment(cabecera, Alignment.MIDDLE_CENTER);
+		mainLayout.setComponentAlignment(panel, Alignment.MIDDLE_CENTER);
+		mainLayout.setComponentAlignment(msjResultado, Alignment.MIDDLE_CENTER);
+		
+        setCompositionRoot(mainLayout);
+		
+	}
+
+	
+	private void abrirVentanaConfirmacion(Propiedad propiedad, FormLayout propiedadLayout) {
+
+		propActual = propiedad;
+		layoutActual = propiedadLayout;
+
+		// completa el campo de oferta automáticamente con el monto actual (deshabilitado ya que no se indica en la historia)
+//		montoOferta.setValue(montoString);
+		
+		UI.getCurrent().addWindow(ventanaConfirmacion);
+	}
 		
 	
 	private void eliminar(Propiedad propiedad, FormLayout propiedadLayout) throws SQLException, EmailException {		

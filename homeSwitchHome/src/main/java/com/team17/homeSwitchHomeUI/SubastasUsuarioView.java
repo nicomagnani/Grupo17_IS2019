@@ -36,12 +36,12 @@ public class SubastasUsuarioView extends Composite implements View {
 	private Label cabecera = new Label("Lista de subastas");
 	private Label msjResultado = new Label("No hay subastas disponibles.");
 
+	private Notification notifResultado;
 	private Window ventanaConfirmacion = new Window("Confirmar oferta");
 	private Label info = new Label("Indique un monto a ofertar:");
 	private NumberField montoOferta = new NumberField();
 	private Button botonConfirmar = new Button("Enviar");
 	private Button botonCancelar = new Button("Cancelar");
-	private Notification notifResultado;
 
 	private VerticalLayout subastasLayout = new VerticalLayout();
 	private Panel panel = new Panel();
@@ -190,10 +190,10 @@ public class SubastasUsuarioView extends Composite implements View {
 		rsActual = rs;
 		botonActual = botonOfertar;
 
-		montoOferta.setValue(montoString);
+		// completa el campo doferta automáticamente con la oferta actual; deshabilitado ya que no se indica en la historia
+//		montoOferta.setValue(montoString);
+		
 		UI.getCurrent().addWindow(ventanaConfirmacion);
-
-
 	}
 
 
