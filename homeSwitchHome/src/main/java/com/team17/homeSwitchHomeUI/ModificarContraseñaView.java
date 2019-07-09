@@ -66,7 +66,7 @@ public class ModificarContraseñaView extends Composite implements View {
 			if ( textoContraseña1.getValue().equals(usuario.getContraseña()) ) {
 				if ( textoContraseña2.getValue().equals(textoContraseña3.getValue()) ) {					
 					try {
-						conectar.modificarContraseña(usuario.getMail(),textoContraseña2.getValue());
+						conectar.modificarUsuarioContraseña(usuario.getMail(),textoContraseña2.getValue());
 
 						//informa resultado y actualiza la vista solo si no ocurre excepción
 						this.mostrarNotificacion("Éxito. Regresando...", Notification.Type.HUMANIZED_MESSAGE);

@@ -31,8 +31,8 @@ import homeSwitchHome.ReservaSubasta;
 import homeSwitchHome.Usuario;
 
 @Title("Subastas - HomeSwitchHome")
-public class SubastasUsuarioView extends Composite implements View { // necesita composite y view para funcionar correctamente
-
+public class SubastasUsuarioView extends Composite implements View {
+	
 	private Label cabecera = new Label("Lista de subastas");
 	private Label msjResultado = new Label("No hay subastas disponibles.");
 
@@ -54,9 +54,7 @@ public class SubastasUsuarioView extends Composite implements View { // necesita
 
 	private ConnectionBD conexion = new ConnectionBD();
 	private MyUI interfaz;
-
-
-
+	
 
 	public SubastasUsuarioView(MyUI interfaz) {
 

@@ -28,7 +28,7 @@ import homeSwitchHome.Propiedad;
 
 @Title("Búsqueda por fecha - HomeSwitchHome")
 public class BuscarFechaView extends Composite implements View {  //necesita composite y view para funcionar correctamente
-
+	
 	private Label cabecera = new Label("Buscar residencias por fecha");
 	private DateField campoFechaIncio = new DateField("Fecha inicio",LocalDate.now().plusMonths(6));
 	private DateField campoFechaFin = new DateField("Fecha fin",LocalDate.now().plusMonths(8));
@@ -91,7 +91,6 @@ public class BuscarFechaView extends Composite implements View {  //necesita com
 		if ( (!fechaInicio.isAfter(fechaFin)) && (!fechaFin.isAfter(fechaInicio.plusMonths(2))) ) {
 			
 			ConnectionBD conectar = new ConnectionBD();
-			propiedades = new ArrayList<Propiedad>();
 			
 			try {
 				propiedades = conectar.listaResidenciasPorFecha(fechaInicio, fechaFin);
@@ -100,7 +99,7 @@ public class BuscarFechaView extends Composite implements View {  //necesita com
 			}
 			
 			//propiedades = new ArrayList<>();   <-- para chequear cuando no hay residencias cargadas
-			if ( propiedades.size() == 0 ) {			
+			if ( propiedades.isEmpty() ) {			
 				tabla.setVisible(false);
 				msjResultado.setValue("No se encontraron residencias en ese rango de fechas.");
 			} else {

@@ -137,7 +137,7 @@ public class ReservarDirectaView extends Composite implements View {
 				mostrarNotificacion("Éxito. Redirigiendo...", Notification.Type.HUMANIZED_MESSAGE);
 								
 				//modifico creditos y reserva
-				conexion.modificarCreditos(mail, "-", 1);				
+				conexion.modificarUsuarioCreditos(mail, "-", 1);				
 				reserva.setUsuario(mail);
 				conexion.realizarReservaDirecta(reserva);
 				

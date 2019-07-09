@@ -41,42 +41,6 @@ public class Propiedad {
 		this.fotos = fotos;
 	}
 
-	//no recomendable usar ya que mostraria un monto erroneo
-//	public Propiedad(String titulo, String pais, String provincia, String localidad, String domicilio,
-//			String descripcion, int montoBase, byte[][] fotos) {
-//
-//	 	this.titulo = titulo;
-//	 	this.pais = pais;
-//	 	this.provincia = provincia;
-//	 	this.localidad = localidad;
-//	 	this.domicilio = domicilio;
-//	 	this.descripcion = descripcion;
-//	 	this.montoBase = montoBase;
-//	 	this.fotos = fotos;	 	 
-//	}
-	
-	public void reservarSemana (int unaSemana) {
-		
-	}
-	
-	public void anularReservaSemana (int unaSemana) {
-		
-	}
-
-	public boolean añadirReserva (Reserva reserva) {		
-		// >>true si tuvo exito
-		return false;
-	}
-	
-	public boolean eliminarReserva (Reserva reserva) {		
-		// >>true si tuvo exito
-		return false;
-	}
-	
-	public boolean tieneReservaEnFecha(LocalDate fechaDeInicio) {		
-		// >>true si tuvo exito
-		return false;
-	}	
 	
 	public String getTitulo() {
 		return titulo;
@@ -299,8 +263,7 @@ public class Propiedad {
 			if (reserva.getEstado() == EstadoDeReserva.RESERVADA) {
 				return true;
 			}
-		}
-		
+		}		
 		return false;		
 	}
 	
@@ -313,6 +276,6 @@ public class Propiedad {
 			}
 		}
 		return false;
-	}	
+	}
 	
 }

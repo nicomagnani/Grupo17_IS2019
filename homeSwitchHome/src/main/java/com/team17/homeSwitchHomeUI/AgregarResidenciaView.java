@@ -39,7 +39,7 @@ import homeSwitchHome.Propiedad;
 
 @Title("Agregar residencia - HomeSwitchHome")
 public class AgregarResidenciaView extends Composite implements View {  //.necesita composite y view para funcionar correctamente	
-
+		
 	Label cabecera = new Label("Agregar una residencia");
 	private FormLayout formulario = new FormLayout();
 	private TextField titulo = new TextField("Título");
@@ -236,7 +236,8 @@ public class AgregarResidenciaView extends Composite implements View {  //.neces
 		
 		StreamResource resource = new StreamResource(
 	            new StreamResource.StreamSource() {
-	                @Override
+
+					@Override
 	                public InputStream getStream() {
 	                    return new ByteArrayInputStream(preFoto);
 	                }
@@ -249,7 +250,8 @@ public class AgregarResidenciaView extends Composite implements View {  //.neces
 	private void showFinal(byte[] foto, Image image) {
 	    StreamResource resource = new StreamResource(
 	            new StreamResource.StreamSource() {
-	                @Override
+
+					@Override
 	                public InputStream getStream() {
 	                    return new ByteArrayInputStream(foto);
 	                }

@@ -102,7 +102,7 @@ public class ModificarTarjetaView extends Composite implements View {
 			this.mostrarNotificacion("Error: Hay campos vacíos.", Notification.Type.ERROR_MESSAGE);
 		} else {
 			try {
-				conectar.modificarTarjeta(Long.parseLong(campoNroTarj.getValue()), campoMarcaTarj.getValue(),
+				conectar.modificarUsuarioTarjeta(Long.parseLong(campoNroTarj.getValue()), campoMarcaTarj.getValue(),
 						textoTitTarj.getValue(), fechaVencTarj.getValue(), Short.parseShort(nroSegTarj.getValue()),
 						usuario.getMail());
 				HomeSwitchHome.setUsuarioActual(conectar.buscarUsuario(usuario.getMail()));

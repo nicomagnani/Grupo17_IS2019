@@ -23,7 +23,7 @@ import homeSwitchHome.UsuarioAdministrador;
 @Theme("hometheme")
 @Title("Iniciar sesión - HomeSwitchHome")
 public class IniciarSesionView extends Composite implements View {  //.necesita composite y view para funcionar correctamente
-	
+		
 	Label cabecera = new Label("Iniciar Sesión");
 	TextField textoEmail = new TextField("Email:");
 	PasswordField textoContraseña = new PasswordField("Contraseña:");

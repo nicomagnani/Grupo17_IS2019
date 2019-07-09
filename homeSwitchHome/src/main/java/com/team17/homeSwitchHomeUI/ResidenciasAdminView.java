@@ -214,7 +214,8 @@ public class ResidenciasAdminView extends Composite implements View {
 	private void cargarFoto(Image image, byte[] foto) {
 		StreamResource resource = new StreamResource(
 	            new StreamResource.StreamSource() {
-	                @Override
+
+					@Override
 	                public InputStream getStream() {
 	                    return new ByteArrayInputStream(foto);
 	                }
@@ -254,7 +255,7 @@ public class ResidenciasAdminView extends Composite implements View {
 			//devolver creditos de reservas directas
 			for (Reserva r : propiedad.getReservas()) { 
 				if ( (r instanceof ReservaDirecta) && (r.getEstado() == EstadoDeReserva.RESERVADA) )
-					conexion.modificarCreditos(r.getUsuario(), "+", 1);
+					conexion.modificarUsuarioCreditos(r.getUsuario(), "+", 1);
 			}
 			
 			mostrarNotificacion("Residencia con "+propiedad.getReservas().size()+" reservas borrada con éxito.", Notification.Type.ERROR_MESSAGE);			

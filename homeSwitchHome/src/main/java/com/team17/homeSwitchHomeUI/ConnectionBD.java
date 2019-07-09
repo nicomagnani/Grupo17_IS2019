@@ -92,8 +92,9 @@ public class ConnectionBD {
 	}	
 
 
-	public void modificarResidencia(Propiedad p, String titulo, String localidad) throws SQLException{
+	public void modificarResidencia(Propiedad p, String tituloOriginal, String localidadOriginal) throws SQLException{
 		
+		// parte 1: modifico residencia (tabla 'propiedad')
 		byte[][] fotos = p.getFotos();
 		ByteArrayInputStream bais;
 		int col = 8;
@@ -111,7 +112,7 @@ public class ConnectionBD {
 				+ " foto3 = ?,"
 				+ " foto4 = ?,"
 				+ " foto5 = ?"
-				+ " WHERE titulo = '"+titulo+"' AND localidad = '"+localidad+"'";
+				+ " WHERE titulo = ? AND localidad = ?";
 
 		ps = (PreparedStatement) con.prepareStatement(query);
 
@@ -122,6 +123,8 @@ public class ConnectionBD {
 		ps.setString(5,p.getLocalidad());
 		ps.setString(6,p.getDomicilio());
 		ps.setFloat(7,p.getMontoBase());
+		ps.setString(8,tituloOriginal);
+		ps.setString(9,localidadOriginal);
 
 		for (byte[] foto : fotos) {
 			if (foto != null) {
@@ -135,12 +138,73 @@ public class ConnectionBD {
 		ps.executeUpdate();
 		ps.close();
 		
-		//TODO: en caso de haber reservas y/o subastas asociadas a la residencias, las modifico
-
+		
+		// parte 2: modifico referencias en otras tablas ('canceladas', 'reservas', 'subastas')
+		// parte 2a: canceladas
+		query = "UPDATE canceladas"
+				+" SET propiedad = ?, localidad = ?"
+				+" WHERE propiedad = ? AND localidad = ?";
+		ps = (PreparedStatement) con.prepareStatement(query);
+		
+		ps.setString(1,p.getTitulo());
+		ps.setString(2,p.getLocalidad());
+		ps.setString(3,tituloOriginal);
+		ps.setString(4,localidadOriginal);
+		
+		ps.executeUpdate();
+		ps.close();
+		
+		
+		// parte 2b1: 'reservas' - semanas sin reservar
+		query = "UPDATE reservas"
+				+" SET propiedad = ?, localidad = ?, monto = ?"
+				+" WHERE propiedad = ? AND localidad = ? AND estado <> 'RESERVADA'";
+				
+		ps = (PreparedStatement) con.prepareStatement(query);
+		
+		ps.setString(1,p.getTitulo());
+		ps.setString(2,p.getLocalidad());
+		ps.setFloat(3,p.getMontoBase());
+		ps.setString(4,tituloOriginal);
+		ps.setString(5,localidadOriginal);
+		
+		ps.executeUpdate();
+		ps.close();
+		
+		
+		// parte 2b2: 'reservas' - semanas reservadas
+		query = "UPDATE reservas"
+				+" SET propiedad = ?, localidad = ?"
+				+" WHERE propiedad = ? AND localidad = ? AND estado = 'RESERVADA'";
+				
+		ps = (PreparedStatement) con.prepareStatement(query);
+		
+		ps.setString(1,p.getTitulo());
+		ps.setString(2,p.getLocalidad());
+		ps.setString(4,tituloOriginal);
+		ps.setString(5,localidadOriginal);
+		
+		ps.executeUpdate();
+		ps.close();
+				
+		// parte 2c: 'subastas' - solo subastas terminadas (se supone que no posee subastas en curso)
+		query = "UPDATE reservas"
+				+" SET propiedad = ?, localidad = ?"
+				+" WHERE propiedad = ? AND localidad = ?";
+				
+		ps = (PreparedStatement) con.prepareStatement(query);
+		
+		ps.setString(1,p.getTitulo());
+		ps.setString(2,p.getLocalidad());
+		ps.setString(4,tituloOriginal);
+		ps.setString(5,localidadOriginal);
+		
+		ps.executeUpdate();
+		ps.close();				
 	}
 
 
-	public void modificarResidenciaEnSubasta(Propiedad p, String titulo, String localidad) throws SQLException{
+	public void modificarResidenciaEnSubasta(Propiedad p, String tituloOriginal, String localidad) throws SQLException{
 		
 		byte[][] fotos = p.getFotos();
 		ByteArrayInputStream bais;
@@ -154,7 +218,7 @@ public class ConnectionBD {
 				+ " foto3 = ?,"
 				+ " foto4 = ?,"
 				+ " foto5 = ?"
-				+ " WHERE titulo = '"+titulo+"' AND localidad = '"+localidad+"'";
+				+ " WHERE titulo = ? AND localidad = ?";
 
 		ps = (PreparedStatement) con.prepareStatement(query);
 
@@ -170,10 +234,56 @@ public class ConnectionBD {
 			col++; //incrementa fuera del if-else para asegurar que se guarde en la pos correcta
 		}
 		
-		ps.executeUpdate();
-		ps.close();	
+		ps.setString(8,tituloOriginal);
+		ps.setString(9,localidad);
 		
-		//TODO: en caso de haber reservas y/o subastas asociadas a la residencias, las modifico
+		ps.executeUpdate();
+		ps.close();
+		
+		
+		// parte 2: modifico referencias en otras tablas ('canceladas', 'reservas', 'subastas')
+		// parte 2a: canceladas
+		query = "UPDATE canceladas"
+				+" SET propiedad = ?"
+				+" WHERE propiedad = ? AND localidad = ?";
+		ps = (PreparedStatement) con.prepareStatement(query);
+		
+		ps.setString(1,p.getTitulo());
+		ps.setString(2,tituloOriginal);
+		ps.setString(3,localidad);
+		
+		ps.executeUpdate();
+		ps.close();
+		
+		
+		// parte 2b: 'reservas'
+		query = "UPDATE reservas"
+				+" SET propiedad = ?"
+				+" WHERE propiedad = ? AND localidad = ?";
+				
+		ps = (PreparedStatement) con.prepareStatement(query);
+		
+		ps.setString(1,p.getTitulo());
+		ps.setString(2,tituloOriginal);
+		ps.setString(3,localidad);
+		
+		ps.executeUpdate();
+		ps.close();
+		
+		
+		// parte 2c: 'subastas'
+		query = "UPDATE reservas"
+				+" SET propiedad = ?"
+				+" WHERE propiedad = ? AND localidad = ?";
+				
+		ps = (PreparedStatement) con.prepareStatement(query);
+		
+		ps.setString(1,p.getTitulo());
+		ps.setString(2,tituloOriginal);
+		ps.setString(3,localidad);
+		
+		ps.executeUpdate();
+		ps.close();
 	
 	}
 	
@@ -343,10 +453,13 @@ public class ConnectionBD {
 		
 		//filtro propiedades sin reservas disponibles
 		for (Propiedad p : propiedades) {
-			p.setReservas(listaReservasPorPropiedad(p.getTitulo(),p.getLocalidad()));
-			if (p.getReservas().size() > 0) {
+			p.setReservas( this.listaReservasPorPropiedad(p.getTitulo(),p.getLocalidad()) );
+			
+			if (!p.getReservas().isEmpty()) {
 				p.actualizarTiposDeReservasDisponibles();
-				propiedades2.add(p);
+				
+				if ( (p.isDispDirecta()) || (p.isDispSubasta()) || (p.isDispHotsale()) )
+					propiedades2.add(p);				
 			}				
 		}	
 		
@@ -380,8 +493,9 @@ public class ConnectionBD {
 
 		//filtro propiedades sin reservas disponibles			
 		for (Propiedad p : propiedades) {
-			p.setReservas(listaReservasPorPropiedad(p.getTitulo(),p.getLocalidad()));				
-			if (p.hayReservaEntreFechas(fecha1, fecha2)) {
+			p.setReservas(listaReservasPorPropiedad(p.getTitulo(),p.getLocalidad()));		
+			
+			if (p.hayReservaEntreFechas(fecha1,fecha2)) {
 				propiedades2.add(p);
 			}
 		}
@@ -585,7 +699,7 @@ public class ConnectionBD {
 	
 	public void abrirSubasta(Reserva r) throws SQLException {		
 		
-		//parte 1, se actualiza tipo de reserva
+		//parte 1, se actualiza tabla reserva
 		String query = "UPDATE reservas"
 				+ " SET tipo = ?, estado = ?"
 				+" WHERE propiedad = ? AND localidad = ? AND fecha_inicio = ?";
@@ -615,14 +729,80 @@ public class ConnectionBD {
 		
 		ps.executeUpdate();
 		ps.close();
-		con.close();		
 	}
 	
 	
-	public void cerrarSubasta(ReservaSubasta r) {
-		// TODO Auto-generated method stub
+	public void cerrarSubastaConGanador(ReservaSubasta res) throws SQLException {
+
+		//parte 1, se actualiza tabla reserva
+		String query = "UPDATE reservas"
+				+" SET usuario = ?, estado = ?, monto = ?"
+				+" WHERE propiedad = ? AND localidad = ? AND fecha_inicio = ?";
+			
+		ps = (PreparedStatement) con.prepareStatement(query);
+		
+		ps.setString(1,res.getUsuarios().get(0));
+		ps.setString(2,"RESERVADA");
+		ps.setFloat(3,res.getMontos().get(0));
+		ps.setString(4,res.getPropiedad());
+		ps.setString(5,res.getLocalidad());
+		ps.setDate(6,Date.valueOf(res.getFechaInicio()));		
+		
+		ps.executeUpdate();
+		ps.close();
 		
 		
+		//parte 2, se actualiza subasta (en caso de que se hayan eliminado ofertas inválidas)
+		query = "UPDATE subastas"
+				+" SET montos = ?, usuarios = ?"
+				+" WHERE propiedad = ? AND localidad = ? AND fecha_inicio = ?";
+			
+		ps = (PreparedStatement) con.prepareStatement(query);
+		
+		ps.setString(1,res.getMontosString());
+		ps.setString(2,res.getUsuariosString());
+		ps.setString(3,res.getPropiedad());
+		ps.setString(4,res.getLocalidad());
+		ps.setDate(5, Date.valueOf(res.getFechaInicio()));
+		
+		ps.executeUpdate();
+		ps.close();
+	}
+	
+	
+	public void cerrarSubastaSinGanador(ReservaSubasta res) throws SQLException {
+
+		//parte 1, se actualiza tabla reserva
+		String query = "UPDATE reservas"
+				+" SET tipo = ?, estado = ?"
+				+" WHERE propiedad = ? AND localidad = ? AND fecha_inicio = ?";
+			
+		ps = (PreparedStatement) con.prepareStatement(query);
+		
+		ps.setString(1,"hotsale");
+		ps.setString(2,"EN_ESPERA");
+		ps.setString(3,res.getPropiedad());
+		ps.setString(4,res.getLocalidad());
+		ps.setDate(5, Date.valueOf(res.getFechaInicio()));		
+		
+		ps.executeUpdate();
+		ps.close();
+		
+		
+		//parte 2, se actualiza subasta (en caso de que se hayan eliminado ofertas inválidas)
+		query = "UPDATE subastas"
+				+" SET montos = ?, usuarios = NULL"
+				+" WHERE propiedad = ? AND localidad = ? AND fecha_inicio = ?";
+			
+		ps = (PreparedStatement) con.prepareStatement(query);
+		
+		ps.setString(1,String.valueOf(res.getMontos().get(0)));
+		ps.setString(2,res.getPropiedad());
+		ps.setString(3,res.getLocalidad());
+		ps.setDate(4, Date.valueOf(res.getFechaInicio()));
+		
+		ps.executeUpdate();
+		ps.close();
 	}
 	
 
@@ -773,23 +953,87 @@ public class ConnectionBD {
 	}
 
 
-	public void ModificarPerfil(String mailOriginal, String mailNuevo, String nombre, String apellido, LocalDate fechaNacimiento) throws SQLException {
+	public void modificarUsuarioDatos(String mailOriginal, String mailNuevo, String nombre, String apellido, LocalDate fechaNacimiento) throws SQLException {
 		
-		String query = "UPDATE usuarios "
-				+ "SET mail = ?, nombre = ?, apellido = ?, f_nac = ? "
-				+ "WHERE mail = '"+mailOriginal+"'";		
+		// parte 1: modifica usuario (tabla 'usuarios')
+		String query = "UPDATE usuarios"
+				+ " SET mail = ?, nombre = ?, apellido = ?, f_nac = ?"
+				+ " WHERE mail = ?";		
 		ps = (PreparedStatement) con.prepareStatement(query);
 		
-		ps.setString(1, mailNuevo);
-		ps.setString(2, nombre);
-		ps.setString(3, apellido);
-		ps.setDate(4, Date.valueOf(fechaNacimiento));
+		ps.setString(1,mailNuevo);
+		ps.setString(2,nombre);
+		ps.setString(3,apellido);
+		ps.setDate(4,Date.valueOf(fechaNacimiento));
+		ps.setString(5,mailOriginal);
 		
 		ps.executeUpdate();
+		ps.close();
+		
+		
+		// parte 2: modifica referencias en otras tablas ('canceladas', 'reservas', 'solicitudes', 'subastas')
+		// parte 2a: canceladas
+		query = "UPDATE canceladas"
+				+ " SET usuario = ?"
+				+ " WHERE usuario = ?";		
+		ps = (PreparedStatement) con.prepareStatement(query);
+		
+		ps.setString(1,mailNuevo);
+		ps.setString(2,mailOriginal);
+		
+		ps.executeUpdate();
+		ps.close();
+		
+		
+		// parte 2b: reservas
+		query = "UPDATE reservas"
+				+ " SET usuario = ?"
+				+ " WHERE usuario = ?";		
+		ps = (PreparedStatement) con.prepareStatement(query);
+		
+		ps.setString(1,mailNuevo);
+		ps.setString(2,mailOriginal);
+		
+		ps.executeUpdate();
+		ps.close();
+		
+		
+		// parte 2c: solicitudes
+		query = "UPDATE solicitudes"
+				+ " SET usuario = ?"
+				+ " WHERE usuario = ?";		
+		ps = (PreparedStatement) con.prepareStatement(query);
+		
+		ps.setString(1,mailNuevo);
+		ps.setString(2,mailOriginal);
+		
+		ps.executeUpdate();
+		ps.close();
+		
+
+		// parte 2d: subastas. para cada subasta, obtengo la lista de usuarios, la modifico y luego reenvio la lista
+		ArrayList<ReservaSubasta> subastas = this.listaSubastas();
+		ArrayList<String> usuarios;
+		boolean ok;
+		
+		for (ReservaSubasta res : subastas) {
+			usuarios = res.getUsuarios();
+			ok = false;
+			if (usuarios != null)
+				for (int i=0; i<usuarios.size(); i++) {
+					if (usuarios.get(i).equals(mailOriginal)) {
+						usuarios.remove(i);
+						usuarios.add(i, mailOriginal);
+						ok = true;
+					}
+				}
+			if (ok)
+				this.modificarSubasta(res);
+		}
 	}
 
 
-	public void modificarTarjeta(long numTarj, String marca, String titular, LocalDate fechaVencimiento, short numSeg, String mail) throws SQLException {		
+	public void modificarUsuarioTarjeta(long numTarj, String marca, String titular, LocalDate fechaVencimiento, short numSeg, String mail) throws SQLException {		
 		
 		String query = "UPDATE usuarios "
 				+ "SET nro_tarj = ?, marca_tarj = ?, titu_tarj = ?, venc_tarj = ?, cod_tarj = ? "
@@ -803,10 +1047,11 @@ public class ConnectionBD {
 		ps.setLong(5, numSeg);
 		
 		ps.executeUpdate();
+		ps.close();
 	}
 
 
-	public void modificarContraseña(String mail, String value) throws SQLException {		
+	public void modificarUsuarioContraseña(String mail, String value) throws SQLException {		
 		
 		String query ="UPDATE usuarios "
 				+ "SET contraseña = ? "
@@ -816,10 +1061,11 @@ public class ConnectionBD {
 		ps.setString(1, value);
 		
 		ps.executeUpdate();
+		ps.close();
 	}
 	
 	
-	public void modificarCreditos(String mail, String operacion, int cantidad) throws SQLException {		
+	public void modificarUsuarioCreditos(String mail, String operacion, int cantidad) throws SQLException {		
 		
 		String modificador = operacion +" "+cantidad;
 		
@@ -830,10 +1076,11 @@ public class ConnectionBD {
 		ps = (PreparedStatement) con.prepareStatement(query);
 		
 		ps.executeUpdate();
+		ps.close();
 	}
 	
 
-	public void modificarTipoDeUsuario(String mail, String tipo) throws SQLException {
+	public void modificarDeUsuarioTipo(String mail, String tipo) throws SQLException {
 		
 		boolean t2 = tipo.equals("alta");
 		
@@ -843,6 +1090,7 @@ public class ConnectionBD {
 		ps = (PreparedStatement) con.prepareStatement(query);
 		
 		ps.executeUpdate();
+		ps.close();
 	}
     
 	

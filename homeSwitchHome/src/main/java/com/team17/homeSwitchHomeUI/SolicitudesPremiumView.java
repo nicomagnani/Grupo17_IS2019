@@ -144,7 +144,7 @@ public class SolicitudesPremiumView extends Composite implements View {
 	
 	private void aceptar(Solicitud s, FormLayout sl) throws EmailException, SQLException {
 		
-		conexion.modificarTipoDeUsuario(s.getMail(),s.getTipo());
+		conexion.modificarDeUsuarioTipo(s.getMail(),s.getTipo());
 		conexion.eliminarSolicitud(s.getMail());
 		this.enviarEmail(s.getMail(), "aceptada", s.getTipo());
 		mostrarNotificacion("Solicitud aceptada y usuario informado vía mail.", Notification.Type.HUMANIZED_MESSAGE);

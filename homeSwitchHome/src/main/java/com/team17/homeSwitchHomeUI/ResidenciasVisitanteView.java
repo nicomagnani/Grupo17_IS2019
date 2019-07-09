@@ -20,7 +20,6 @@ import homeSwitchHome.Propiedad;
 
 @Title("HomeSwitchHome")
 public class ResidenciasVisitanteView extends Composite implements View {
-		
 	
 	private Image img = new Image();
 	private Label cabecera = new Label("<p style=\"text-align: center; font-weight: bold;"

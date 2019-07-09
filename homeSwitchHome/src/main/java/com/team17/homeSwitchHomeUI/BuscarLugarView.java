@@ -25,7 +25,7 @@ import homeSwitchHome.Propiedad;
 
 @Title("Búsqueda por lugar - HomeSwitchHome")
 public class BuscarLugarView extends Composite implements View {  //.necesita composite y view para funcionar correctamente
-
+		
 	Label cabecera = new Label("Buscar residencias por lugar");
 	TextField textoBuscar = new TextField("Ingrese una localidad");
 	Button botonBuscar = new Button("Buscar");

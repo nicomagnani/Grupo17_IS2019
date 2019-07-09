@@ -186,6 +186,11 @@ public class ModificarResidenciaView extends Composite implements View {
 		image3.setVisible(false);
 		image4.setVisible(false);
 		image5.setVisible(false);
+		image1.addClickListener( e -> this.eliminarFoto(0) );
+		image2.addClickListener( e -> this.eliminarFoto(1) );
+		image3.addClickListener( e -> this.eliminarFoto(2) );
+		image4.addClickListener( e -> this.eliminarFoto(3) );
+		image5.addClickListener( e -> this.eliminarFoto(4) );
 		fotos[0] = propiedad.getFoto1();
 		fotos[1] = propiedad.getFoto2();
 		fotos[2] = propiedad.getFoto3();
@@ -200,6 +205,20 @@ public class ModificarResidenciaView extends Composite implements View {
 				e1.printStackTrace();
 			}
 		});
+	}
+
+
+	private void eliminarFoto(int i) {
+		
+		int posFinal = this.cantidadFotosCargadas() - 1;
+		fotos[i] = null;
+		
+		//si la foto eliminada no es la última, reacomoda el orden de las fotos
+		if (i < posFinal)			
+			for (int j=i; j <= posFinal; j++) {
+				fotos[j] = fotos[j+1];
+			}
+		this.mostrarFotosFinales();
 	}
 
 
@@ -323,6 +342,7 @@ public class ModificarResidenciaView extends Composite implements View {
 
 		StreamResource resource = new StreamResource(
 				new StreamResource.StreamSource() {
+					
 					@Override
 					public InputStream getStream() {
 						return new ByteArrayInputStream(preFoto);
@@ -336,7 +356,8 @@ public class ModificarResidenciaView extends Composite implements View {
 	private void mostrarFotoCargada(byte[] foto, Image image) {
 	    StreamResource resource = new StreamResource(
 	            new StreamResource.StreamSource() {
-	                @Override
+
+					@Override
 	                public InputStream getStream() {
 	                    return new ByteArrayInputStream(foto);
 	                }

@@ -10,7 +10,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 @Title("Contacto - HomeSwitchHome")
 public class ContactarView extends Composite implements View {  //.necesita composite y view para funcionar correctamente
-
+		
 	public ContactarView() {
 		
 		Label cabecera = new Label("Comunicarse vía correo electrónico");

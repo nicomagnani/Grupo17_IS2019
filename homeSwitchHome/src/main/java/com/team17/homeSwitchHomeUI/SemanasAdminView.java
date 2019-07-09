@@ -41,8 +41,7 @@ public class SemanasAdminView extends Composite implements View {
 	private Notification notifResultado = new Notification("");
 	
 	private HtmlEmail email = new HtmlEmail();
-	private ArrayList<Reserva> reservas = new ArrayList<>();
-	
+	private ArrayList<Reserva> reservas = new ArrayList<>();	
 
 	private ConnectionBD conexion = new ConnectionBD();
 	private MyUI interfaz;
@@ -84,7 +83,7 @@ public class SemanasAdminView extends Composite implements View {
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}		
-		}		
+		}
 	}
 	
 
@@ -206,7 +205,7 @@ public class SemanasAdminView extends Composite implements View {
 			
 			if ( (r.getEstado() == EstadoDeReserva.DISPONIBLE_DIRECTA) && 
 					(!r.getFechaInicio().isAfter(hace6meses)) &&
-					(!r.getFechaInicio().isBefore(hace6meses.minusDays(3))) ) {					
+					(!r.getFechaInicio().isBefore(hace6meses.minusDays(3))) ) {
 				conexion.abrirSubasta(r);
 				n++;
 				subastasAbiertas += r.getPropiedad()+" - "+r.getLocalidad()+" - "+r.getFechaInicio()+"<br/>";
@@ -226,21 +225,32 @@ public class SemanasAdminView extends Composite implements View {
 		
 		int n = 0; //subastas cerradas
 		LocalDate hoy = LocalDate.now();
-		ReservaSubasta r2;
-		String subastasCerradas = "<strong>Propiedad - Localidad - Fecha de inicio - Ganador</strong><br/>";
+		ReservaSubasta rs;
+		String subastasCerradas = "<strong>Propiedad - Localidad - Fecha de inicio - Ganador</strong><br/>";		
 		
-		for (Reserva r : reservas) {
+		// para cada reserva:
+		// > si es una subasta -> si está disponible y se alcanzó la fecha del cierre ->
+		// >> si hay ganador -> enviar mail + restar credito + cerrar subasta con ganador 
+		// >> si no hay ganador -> cerrar subasta sin ganador
+		// >> sumar subasta cerrada (n++)
+		// >> agregar info de subasta
+		
+		for (Reserva r : reservas) {			
 			
 			if (r instanceof ReservaSubasta) {
-				r2 = (ReservaSubasta) r;
-				if ( (r2.getEstado() == EstadoDeReserva.DISPONIBLE_SUBASTA)		
-						&& (hoy.isBefore(r2.getFechaFinSubasta())) ) {						
-					this.definirOfertaGanadora(r2);
-					this.enviarEmail(r2);
-					conexion.modificarCreditos(r2.getUsuarios().get(0), "-", 1);	
-					conexion.cerrarSubasta(r2);
+				rs = (ReservaSubasta) r;				
+				
+				if ( (rs.getEstado() == EstadoDeReserva.DISPONIBLE_SUBASTA) && (!hoy.isBefore(rs.getFechaFinSubasta())) ) {					
+					
+					if (this.hayOfertaGanadora(rs)) {
+						this.enviarEmail(rs);
+						conexion.modificarUsuarioCreditos(rs.getUsuarios().get(0), "-", 1);
+						conexion.cerrarSubastaConGanador(rs);
+					} else
+						conexion.cerrarSubastaSinGanador(rs);
+					
 					n++;
-					subastasCerradas += r2.getPropiedad()+" - "+r2.getLocalidad()+" - "+r2.getFechaInicio()+" - "+r2.getOfertaGanadora()+"<br/>";
+					subastasCerradas += rs.getPropiedad()+" - "+rs.getLocalidad()+" - "+rs.getFechaInicio()+" - "+rs.getOfertaGanadora()+"<br/>";
 				}
 			}
 		}
@@ -249,30 +259,30 @@ public class SemanasAdminView extends Composite implements View {
 			mostrarNotificacion("Se cerraron "+n+" subastas. Detalle:<br/>" + subastasCerradas, Notification.Type.HUMANIZED_MESSAGE);
 			interfaz.vistaAdmin("semanasAdmin");
 		} else {
-			mostrarNotificacion("No se abrió ninguna subasta.", Notification.Type.HUMANIZED_MESSAGE);
-		}		
+			mostrarNotificacion("No se cerró ninguna subasta.", Notification.Type.HUMANIZED_MESSAGE);
+		}
 	}
 	
 	
 	
-	private void definirOfertaGanadora(ReservaSubasta rs) throws SQLException {
+	private boolean hayOfertaGanadora(ReservaSubasta rs) throws SQLException {
 		
-		//verifica:
-		// 1) créditos disponibles
-		// 2) que no posea reservas en la misma semana
+		//verifica si:
+		// 1) posee créditos disponibles Y
+		// 2) no posee reservas en la misma semana
 		
 		Usuario u;
-		boolean ok = false;
 		ArrayList<Float> montos = rs.getMontos();
-		ArrayList<String> usuarios = rs.getUsuarios();		
-		
-		while ( (montos.size() > 1) && (!ok) ) {			
+		ArrayList<String> usuarios = rs.getUsuarios();
+				
+		while (montos.size() > 1) {			
 			u = conexion.buscarUsuario(usuarios.get(0));
 			if ( (u.getCreditos() > 1) && (!poseeReservaEnMismaSemana(u.getMail(), rs.getFechaReserva())) ) {
-				ok = true;
+				return true;
 			} else
 				rs.eliminarOferta(0);
-		}
+		}		
+		return false;
 	}
 
 
@@ -284,9 +294,9 @@ public class SemanasAdminView extends Composite implements View {
 		//verifica si alguna reserva de la BD pertenece al usuario ganador Y coincide en la fecha de reserva con la semana subastada
 		for (Reserva r : reservas) {				
 			if ( r.getUsuario().equals(mail) && (r.getFechaReserva().isEqual(fecha)) )
-				return false;
+				return true;
 		}
-		return true;
+		return false;
 	}
 
 

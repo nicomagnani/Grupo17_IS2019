@@ -34,7 +34,7 @@ import homeSwitchHome.UsuarioPremium;
 
 @Title("Detalle de residencia - HomeSwitchHome")
 public class DetalleResidenciaView extends Composite implements View {
-	
+		
 	private Label cabeceraPrincipal = new Label("Detalle de residencia");
 	private Label cabeceraDatos = new Label("Datos de residencia");
 	private Label cabeceraSemanas = new Label("Semanas");
@@ -139,7 +139,6 @@ public class DetalleResidenciaView extends Composite implements View {
 		
 		setCompositionRoot(mainLayout);
 		
-
 		try {
 			this.cargarReservas(reservasLayout);
 		} catch (SQLException e) {
@@ -330,7 +329,8 @@ public class DetalleResidenciaView extends Composite implements View {
 	private void cargarFoto(Image image, byte[] foto) {
 		StreamResource resource = new StreamResource(
 	            new StreamResource.StreamSource() {
-	                @Override
+
+					@Override
 	                public InputStream getStream() {
 	                    return new ByteArrayInputStream(foto);
 	                }

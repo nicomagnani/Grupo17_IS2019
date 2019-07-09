@@ -37,10 +37,34 @@ public class ReservaSubasta extends Reserva {
 
 	public void setUsuarios(ArrayList<String> usuarios) {
 		this.usuarios = usuarios;
+	}	
+	
+	//para enviar a la BD
+	public String getMontosString() {
+	
+		String st = "";
+		for (Float m : montos)
+				st += String.valueOf(m)+" ";
+		
+		//elimino espacio al final
+		st = st.substring(0, st.length()-1);
+		
+		return st;
 	}
 	
-	public void getUsuarioGanador(ArrayList<String> usuarios) {
-		this.usuarios = usuarios;
+	//para enviar a la BD
+	public String getUsuariosString() {
+		
+		String st = "";
+		if ( (usuarios != null) && (usuarios.isEmpty()) )
+			for (String u : usuarios)
+				st += u+" ";
+		
+		//elimino espacio al final
+		if (!st.equals(""))
+			st = st.substring(0, st.length()-1);			
+		
+		return st;		
 	}
 
 	public LocalDate getFechaInicioSubasta() {
@@ -52,7 +76,7 @@ public class ReservaSubasta extends Reserva {
 	}
 	
 	public LocalDate getFechaFinSubasta() {
-		return this.getFechaInicioSubasta().plusDays(3);		
+		return this.getFechaInicioSubasta().plusDays(4);
 	}
 	
 	public String getFechaFinSubastaString() {
@@ -60,7 +84,7 @@ public class ReservaSubasta extends Reserva {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
 		
 		if ( LocalDate.now().isBefore(this.getFechaFinSubasta()) ) {
-			return this.getFechaInicioSubasta().plusDays(3).atStartOfDay().format(formatter) + " hs.";
+			return this.getFechaFinSubasta().atStartOfDay().format(formatter) + " hs.";
 		} else
 			return "Finalizada";
 	}

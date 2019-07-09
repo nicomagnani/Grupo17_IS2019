@@ -96,14 +96,13 @@ public class ModificarPerfilView extends Composite implements View {  //.necesit
 				
 				//modificar datos y actualizar usuario actual
 				try {
-					conectar.ModificarPerfil(usuario.getMail(),textoEmail.getValue(),textoNombre.getValue(),textoApellido.getValue(),fechaNac.getValue());
+					conectar.modificarUsuarioDatos(usuario.getMail(),textoEmail.getValue(),textoNombre.getValue(),textoApellido.getValue(),fechaNac.getValue());
 					HomeSwitchHome.setUsuarioActual(conectar.buscarUsuario(textoEmail.getValue()));
 					
 					//informa resultado y actualiza la vista solo si no ocurre excepción
 					this.mostrarNotificacion("Modificación exitosa", Notification.Type.HUMANIZED_MESSAGE);
 					interfaz.vistaUsuario("miPerfil");
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}

@@ -36,7 +36,7 @@ import homeSwitchHome.UsuarioAdministrador;
 import homeSwitchHome.UsuarioComun;
 
 @Title("Registro - HomeSwitchHome")
-public class RegistrarUsuarioView extends Composite implements View {
+public class RegistrarUsuarioView extends Composite implements View {	
 	
 	Label cabecera = new Label("Registrar usuario");
 	Label labelParte1 = new Label("<span style=\"text-align: left; font-weight: bold; text-decoration: underline; font-size: 120%;\">Datos generales</span>", ContentMode.HTML);
