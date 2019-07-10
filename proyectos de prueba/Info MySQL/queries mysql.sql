@@ -132,7 +132,7 @@ WHERE propiedad = 'prueba1' AND estado = 'DISPONIBLE_HOTSALE' /* multiples condi
 UPDATE subastas
 SET 
     usuarios = 'pedro@asd.com juan@mail.com',
-	montos = '300 500 700'
+    montos = '700 500 300'
 WHERE propiedad = 'prueba2' AND localidad = 'prueba5';
 
 UPDATE usuarios

@@ -101,8 +101,10 @@ public class BuscarFechaView extends Composite implements View {  //necesita com
 			//propiedades = new ArrayList<>();   <-- para chequear cuando no hay residencias cargadas
 			if ( propiedades.isEmpty() ) {			
 				tabla.setVisible(false);
+				msjResultado.setVisible(true);
 				msjResultado.setValue("No se encontraron residencias en ese rango de fechas.");
 			} else {
+				msjResultado.setVisible(false);
 				msjAyuda.setVisible(true);
 				tabla.setVisible(true);
 				tabla.setItems(propiedades);
@@ -128,6 +130,7 @@ public class BuscarFechaView extends Composite implements View {  //necesita com
 			}
 		} else {
 			tabla.setVisible(false);
+			msjResultado.setVisible(true);
 			msjResultado.setValue("Error: El rango de meses es incorrecto.");
 		}		
 	}

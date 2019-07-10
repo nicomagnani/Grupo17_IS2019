@@ -85,7 +85,7 @@ import java.time.LocalDate;
 	
 	//la fecha en que finaliza la publicacion
 	public LocalDate getFechaFin() {
-		return fechaInicio.plusYears(1).minusDays(1);
+		return fechaInicio.plusYears(1);
 	}
 	
 	//la fecha en que comienza a reservarse la residencia

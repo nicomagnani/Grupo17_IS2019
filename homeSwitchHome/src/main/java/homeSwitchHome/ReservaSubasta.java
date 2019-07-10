@@ -76,12 +76,12 @@ public class ReservaSubasta extends Reserva {
 	}
 	
 	public LocalDate getFechaFinSubasta() {
-		return this.getFechaInicioSubasta().plusDays(4);
+		return this.getFechaInicioSubasta().plusDays(3);
 	}
 	
 	public String getFechaFinSubastaString() {
 		
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 		
 		if ( LocalDate.now().isBefore(this.getFechaFinSubasta()) ) {
 			return this.getFechaFinSubasta().atStartOfDay().format(formatter) + " hs.";

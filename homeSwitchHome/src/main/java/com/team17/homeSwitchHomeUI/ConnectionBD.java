@@ -123,8 +123,9 @@ public class ConnectionBD {
 		ps.setString(5,p.getLocalidad());
 		ps.setString(6,p.getDomicilio());
 		ps.setFloat(7,p.getMontoBase());
-		ps.setString(8,tituloOriginal);
-		ps.setString(9,localidadOriginal);
+		
+		ps.setString(13,tituloOriginal);
+		ps.setString(14,localidadOriginal);
 
 		for (byte[] foto : fotos) {
 			if (foto != null) {
@@ -181,8 +182,8 @@ public class ConnectionBD {
 		
 		ps.setString(1,p.getTitulo());
 		ps.setString(2,p.getLocalidad());
-		ps.setString(4,tituloOriginal);
-		ps.setString(5,localidadOriginal);
+		ps.setString(3,tituloOriginal);
+		ps.setString(4,localidadOriginal);
 		
 		ps.executeUpdate();
 		ps.close();
@@ -196,8 +197,8 @@ public class ConnectionBD {
 		
 		ps.setString(1,p.getTitulo());
 		ps.setString(2,p.getLocalidad());
-		ps.setString(4,tituloOriginal);
-		ps.setString(5,localidadOriginal);
+		ps.setString(3,tituloOriginal);
+		ps.setString(4,localidadOriginal);
 		
 		ps.executeUpdate();
 		ps.close();				

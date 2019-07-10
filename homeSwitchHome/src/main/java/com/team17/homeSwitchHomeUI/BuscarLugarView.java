@@ -80,8 +80,10 @@ public class BuscarLugarView extends Composite implements View {  //.necesita co
 			//propiedades = new ArrayList<>();  // <-- para chequear cuando no hay residencias cargadas
 			if ( propiedades.size() == 0 ) {
 				tabla.setVisible(false);
+				msjResultado.setVisible(true);
 				msjResultado.setValue("No se encontraron residencias disponibles en esa localidad.");
 			} else {
+				msjResultado.setVisible(false);
 				msjAyuda.setVisible(true);
 				tabla.setVisible(true);
 				tabla.setItems(propiedades);				
@@ -107,6 +109,7 @@ public class BuscarLugarView extends Composite implements View {  //.necesita co
 			}
 		} else {
 			tabla.setVisible(false);
+			msjResultado.setVisible(true);
 			msjResultado.setValue("Error: Debe ingresar una localidad.");
 		}		
 	}

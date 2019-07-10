@@ -89,7 +89,6 @@ public class ModificarResidenciaView extends Composite implements View {
 		propiedad = HomeSwitchHome.getPropiedadActual();
 		enSubasta = this.seEncuentraEnSubasta();
 
-//		this.inicializarBinder();
 		this.inicializarComponentes();
 		this.inicializarLayouts();
 
@@ -175,17 +174,7 @@ public class ModificarResidenciaView extends Composite implements View {
 
 		//configuro el boton que muestra las fotos cargadas
 		mostrarFotosFinalesButton.addClickListener( e -> mostrarFotosFinales() );
-
-		image1.setWidth(100, Unit.PIXELS);
-		image2.setWidth(100, Unit.PIXELS);
-		image3.setWidth(100, Unit.PIXELS);
-		image4.setWidth(100, Unit.PIXELS);
-		image5.setWidth(100, Unit.PIXELS);
-		image1.setVisible(false);
-		image2.setVisible(false);
-		image3.setVisible(false);
-		image4.setVisible(false);
-		image5.setVisible(false);
+		
 		image1.addClickListener( e -> this.eliminarFoto(0) );
 		image2.addClickListener( e -> this.eliminarFoto(1) );
 		image3.addClickListener( e -> this.eliminarFoto(2) );
@@ -196,6 +185,11 @@ public class ModificarResidenciaView extends Composite implements View {
 		fotos[2] = propiedad.getFoto3();
 		fotos[3] = propiedad.getFoto4();
 		fotos[4] = propiedad.getFoto5();
+		image1.setVisible(false);
+		image2.setVisible(false);
+		image3.setVisible(false);
+		image4.setVisible(false);
+		image5.setVisible(false);
 
 		//configuro boton para modificar una residencia
 		aceptarButton.addClickListener(e -> {
@@ -210,14 +204,8 @@ public class ModificarResidenciaView extends Composite implements View {
 
 	private void eliminarFoto(int i) {
 		
-		int posFinal = this.cantidadFotosCargadas() - 1;
 		fotos[i] = null;
 		
-		//si la foto eliminada no es la última, reacomoda el orden de las fotos
-		if (i < posFinal)			
-			for (int j=i; j <= posFinal; j++) {
-				fotos[j] = fotos[j+1];
-			}
 		this.mostrarFotosFinales();
 	}
 
@@ -248,31 +236,46 @@ public class ModificarResidenciaView extends Composite implements View {
 
 	private void mostrarFotosFinales() {
 
+		image1.setVisible(false);
+		image2.setVisible(false);
+		image3.setVisible(false);
+		image4.setVisible(false);
+		image5.setVisible(false);
 		image1.setSource(null);
 		image2.setSource(null);
 		image3.setSource(null);
 		image4.setSource(null);
 		image5.setSource(null);
+		image1.setWidth("1");
+		image2.setWidth("1");
+		image3.setWidth("1");
+		image4.setWidth("1");
+		image5.setWidth("1");
 		
 		if (fotos[0] != null) {
 			mostrarFotoCargada(fotos[0],image1);
 			image1.setVisible(true);
+			image1.setWidth(100, Unit.PIXELS);
 		}
 		if (fotos[1] != null) {
 			mostrarFotoCargada(fotos[1],image2);
 			image2.setVisible(true);
+			image2.setWidth(100, Unit.PIXELS);			
 		}
 		if (fotos[2] != null) {
 			mostrarFotoCargada(fotos[2],image3);
 			image3.setVisible(true);
+			image3.setWidth(100, Unit.PIXELS);
 		}
 		if (fotos[3] != null) {
 			mostrarFotoCargada(fotos[3],image4);
-			image4.setVisible(true);			
+			image4.setVisible(true);
+			image4.setWidth(100, Unit.PIXELS);			
 		}
 		if (fotos[4] != null) {
 			mostrarFotoCargada(fotos[4],image5);
-			image5.setVisible(true);			
+			image5.setVisible(true);
+			image5.setWidth(100, Unit.PIXELS);			
 		}
 	}
 	
@@ -295,9 +298,12 @@ public class ModificarResidenciaView extends Composite implements View {
 		int cant = this.cantidadFotosCargadas();
 		
 		if (cant < 5) {
+			
+			int pos = this.primerPosicionVacia();
+			
 			if (op == "Local") {
 				if (!uploadField.isEmpty()) {
-					fotos[cant] = uploadField.getValue();
+					fotos[pos] = uploadField.getValue();
 					uploadField.setValue(uploadField.getEmptyValue());
 					msjFoto.setValue("Éxito");
 				} else
@@ -306,7 +312,7 @@ public class ModificarResidenciaView extends Composite implements View {
 				if (op == "URL") {
 					if (!url.isEmpty()) {
 						cargarDesdeURL(url.getValue());
-						fotos[cant] = preFoto;
+						fotos[pos] = preFoto;
 						preFoto = null;
 						url.setValue(url.getEmptyValue());
 						msjFoto.setValue("Éxito");
@@ -315,6 +321,16 @@ public class ModificarResidenciaView extends Composite implements View {
 				}
 		} else
 			msjFoto.setValue("Error: La cantidad máxima de fotos es 5");
+	}
+
+
+	private int primerPosicionVacia() {
+		
+		for (int i=0; i < fotos.length; i++) {
+			if (fotos[i] == null)
+				return i;
+		}
+		return -1;
 	}
 
 

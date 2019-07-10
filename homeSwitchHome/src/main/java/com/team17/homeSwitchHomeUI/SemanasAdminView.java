@@ -2,6 +2,7 @@ package com.team17.homeSwitchHomeUI;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import org.apache.commons.mail.EmailException;
@@ -24,6 +25,8 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import homeSwitchHome.EstadoDeReserva;
 import homeSwitchHome.Reserva;
+import homeSwitchHome.ReservaDirecta;
+import homeSwitchHome.ReservaHotsale;
 import homeSwitchHome.ReservaSubasta;
 import homeSwitchHome.Usuario;
 
@@ -31,7 +34,7 @@ import homeSwitchHome.Usuario;
 public class SemanasAdminView extends Composite implements View {
 	
 	private Label cabecera = new Label("Lista de semanas disponibles / en espera");
-	private Label msjResultado = new Label("No se han encontrado semanas en el sistema.");	
+	private Label msjResultado = new Label("No se han encontrado semanas sin reservar en el sistema.");	
 	
 	private VerticalLayout semanasLayout = new VerticalLayout();
 	private HorizontalLayout botonesLayout = new HorizontalLayout();
@@ -42,6 +45,7 @@ public class SemanasAdminView extends Composite implements View {
 	
 	private HtmlEmail email = new HtmlEmail();
 	private ArrayList<Reserva> reservas = new ArrayList<>();	
+	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
 	private ConnectionBD conexion = new ConnectionBD();
 	private MyUI interfaz;
@@ -147,17 +151,37 @@ public class SemanasAdminView extends Composite implements View {
 	}
 	
 	
-	private void añadirSemana(Reserva r) {
+	private void añadirSemana(Reserva r) {		
 		
 		Label propiedad = new Label("<p><span style=\"text-align: left; font-weight: bold; font-size: 120%;\">Propiedad:</span> <span style=\"font-size: 120%;\">"
 						+ r.getPropiedad()+"</span></p>", ContentMode.HTML);
 		
 		Label localidad = new Label("<span style=\"font-weight: bold;\">Localidad:</span> " + r.getLocalidad(), ContentMode.HTML);	
 				
-		Label estado = new Label("<span style=\"font-weight: bold;\">Estado:</span> " + r.getEstadoComoString(), ContentMode.HTML);
+		Label estado = new Label("<span style=\"font-weight: bold;\">Estado:</span> " + r.getEstadoComoString(), ContentMode.HTML);		
 		
-		Label fechasInicioFin = new Label("<span style=\"font-weight: bold;\">Fecha de publicación (inicio a fin):</span> "
-					+ r.getFechaInicio().toString() + " a "+r.getFechaFin().toString(), ContentMode.HTML);
+		String tipo = "";
+		String fecha = "";
+		if (r instanceof ReservaDirecta) {
+			tipo = "reserva directa";
+			fecha = r.getFechaInicio().plusMonths(6).format(formatter);
+		} else
+			if (r instanceof ReservaSubasta) {
+				tipo = "subasta";
+				fecha = ((ReservaSubasta) r).getFechaFinSubasta().format(formatter);
+			} else
+				if (r instanceof ReservaHotsale) {
+					tipo = "Hotsale";
+					fecha = r.getFechaFin().format(formatter);
+					
+				}
+		
+		Label fechaFinParcial = new Label("<span style=\"font-weight: bold;\">Fin de "+tipo+":</span> "
+				+ fecha, ContentMode.HTML);
+				
+		Label fechasInicioFin = new Label("<span style=\"font-weight: bold;\">Período de publicación [1 año]:</span> "
+				+ r.getFechaInicio().format(formatter) + " a "+r.getFechaFin().format(formatter), ContentMode.HTML);
+		
 		
 		Label montoBase = new Label("<span style=\"font-weight: bold;\">Monto base:</span> " + String.valueOf(r.getMonto()), ContentMode.HTML);
 		    	
@@ -165,7 +189,7 @@ public class SemanasAdminView extends Composite implements View {
 		HorizontalLayout botones2Layout = new HorizontalLayout(abrirHotsale, cerrarHotsale);
 		 */
     	
-    	FormLayout semanaLayout = new FormLayout(propiedad,localidad,estado,fechasInicioFin,montoBase);
+    	FormLayout semanaLayout = new FormLayout(propiedad,localidad,estado,fechaFinParcial,fechasInicioFin,montoBase);
 		semanaLayout.setWidth("500");
 		semanaLayout.setSizeFull();
 		semanaLayout.addStyleName("layout-with-border");
@@ -208,7 +232,7 @@ public class SemanasAdminView extends Composite implements View {
 					(!r.getFechaInicio().isBefore(hace6meses.minusDays(3))) ) {
 				conexion.abrirSubasta(r);
 				n++;
-				subastasAbiertas += r.getPropiedad()+" - "+r.getLocalidad()+" - "+r.getFechaInicio()+"<br/>";
+				subastasAbiertas += r.getPropiedad()+" - "+r.getLocalidad()+" - "+r.getFechaInicio().format(formatter)+"<br/>";
 			}
 		}
 		
@@ -250,7 +274,7 @@ public class SemanasAdminView extends Composite implements View {
 						conexion.cerrarSubastaSinGanador(rs);
 					
 					n++;
-					subastasCerradas += rs.getPropiedad()+" - "+rs.getLocalidad()+" - "+rs.getFechaInicio()+" - "+rs.getOfertaGanadora()+"<br/>";
+					subastasCerradas += rs.getPropiedad()+" - "+rs.getLocalidad()+" - "+rs.getFechaInicio().format(formatter)+" - "+rs.getOfertaGanadora()+"<br/>";
 				}
 			}
 		}
@@ -320,7 +344,7 @@ public class SemanasAdminView extends Composite implements View {
 		String mensaje = "Estimado usuario, usted ha sido el ganador de la siguiente subasta:<br/>"
 					+ "<br/>"
 					+ "<strong>Propiedad - Localidad - Fecha de Reserva</strong><br/>"
-					+ rs.getPropiedad()+" - "+rs.getLocalidad()+" - "+rs.getFechaReserva()+"<br/>"					
+					+ rs.getPropiedad()+" - "+rs.getLocalidad()+" - "+rs.getFechaReserva().format(formatter)+"<br/>"					
 					+ "<p>Se descontará un crédito de su cuenta junto con el cobro del pago.</p>"
 					+ "<p>Atte. Staff de <span style=\"text-decoration: underline;\">HomeSwitchHome</span></p>";
 		
