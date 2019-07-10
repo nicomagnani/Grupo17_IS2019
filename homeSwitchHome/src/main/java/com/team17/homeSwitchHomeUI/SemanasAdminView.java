@@ -280,7 +280,7 @@ public class SemanasAdminView extends Composite implements View {
 		}
 		
 		if (n > 0) {
-			mostrarNotificacion("Se cerraron "+n+" subastas. Detalle:<br/>" + subastasCerradas, Notification.Type.HUMANIZED_MESSAGE);
+			mostrarNotificacion("Se cerraron "+n+" subastas. Detalle:<br/><br/>" + subastasCerradas, Notification.Type.HUMANIZED_MESSAGE);
 			interfaz.vistaAdmin("semanasAdmin");
 		} else {
 			mostrarNotificacion("No se cerró ninguna subasta.", Notification.Type.HUMANIZED_MESSAGE);

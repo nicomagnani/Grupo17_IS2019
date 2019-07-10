@@ -71,7 +71,7 @@ public class ReservasAdminView extends Composite implements View {
 		} else {				
 			tabla.setItems(resReservadas);
 			tabla.setVisible(true);
-			tabla.setColumns("fechaInicio", "fechaFin", "fechaReserva", "usuario");
+			tabla.setColumns("propiedad", "localidad", "fechaInicio", "fechaReserva", "usuario");
 			
 			tabla.addColumn(Reserva::getMonto,
 					new NumberRenderer(new DecimalFormat("¤#######.##")))

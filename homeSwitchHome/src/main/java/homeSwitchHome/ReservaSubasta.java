@@ -56,7 +56,7 @@ public class ReservaSubasta extends Reserva {
 	public String getUsuariosString() {
 		
 		String st = "";
-		if ( (usuarios != null) && (usuarios.isEmpty()) )
+		if ( (usuarios != null) && (!usuarios.isEmpty()) )
 			for (String u : usuarios)
 				st += u+" ";
 		

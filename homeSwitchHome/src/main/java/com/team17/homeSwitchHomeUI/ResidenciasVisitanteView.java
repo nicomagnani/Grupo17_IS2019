@@ -41,7 +41,7 @@ public class ResidenciasVisitanteView extends Composite implements View {
 		ArrayList<Propiedad> propiedades = conectar.listaResidenciasVisitante();		
 		
 //		propiedades = new ArrayList<>();   <-- para chequear cuando no hay residencias cargadas
-		if ( propiedades.size() == 0 )
+		if (propiedades.isEmpty())
 			tabla.setVisible(false);
 		else {
 			msj.setVisible(false);
