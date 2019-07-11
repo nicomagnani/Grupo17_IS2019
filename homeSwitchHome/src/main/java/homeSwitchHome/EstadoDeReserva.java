@@ -2,9 +2,7 @@ package homeSwitchHome;
 
 public enum EstadoDeReserva {
 	EN_ESPERA("En espera"), //aguardando Hotsale
-	DISPONIBLE_DIRECTA("Disponible (Reserva directa)"), // disponible para reserva directa
-	DISPONIBLE_HOTSALE("Disponible (Hotsale)"), // disponible para reserva hotsale
-	DISPONIBLE_SUBASTA("Disponible (En subasta)"), // subasta en curso
+	DISPONIBLE("Disponible"), //disponible para reservar
 	RESERVADA("Reservada"), // aguardando fecha de finalizacion
 	CANCELADA("Cancelada"), // reserva cancelada, las de este tipo se guardan en otra tabla
 	FINALIZADA("Finalizada"); //tras pasar un año

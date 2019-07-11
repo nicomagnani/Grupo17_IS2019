@@ -32,6 +32,7 @@ import homeSwitchHome.HomeSwitchHome;
 import homeSwitchHome.Propiedad;
 import homeSwitchHome.Reserva;
 import homeSwitchHome.ReservaDirecta;
+import homeSwitchHome.ReservaHotsale;
 import homeSwitchHome.ReservaSubasta;
 
 @Title("Residencias - HomeSwitchHome")
@@ -94,12 +95,6 @@ public class ResidenciasAdminView extends Composite implements View {
 		} else
 			msjResultado.setVisible(true);
 		
-		try {
-			this.inicializarEmail();
-		} catch (EmailException e1) {
-			e1.printStackTrace();
-		}
-
 		botonConfirmar.addClickListener(e -> {
 			try {
 				this.eliminar(propActual, layoutActual);
@@ -115,22 +110,6 @@ public class ResidenciasAdminView extends Composite implements View {
 		ventanaConfirmacion.setResizable(true);
 		ventanaConfirmacion.setModal(true);
 	}
-
-
-	private void inicializarEmail() throws EmailException {
-
-		email.setHostName("localhost");
-		email.setSmtpPort(9090);
-		email.setAuthentication("homeswitchhome@outlook.com.ar", "1234");		
-		email.setFrom("homeswitchhome@outlook.com.ar");
-		email.setSubject("Propiedad eliminada");
-		
-		String mensaje = "<p>Estimado usuario, la propiedad que se encontraba en subasta"
-				+ " y en la cual usted había ofertado ha sido eliminada. Sepa disculpar las molestias.</p><p>Atte. Staff"
-				+ " de <span style=\"text-decoration: underline;\">HomeSwitchHome</span></p>";
-		email.setHtmlMsg(mensaje);
-	}
-
 	
 	
 	private void añadirResidencia(Propiedad propiedad) {
@@ -270,9 +249,6 @@ public class ResidenciasAdminView extends Composite implements View {
 
 		propActual = propiedad;
 		layoutActual = propiedadLayout;
-
-		// completa el campo de oferta automáticamente con el monto actual (deshabilitado ya que no se indica en la historia)
-//		montoOferta.setValue(montoString);
 		
 		UI.getCurrent().addWindow(ventanaConfirmacion);
 	}
@@ -280,65 +256,164 @@ public class ResidenciasAdminView extends Composite implements View {
 	
 	private void eliminar(Propiedad propiedad, FormLayout propiedadLayout) throws SQLException, EmailException {		
 		
-		int n = 0; //cantidad de ofertantes informados
+		/* #PASOS#
+		1) verificar si tenia subasta en curso, enviar mails y agregar al informe
+		2a) verificar si tenia reservas directas, devolver creditos, enviar mails y agregar al informe
+		2a) verificar si tenia reservas hotsale, enviar mails y agregar al informe
+		3) informar todo junto en 1 notificacion: si tenia subasta en curso, si habia ofertantes y cuantas reservas
+		4) eliminar residencia de la BD
+		5) actualizar sesion de admin
+		*/
 		
+		int n = 0; //cantidad de ofertantes informados
+		int m = propiedad.getReservas().size(); //cantidad de reservas eliminadas		
+		String msjNotificacion = "Residencia borrada con éxito.<br/>";
 		propiedad.setReservas( conexion.listaReservasPorPropiedad(propiedad.getTitulo(), propiedad.getLocalidad()) );
 		
-		if (!propiedad.hayReservasRealizadas()) {
+		if (propiedad.haySubastasEncurso()) {				
 			
-			if (propiedad.haySubastasEncurso()) {				
-				for (Reserva reserva : propiedad.getReservas()) {
-					if (reserva.getEstado() == EstadoDeReserva.DISPONIBLE_SUBASTA) {
-						ReservaSubasta reserva2 = conexion.buscarSubasta(reserva.getPropiedad(), reserva.getLocalidad(), reserva.getFechaInicio(), reserva.getEstado());
-						for (String usuario : reserva2.getUsuarios() )  {
-							if (this.agregarReceptorDeEmail(usuario))
-								n++;
+			this.inicializarEmailSubasta(propiedad.getTitulo(), propiedad.getLocalidad());
+			
+			for (Reserva r : propiedad.getReservas()) {
+				if ( (r.getEstado() == EstadoDeReserva.DISPONIBLE) && (r instanceof ReservaSubasta) ) {
+					ReservaSubasta r2 = conexion.buscarSubasta(r.getPropiedad(), r.getLocalidad(), r.getFechaInicio(),
+							r.getEstado(), r.getMontoOriginal());
+					if (r2.getUsuarios() != null)
+						for (String usuario : r2.getUsuarios()) {
+							this.agregarReceptorDeEmailSubasta(usuario);
+							n++;
 						}
-						email.send();
-					}
 				}
-				if (n > 0) {
-					mostrarNotificacion("Residencia en subasta borrada con éxito y "+n+" ofertantes informados vía email.", Notification.Type.HUMANIZED_MESSAGE);
-				} else
-					mostrarNotificacion("Residencia en subasta y sin ofertas borrada con éxito.", Notification.Type.HUMANIZED_MESSAGE);interfaz.vistaAdmin("residenciasAdmin");
-				
-			} else
-				mostrarNotificacion("Residencia sin reservas borrada con éxito.", Notification.Type.HUMANIZED_MESSAGE);			
-			 	
-		} else {			
-			//devolver creditos de reservas directas
-			for (Reserva r : propiedad.getReservas()) { 
-				if ( (r instanceof ReservaDirecta) && (r.getEstado() == EstadoDeReserva.RESERVADA) )
-					conexion.modificarUsuarioCreditos(r.getUsuario(), "+", 1);
 			}
 			
-			mostrarNotificacion("Residencia con "+propiedad.getReservas().size()+" reservas borrada con éxito.", Notification.Type.ERROR_MESSAGE);			
-		}
+			if (n > 0) {
+				email.send();
+				msjNotificacion += "Se encontraba en subasta y "+n+" ofertantes fueron informados vía email.<br/>";
+			} else
+				msjNotificacion += "No se encontraba en subastaResidencia en subasta y sin ofertas borrada con éxito.<br/>";
+		}	
+
+		if (propiedad.hayReservasRealizadas()) {
+			
+			n = 0;
+			this.inicializarEmailReservaDirectaSubasta(propiedad.getTitulo(), propiedad.getLocalidad());
+			
+			// debe preparar un mail distinto según si devuelve créditos o no, y no puede preparar ambos a la vez,
+			//por lo tanto recorre un vez por cada tipo
+			for (Reserva r : propiedad.getReservas())
+				if ( (r.getEstado() == EstadoDeReserva.RESERVADA)
+						&& ((r instanceof ReservaDirecta) || (r instanceof ReservaDirecta)) ) {
+					n++;					
+					conexion.modificarUsuarioCreditos(r.getUsuario(), "+", 1);
+					this.agregarReceptorDeEmailReservaDirectaSubasta(r.getUsuario());
+				}
+			
+			if (n > 0)
+				email.send();
+				
+			n = 0;
+			this.inicializarEmailReservaHotsale(propiedad.getTitulo(), propiedad.getLocalidad());
+			
+			for (Reserva r : propiedad.getReservas())
+				if ( (r.getEstado() == EstadoDeReserva.RESERVADA) && (r instanceof ReservaHotsale) ) {
+					n++;
+					this.agregarReceptorDeEmailReservaHotsale(r.getUsuario());
+				}
+			
+			if (n > 0)
+				email.send();
+			
+			msjNotificacion += "Tenía "+m+" reservas hechas, por lo que sus usuarios fueron informados vía email.";			
+		} else
+			msjNotificacion += "No tenía reservas hechas.";
 		
+		mostrarNotificacion(msjNotificacion, Notification.Type.HUMANIZED_MESSAGE);
 		conexion.eliminarResidencia(propiedad);
 		interfaz.vistaAdmin("residenciasAdmin");
+	}
+	
+
+	private void inicializarEmailSubasta(String titulo, String localidad) throws EmailException {
+
+		email.setHostName("localhost");
+		email.setSmtpPort(9090);
+		email.setAuthentication("homeswitchhome@outlook.com.ar", "1234");		
+		email.setFrom("homeswitchhome@outlook.com.ar");
+		email.setSubject("Propiedad en subasta eliminada");
 		
+		String mensaje = "<p>Estimado usuario:<br/><br/> La propiedad de título "+titulo+" ubicada en"
+				+ " la localidad de "+localidad+", y que poseía una subasta en que usted se encontraba"
+				+ " participando, ha sido eliminada. Sepa disculpar las molestias.</p><p>Atte. Staff"
+				+ " de <span style=\"text-decoration: underline;\">HomeSwitchHome</span></p>";
+		email.setHtmlMsg(mensaje);
 	}
 	
 	
-	//devuelve true si tuvo exito
-	private boolean agregarReceptorDeEmail (String mail) {
+	private void inicializarEmailReservaDirectaSubasta(String titulo, String localidad) throws EmailException {
+
+		email.setHostName("localhost");
+		email.setSmtpPort(9090);
+		email.setAuthentication("homeswitchhome@outlook.com.ar", "1234");		
+		email.setFrom("homeswitchhome@outlook.com.ar");
+		email.setSubject("Propiedad reservada eliminada");
+		
+		String mensaje = "<p>Estimado usuario:<br/><br/> La propiedad de título "+titulo+" ubicada en"
+				+ " la localidad de "+localidad+" y que usted había reservado ha sido eliminada."
+				+ " Se le ha devuelto 1 crédito. Sepa disculpar las molestias.</p><p>Atte. Staff"
+				+ " de <span style=\"text-decoration: underline;\">HomeSwitchHome</span></p>";
+		email.setHtmlMsg(mensaje);
+	}
+	
+	
+	private void inicializarEmailReservaHotsale(String titulo, String localidad) throws EmailException {
+
+		email.setHostName("localhost");
+		email.setSmtpPort(9090);
+		email.setAuthentication("homeswitchhome@outlook.com.ar", "1234");		
+		email.setFrom("homeswitchhome@outlook.com.ar");
+		email.setSubject("Propiedad reservada eliminada");
+		
+		String mensaje = "<p>Estimado usuario:<br/><br/> La propiedad de título "+titulo+" ubicada en"
+				+ " la localidad de "+localidad+" y que usted había reservado en Hotsale ha sido eliminada."
+				+ " Sepa disculpar las molestias.</p><p>Atte. Staff"
+				+ " de <span style=\"text-decoration: underline;\">HomeSwitchHome</span></p>";
+		email.setHtmlMsg(mensaje);
+	}
+	
+	
+	private void agregarReceptorDeEmailSubasta (String mail) {
 		
 		try {
 			email.addTo(mail);
-			return true;
 		} catch (EmailException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private void agregarReceptorDeEmailReservaDirectaSubasta (String mail) {
 		
-		return false;
+		try {
+			email.addTo(mail);
+		} catch (EmailException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void agregarReceptorDeEmailReservaHotsale (String mail) {
+		
+		try {
+			email.addTo(mail);
+		} catch (EmailException e) {
+			e.printStackTrace();
+		}
 	}
 
 
 	private void mostrarNotificacion(String st, Notification.Type tipo) {
     	
 		notifResultado = new Notification(st, tipo);
-    	notifResultado.setDelayMsec(5000);
+    	notifResultado.setDelayMsec(-1);
+    	notifResultado.setHtmlContentAllowed(true);
     	notifResultado.show(Page.getCurrent());
     }
 	

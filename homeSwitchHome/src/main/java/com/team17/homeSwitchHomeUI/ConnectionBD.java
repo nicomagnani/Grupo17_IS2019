@@ -188,7 +188,7 @@ public class ConnectionBD {
 		ps.executeUpdate();
 		ps.close();
 
-		// parte 2c: 'subastas' - solo subastas terminadas (se supone que no posee subastas en curso)
+		// parte 2c: 'subastas'
 		query = "UPDATE subastas"
 				+" SET propiedad = ?, localidad = ?"
 				+" WHERE propiedad = ? AND localidad = ?";
@@ -207,6 +207,7 @@ public class ConnectionBD {
 
 	public void modificarResidenciaEnSubasta(Propiedad p, String tituloOriginal, String localidad) throws SQLException{
 
+		// parte 1: modifico residencia (tabla 'propiedad')
 		byte[][] fotos = p.getFotos();
 		ByteArrayInputStream bais;
 		int col = 3;
@@ -242,44 +243,14 @@ public class ConnectionBD {
 		ps.close();
 
 
-		// parte 2: modifico referencias en otras tablas ('canceladas', 'reservas', 'subastas')
-		// parte 2a: canceladas
-		query = "UPDATE canceladas"
-				+" SET propiedad = ?"
-				+" WHERE propiedad = ? AND localidad = ?";
-		ps = (PreparedStatement) con.prepareStatement(query);
-
-		ps.setString(1,p.getTitulo());
-		ps.setString(2,tituloOriginal);
-		ps.setString(3,localidad);
-
-		ps.executeUpdate();
-		ps.close();
-
-
-		// parte 2b: 'reservas'
+		// parte 2: modifico referencias en otras tablas ('reservas' - solo semanas sin reservar)
 		query = "UPDATE reservas"
-				+" SET propiedad = ?"
-				+" WHERE propiedad = ? AND localidad = ?";
+				+" SET monto = ?"
+				+" WHERE propiedad = ? AND localidad = ? AND estado <> 'RESERVADA'";
 
 		ps = (PreparedStatement) con.prepareStatement(query);
-
-		ps.setString(1,p.getTitulo());
-		ps.setString(2,tituloOriginal);
-		ps.setString(3,localidad);
-
-		ps.executeUpdate();
-		ps.close();
-
-
-		// parte 2c: 'subastas'
-		query = "UPDATE subastas"
-				+" SET propiedad = ?"
-				+" WHERE propiedad = ? AND localidad = ?";
-
-		ps = (PreparedStatement) con.prepareStatement(query);
-
-		ps.setString(1,p.getTitulo());
+								   
+		ps.setFloat(1,p.getMontoBase());
 		ps.setString(2,tituloOriginal);
 		ps.setString(3,localidad);
 
@@ -335,8 +306,6 @@ public class ConnectionBD {
 
 		if (rs.next()) {
 			propiedad.setTitulo(rs.getString("titulo"));
-			propiedad.setPais(rs.getString("pais"));
-			propiedad.setProvincia(rs.getString("provincia"));
 			propiedad.setLocalidad(rs.getString("localidad"));
 			propiedad.setDomicilio(rs.getString("domicilio"));
 			propiedad.setDescripcion(rs.getString("descripcion"));
@@ -362,8 +331,6 @@ public class ConnectionBD {
 		while (rs.next()) {
 			Propiedad propiedad = new Propiedad();
 			propiedad.setTitulo(rs.getString("titulo"));
-			propiedad.setPais(rs.getString("pais"));
-			propiedad.setProvincia(rs.getString("provincia"));
 			propiedad.setLocalidad(rs.getString("localidad"));
 			propiedad.setDomicilio(rs.getString("domicilio"));
 			propiedad.setDescripcion(rs.getString("descripcion"));
@@ -386,8 +353,6 @@ public class ConnectionBD {
 		while (rs.next()) {
 			propiedad = new Propiedad();
 			propiedad.setTitulo(rs.getString("titulo"));
-			propiedad.setPais(rs.getString("pais"));
-			propiedad.setProvincia(rs.getString("provincia"));
 			propiedad.setLocalidad(rs.getString("localidad"));
 			propiedad.setDomicilio(rs.getString("domicilio"));
 			propiedad.setDescripcion(rs.getString("descripcion"));
@@ -440,8 +405,6 @@ public class ConnectionBD {
 		while (rs.next()) {
 			propiedad = new Propiedad();
 			propiedad.setTitulo(rs.getString("titulo"));
-			propiedad.setPais(rs.getString("pais"));
-			propiedad.setProvincia(rs.getString("provincia"));
 			propiedad.setLocalidad(rs.getString("localidad"));
 			propiedad.setDomicilio(rs.getString("domicilio"));
 			propiedad.setDescripcion(rs.getString("descripcion"));
@@ -480,8 +443,6 @@ public class ConnectionBD {
 		while (rs.next()) {
 			propiedad = new Propiedad();
 			propiedad.setTitulo(rs.getString("titulo"));
-			propiedad.setPais(rs.getString("pais"));
-			propiedad.setProvincia(rs.getString("provincia"));
 			propiedad.setLocalidad(rs.getString("localidad"));
 			propiedad.setDomicilio(rs.getString("domicilio"));
 			propiedad.setDescripcion(rs.getString("descripcion"));
@@ -708,7 +669,7 @@ public class ConnectionBD {
 		ps = (PreparedStatement) con.prepareStatement(query);
 
 		ps.setString(1,"subasta");
-		ps.setString(2,"DISPONIBLE_SUBASTA");
+		ps.setString(2,"DISPONIBLE");
 		ps.setString(3,r.getPropiedad());
 		ps.setString(4,r.getLocalidad());
 		ps.setDate(5, Date.valueOf(r.getFechaInicio()));
@@ -717,7 +678,7 @@ public class ConnectionBD {
 		ps.close();
 
 		//parte 2, se agrega subasta a la tabla subastas
-		query = "INSERT INTO subastas (propiedad, localidad, fecha_inicio, fecha_subasta, montos)"
+		query = "INSERT INTO subastas (propiedad, localidad, fecha_inicio, fecha_subasta)"
 				+" VALUES (?,?,?,?,?)";
 
 		ps = (PreparedStatement) con.prepareStatement(query);
@@ -792,15 +753,14 @@ public class ConnectionBD {
 
 		//parte 2, se actualiza subasta (en caso de que se hayan eliminado ofertas inválidas)
 		query = "UPDATE subastas"
-				+" SET montos = ?, usuarios = NULL"
+				+" SET montos = NULL, usuarios = NULL"
 				+" WHERE propiedad = ? AND localidad = ? AND fecha_inicio = ?";
 
 		ps = (PreparedStatement) con.prepareStatement(query);
 
-		ps.setString(1,String.valueOf(res.getMontos().get(0)));
-		ps.setString(2,res.getPropiedad());
-		ps.setString(3,res.getLocalidad());
-		ps.setDate(4, Date.valueOf(res.getFechaInicio()));
+		ps.setString(1,res.getPropiedad());
+		ps.setString(2,res.getLocalidad());
+		ps.setDate(3, Date.valueOf(res.getFechaInicio()));
 
 		ps.executeUpdate();
 		ps.close();
@@ -817,14 +777,21 @@ public class ConnectionBD {
 
 		for ( String u : rs.getUsuarios() )
 			usuariosString += u + " ";
-
+		
 		String query = "UPDATE subastas"
 				+ " SET montos = ?, usuarios = ?"
 				+" WHERE propiedad = ? AND localidad = ? AND fecha_inicio = ?";
 
 		ps = (PreparedStatement) con.prepareStatement(query);
 
-		ps.setString(1,montosString);
+		if (montosString.equals("")) {
+			ps.setString(1, null);
+		} else ps.setString(1,montosString);
+		
+		if (usuariosString.equals("")) {
+			ps.setString(1, null);
+		} else ps.setString(2,usuariosString);
+		
 		ps.setString(2,usuariosString);
 		ps.setString(3,rs.getPropiedad());
 		ps.setString(4,rs.getLocalidad());
@@ -835,9 +802,9 @@ public class ConnectionBD {
 	}
 
 
-	public ReservaSubasta buscarSubasta(String propiedad, String localidad, LocalDate fechaInicio, EstadoDeReserva estado) throws SQLException {
+	public ReservaSubasta buscarSubasta(String propiedad, String localidad, LocalDate fechaInicio, EstadoDeReserva estado, Float montoOriginal) throws SQLException {
 
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-LL-dd");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		String fechaComoString = fechaInicio.format(formatter);
 
 		String query = "SELECT * FROM subastas WHERE propiedad = '"+propiedad+"' AND localidad = '"
@@ -845,9 +812,10 @@ public class ConnectionBD {
 		ResultSet rs = stmt.executeQuery(query);
 
 		ReservaSubasta reserva = new ReservaSubasta();
-		String[] lista1;
+		String preMontos;
+		String[] preMontosArray;
 		String preUsuarios;
-		ArrayList<Float> montos = new ArrayList<>();
+		ArrayList<Float> montos;
 
 		while (rs.next()) {
 			reserva.setPropiedad(rs.getString("propiedad"));
@@ -855,11 +823,16 @@ public class ConnectionBD {
 			reserva.setFechaInicio(rs.getDate("fecha_inicio").toLocalDate());
 			reserva.setFechaInicioSubasta(rs.getDate("fecha_subasta").toLocalDate());
 			reserva.setEstado(estado);
+			reserva.setMonto(montoOriginal);
 
-			lista1 = (rs.getString("montos").split("\\s+"));
-			for (String st : lista1)
-				montos.add(Float.parseFloat(st));
-			reserva.setMontos(montos);
+			preMontos = rs.getString("montos");
+			if (preMontos != null) {
+				preMontosArray = preMontos.split("\\s+");
+				montos = new ArrayList<>();
+				for (String st : preMontosArray)
+					montos.add(Float.parseFloat(st));
+				reserva.setMontos(montos);
+			}
 
 			preUsuarios = rs.getString("usuarios");
 			//usuarios (los ofertantes) se inicializa como null, en caso de no haber ofertas no hace falta asignarlo
@@ -876,7 +849,8 @@ public class ConnectionBD {
 
 		ArrayList<ReservaSubasta> reservas = new ArrayList<>();
 		ReservaSubasta reserva;
-		String[] preMontos;
+		String preMontos;
+		String[] preMontosArray;
 		String preUsuarios;
 		ArrayList<Float> montos;
 
@@ -892,15 +866,19 @@ public class ConnectionBD {
 			reserva.setFechaInicio(rs.getDate("fecha_inicio").toLocalDate());
 			reserva.setFechaInicioSubasta(rs.getDate("fecha_subasta").toLocalDate());
 
-			preMontos = (rs.getString("montos").split("\\s+"));
-			for (String st : preMontos)
-				montos.add(Float.parseFloat(st));
-			reserva.setMontos(montos);
+			preMontos = rs.getString("montos");
+			if (preMontos != null) {
+				preMontosArray = preMontos.split("\\s+");
+				for (String st : preMontosArray)
+					montos.add(Float.parseFloat(st));
+				reserva.setMontos(montos);
+			}
 
 			preUsuarios = rs.getString("usuarios");
+			//usuarios (los ofertantes) se inicializa como null, en caso de no haber ofertas no hace falta asignarlo
 			if (preUsuarios != null) {
-				reserva.setUsuarios( new ArrayList<>(Arrays.asList(rs.getString("usuarios").split("\\s+"))) );
-			} //usuarios se inicializa como null, en caso de no haber ofertas no hace falta asignarlo
+				reserva.setUsuarios( new ArrayList<>(Arrays.asList(preUsuarios.split("\\s+"))) );
+			}
 
 			reservas.add(reserva);
 		}
@@ -950,7 +928,6 @@ public class ConnectionBD {
 
 	    ps.executeUpdate();
 		ps.close();
-		con.close();
 	}
 
 

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class Propiedad {
 
-	private String titulo,pais,provincia,localidad,domicilio,descripcion;
+	private String titulo, pais = "Argentina", provincia = "Buenos Aires", localidad, domicilio, descripcion;
 	private float montoBase;
 	private byte[][] fotos = new byte[5][];
 	
@@ -28,12 +28,10 @@ public class Propiedad {
 		
 	}
 
-	public Propiedad(String titulo, String pais, String provincia, String localidad, String domicilio,
+	public Propiedad(String titulo, String localidad, String domicilio,
 			String descripcion, float montoBase, byte[][] fotos) {
 
 		this.titulo = titulo;
-		this.pais = pais;
-		this.provincia = provincia;
 		this.localidad = localidad;
 		this.domicilio = domicilio;
 		this.descripcion = descripcion;
@@ -54,16 +52,8 @@ public class Propiedad {
 		return pais;
 	}
 
-	public void setPais(String pais) {
-		this.pais = pais;
-	}
-
 	public String getProvincia() {
 		return provincia;
-	}
-
-	public void setProvincia(String provincia) {
-		this.provincia = provincia;
 	}
 
 	public String getLocalidad() {
@@ -213,16 +203,19 @@ public class Propiedad {
 				}
 				
 				//si hay intersección entre ambos rangos de fechas
-				if ( (!fecha1.isAfter(f[1])) && (!fecha2.isBefore(f[0])) ) 
-					if (res.getEstado() == EstadoDeReserva.DISPONIBLE_DIRECTA) {
+				if ( (!fecha1.isAfter(f[1])) && (!fecha2.isBefore(f[0]))
+						&& (res.getEstado() == EstadoDeReserva.DISPONIBLE) ) {
+						
+					if (res instanceof ReservaDirecta) {
 						dispDirecta = true;
-					} else 
-						if (res.getEstado() == EstadoDeReserva.DISPONIBLE_SUBASTA) {
-							dispSubasta = true;
+					} else
+						if (res instanceof ReservaSubasta) {
+							dispSubasta = true;							
 						} else
-							if (res.getEstado() == EstadoDeReserva.DISPONIBLE_HOTSALE) {
+							if (res instanceof ReservaHotsale) {
 								dispHotsale = true;
 							}
+				}
 			}
 		
 		return (dispDirecta || dispSubasta || dispHotsale);
@@ -243,16 +236,18 @@ public class Propiedad {
 					break;			
 				}
 				
-				//si hay intersección entre ambos rangos de fechas
-				if (res.getEstado() == EstadoDeReserva.DISPONIBLE_DIRECTA) {
+				if (res.getEstado() == EstadoDeReserva.DISPONIBLE ) {
+					
+					if (res instanceof ReservaDirecta) {
 						dispDirecta = true;
-					} else 
-						if (res.getEstado() == EstadoDeReserva.DISPONIBLE_SUBASTA) {
-							dispSubasta = true;
+					} else
+						if (res instanceof ReservaSubasta) {
+							dispSubasta = true;							
 						} else
-							if (res.getEstado() == EstadoDeReserva.DISPONIBLE_HOTSALE) {
+							if (res instanceof ReservaHotsale) {
 								dispHotsale = true;
 							}
+				}
 			}
 	}
 	
@@ -271,10 +266,10 @@ public class Propiedad {
 	public boolean haySubastasEncurso() {
 		
 		for (Reserva reserva : reservas) {
-			if (reserva.getEstado() == EstadoDeReserva.DISPONIBLE_SUBASTA) {
+			if ( (reserva instanceof ReservaSubasta) && (reserva.getEstado() == EstadoDeReserva.DISPONIBLE) )
 				return true;
-			}
 		}
+		
 		return false;
 	}
 	

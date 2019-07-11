@@ -37,6 +37,7 @@ import homeSwitchHome.EstadoDeReserva;
 import homeSwitchHome.HomeSwitchHome;
 import homeSwitchHome.Propiedad;
 import homeSwitchHome.Reserva;
+import homeSwitchHome.ReservaSubasta;
 
 @Title("Modificar residencia - HomeSwitchHome")
 public class ModificarResidenciaView extends Composite implements View {
@@ -45,8 +46,6 @@ public class ModificarResidenciaView extends Composite implements View {
 
 	private TextField titulo = new TextField("Título");
 	private TextArea descripcion = new TextArea("Descripción");
-	private TextField pais = new TextField("País");
-	private TextField provincia = new TextField("Provincia");
 	private TextField localidad = new TextField("Localidad");
 	private TextField domicilio = new TextField("Domicilio");
 	private NumberField monto = new NumberField("Monto base");
@@ -72,7 +71,7 @@ public class ModificarResidenciaView extends Composite implements View {
 	private VerticalLayout mainLayout;
 
 	private Propiedad propiedad;
-	private Propiedad propiedad2;
+	private Propiedad propiedadActual;
 	private ArrayList<Reserva> reservas = new ArrayList<Reserva>();
 	private String op;
 	private byte[][] fotos = new byte[5][]; // las 5 fotos
@@ -107,7 +106,7 @@ public class ModificarResidenciaView extends Composite implements View {
 
 		for (Reserva r : reservas) {
 			//chequea si la residencia tiene una semana activa
-			if ( (r.getEstado() == EstadoDeReserva.DISPONIBLE_SUBASTA) ) {
+			if ( (r.getEstado() == EstadoDeReserva.DISPONIBLE) && (r instanceof ReservaSubasta) ) {
 				return true;
 			}
 		}
@@ -121,8 +120,8 @@ public class ModificarResidenciaView extends Composite implements View {
 		descripcion.setValue(propiedad.getDescripcion());
 		monto.setValue(String.valueOf(propiedad.getMontoBase()));
 		monto.setDecimalPrecision(2);
-		monto.setDecimalSeparator('.');
-		monto.setGroupingUsed(false);
+		monto.setDecimalSeparator(',');
+		monto.setGroupingUsed(true);
 		
 		new Binder<Propiedad>().forField(monto)
 			    .withValidator(new RegexpValidator("", "[-+]?[0-9]*\\.?[0-9]+"))
@@ -132,15 +131,11 @@ public class ModificarResidenciaView extends Composite implements View {
 		if (!enSubasta) {
 			cabecera.setValue("Modificar residencia (sin subasta activa)");
 			titulo.setValue(propiedad.getTitulo());
-			pais.setValue(propiedad.getPais());
-			provincia.setValue(propiedad.getProvincia());
 			localidad.setValue(propiedad.getLocalidad());
 			domicilio.setValue(propiedad.getDomicilio());
 		} else {
 			cabecera.setValue("Modificar residencia (en subasta)");
 			titulo.setVisible(false);
-			pais.setVisible(false);
-			provincia.setVisible(false);
 			localidad.setVisible(false);
 			domicilio.setVisible(false);
 		}
@@ -213,7 +208,7 @@ public class ModificarResidenciaView extends Composite implements View {
 	private void inicializarLayouts() {
 
 		//agregando los layouts a la vista
-		formulario = new FormLayout(titulo,  descripcion, pais, provincia, localidad, domicilio,
+		formulario = new FormLayout(titulo,  descripcion, localidad, domicilio,
 				monto, labelTipoCarga, tipoCargaRadioButton, uploadField, url, msjFoto,
 				agregarFotoButton, mostrarFotosFinalesButton);
 
@@ -391,27 +386,31 @@ public class ModificarResidenciaView extends Composite implements View {
 			
 			if (montoFinal > 0) {	
 
-				propiedad = new Propiedad( titulo.getValue(), pais.getValue(), provincia.getValue(), localidad.getValue(),
+				propiedad = new Propiedad( titulo.getValue(), localidad.getValue(),
 						domicilio.getValue(), descripcion.getValue(), montoFinal, fotos );
 				
 				propiedad.setFotos(fotos);
-				propiedad2 = HomeSwitchHome.getPropiedadActual();
+				propiedadActual = HomeSwitchHome.getPropiedadActual();
 		
 				//si cumple todos los requisitos, actualizo la residencia y cargo una nueva sesión de admin
-				if ( !enSubasta && seHaModificadoTitulo(propiedad2) && existePropiedad() ) {
+				if ( (!enSubasta) && (this.seHaModificadoTitulo()) && (this.existePropiedad()) ) {
 					mostrarNotificacion("Error: Ya existe una propiedad con el mismo título en esa localidad.", Notification.Type.ERROR_MESSAGE);
 				} else {
 					conexion = new ConnectionBD();
 					if (enSubasta) {
-						conexion.modificarResidenciaEnSubasta(propiedad, propiedad2.getTitulo(), propiedad2.getLocalidad());
+						conexion.modificarResidenciaEnSubasta(propiedad, propiedadActual.getTitulo(), propiedadActual.getLocalidad());
 					} else {
-						conexion.modificarResidencia(propiedad, propiedad2.getTitulo(), propiedad2.getLocalidad());
+						conexion.modificarResidencia(propiedad, propiedadActual.getTitulo(), propiedadActual.getLocalidad());
 					}
 					
 					//actualizo la propiedad a mostrar en el detalle
 					conexion = new ConnectionBD();
-					propiedad2 = conexion.buscarResidencia( propiedad.getTitulo(), propiedad.getLocalidad() );
-					HomeSwitchHome.setPropiedadActual(propiedad2);
+					if (enSubasta) {
+						propiedadActual = conexion.buscarResidencia( propiedadActual.getTitulo(), propiedadActual.getLocalidad() );
+					} else
+						propiedadActual = conexion.buscarResidencia( propiedad.getTitulo(), propiedad.getLocalidad() );
+					
+					HomeSwitchHome.setPropiedadActual(propiedadActual);
 					
 					//muestro msj de éxito y muestro el detalle de la residencia actualizada
 					mostrarNotificacion("Éxito.", Notification.Type.HUMANIZED_MESSAGE);
@@ -424,8 +423,8 @@ public class ModificarResidenciaView extends Composite implements View {
 	}
 
 
-	private boolean seHaModificadoTitulo(Propiedad p2) {
-    	return ( !propiedad.getTitulo().equals(propiedad2.getTitulo()) );
+	private boolean seHaModificadoTitulo() {
+    	return ( !propiedad.getTitulo().equals(propiedadActual.getTitulo()) );
 	}
 
 
@@ -446,8 +445,8 @@ public class ModificarResidenciaView extends Composite implements View {
     	if (enSubasta) {
     		return ( descripcion.isEmpty() || monto.isEmpty() );
     	} else
-    		return ( (titulo.isEmpty()) || (descripcion.isEmpty()) || (pais.isEmpty()) || (provincia.isEmpty()) ||
-    				(localidad.isEmpty()) || (domicilio.isEmpty()) || (monto.isEmpty()) );
+    		return ( (titulo.isEmpty()) || (descripcion.isEmpty()) ||(localidad.isEmpty())
+    				|| (domicilio.isEmpty()) || (monto.isEmpty()) );
 	}
 
 

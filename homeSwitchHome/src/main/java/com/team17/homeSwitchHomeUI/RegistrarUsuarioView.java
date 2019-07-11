@@ -64,7 +64,8 @@ public class RegistrarUsuarioView extends Composite implements View {
 		
 		cabecera.addStyleName(ValoTheme.MENU_TITLE);
 				
-		fechaNac.setValue(LocalDate.parse("2000-01-01"));
+		fechaNac.setValue(LocalDate.parse("2001-01-01"));
+		fechaNac.setDateFormat("dd-MM-yyyy");
 	
 		campoNroTarj.setMaxLength(16);
 		campoNroTarj.setDecimalAllowed(false);
@@ -76,8 +77,8 @@ public class RegistrarUsuarioView extends Composite implements View {
 		
 		fechaVencTarj.setResolution(DateResolution.MONTH);
 		fechaVencTarj.setTextFieldEnabled(false);		
-		fechaVencTarj.setValue(LocalDate.parse("2020-01-01"));
 		fechaVencTarj.setRangeStart(LocalDate.now());
+		fechaVencTarj.setValue(LocalDate.parse("2020-01-01"));
 		
 		nroSegTarj.setMaxLength(4);
 		new Binder<Tarjeta>().forField(nroSegTarj)

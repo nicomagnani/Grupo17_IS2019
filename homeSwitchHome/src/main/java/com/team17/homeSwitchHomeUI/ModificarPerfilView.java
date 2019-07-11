@@ -51,7 +51,8 @@ public class ModificarPerfilView extends Composite implements View {  //.necesit
 		textoNombre.setValue(usuario.getNombre());
 		textoApellido.setValue(usuario.getApellido());
 		fechaNac.setValue(usuario.getfNac());
-		fechaNac.setRangeEnd(LocalDate.now().minusYears(18));		
+		fechaNac.setRangeEnd(LocalDate.now().minusYears(18));	
+		fechaNac.setDateFormat("dd-MM-yyyy");
 		
 		botonAceptar.addClickListener( e -> modificar(interfaz) );
 		botonCancelar.addClickListener(e-> cancelar(navigator));

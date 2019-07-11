@@ -69,7 +69,7 @@ public class ModificarTarjetaView extends Composite implements View {
 		campoMarcaTarj.setItems("VISA", "MasterCard");
 		fechaVencTarj.setResolution(DateResolution.MONTH);
 		fechaVencTarj.setTextFieldEnabled(false);
-		fechaVencTarj.setValue(LocalDate.parse("2020-01-01"));
+		fechaVencTarj.setValue(usuario.getfVencCred());
 		fechaVencTarj.setRangeStart(LocalDate.now());
 		nroSegTarj.setMaxLength(4);
 

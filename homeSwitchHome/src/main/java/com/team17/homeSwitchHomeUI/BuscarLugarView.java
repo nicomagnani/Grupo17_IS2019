@@ -79,6 +79,7 @@ public class BuscarLugarView extends Composite implements View {  //.necesita co
 			
 			//propiedades = new ArrayList<>();  // <-- para chequear cuando no hay residencias cargadas
 			if ( propiedades.size() == 0 ) {
+				msjAyuda.setVisible(false);
 				tabla.setVisible(false);
 				msjResultado.setVisible(true);
 				msjResultado.setValue("No se encontraron residencias disponibles en esa localidad.");
@@ -92,6 +93,9 @@ public class BuscarLugarView extends Composite implements View {  //.necesita co
 				Column<Propiedad, Float> columnaMonto = tabla.addColumn(Propiedad::getMontoBase,
 					      new NumberRenderer(new DecimalFormat("¤#######.##")));
 				columnaMonto.setCaption("Monto base");
+				
+				Column<Propiedad, String> columnaDirecta = tabla.addColumn( p -> parseBoolean(p.isDispDirecta()) );
+				columnaDirecta.setCaption("Res. directa");
 				
 				Column<Propiedad, String> columnaSubasta = tabla.addColumn( p -> parseBoolean(p.isDispSubasta()) );
 				columnaSubasta.setCaption("En subasta");				
@@ -108,9 +112,10 @@ public class BuscarLugarView extends Composite implements View {  //.necesita co
 				});
 			}
 		} else {
+			msjAyuda.setVisible(false);
 			tabla.setVisible(false);
 			msjResultado.setVisible(true);
-			msjResultado.setValue("Error: Debe ingresar una localidad.");
+			msjResultado.setValue("Error: Ingrese una localidad.");
 		}		
 	}
 		

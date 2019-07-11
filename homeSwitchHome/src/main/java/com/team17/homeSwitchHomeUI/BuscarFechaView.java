@@ -30,7 +30,7 @@ import homeSwitchHome.Propiedad;
 public class BuscarFechaView extends Composite implements View {  //necesita composite y view para funcionar correctamente
 	
 	private Label cabecera = new Label("Buscar residencias por fecha");
-	private DateField campoFechaIncio = new DateField("Fecha inicio",LocalDate.now().plusMonths(6));
+	private DateField campoFechaInicio = new DateField("Fecha inicio",LocalDate.now().plusMonths(6));
 	private DateField campoFechaFin = new DateField("Fecha fin",LocalDate.now().plusMonths(8));
 	private Label msjAyuda = new Label("Seleccione una residencia para ver sus semanas disponibles.");
 	private Label msjResultado = new Label();
@@ -48,13 +48,15 @@ public class BuscarFechaView extends Composite implements View {  //necesita com
 		
 		cabecera.addStyleName(ValoTheme.MENU_TITLE);
 		
-		campoFechaIncio.setTextFieldEnabled(false);		
-		campoFechaIncio.setResolution(DateResolution.DAY);
-		campoFechaIncio.setRangeStart(LocalDate.now().plusMonths(6));
+		campoFechaInicio.setTextFieldEnabled(false);		
+		campoFechaInicio.setResolution(DateResolution.DAY);
+		campoFechaInicio.setRangeStart(LocalDate.now().plusMonths(6));
+		campoFechaInicio.setDateFormat("dd-MM-yyyy");
 				
 		campoFechaFin.setTextFieldEnabled(false);
 		campoFechaFin.setResolution(DateResolution.DAY);
 		campoFechaFin.setRangeStart(LocalDate.now().plusMonths(6));
+		campoFechaFin.setDateFormat("dd-MM-yyyy");
 				
 		botonBuscar.addClickListener(e -> buscar());
 		
@@ -65,7 +67,7 @@ public class BuscarFechaView extends Composite implements View {  //necesita com
 		tabla.setBodyRowHeight(100);
 		
 		
-		HorizontalLayout fechas = new HorizontalLayout(campoFechaIncio, campoFechaFin);
+		HorizontalLayout fechas = new HorizontalLayout(campoFechaInicio, campoFechaFin);
 		
 		VerticalLayout mainLayout = new VerticalLayout(cabecera, fechas, botonBuscar, msjAyuda, msjResultado, tabla);
 		mainLayout.setComponentAlignment(fechas, Alignment.MIDDLE_CENTER);
@@ -80,26 +82,27 @@ public class BuscarFechaView extends Composite implements View {  //necesita com
 	
 	private void buscar() {
 		
-		LocalDate fechaInicio = campoFechaIncio.getValue();
-		LocalDate fechaFin = campoFechaFin.getValue();
-		HomeSwitchHome.setFechaInicioBuscada(fechaInicio);
-		HomeSwitchHome.setFechaFinBuscada(fechaFin);
+		LocalDate fechaInicioBuscada = campoFechaInicio.getValue();
+		LocalDate fechaFinBuscada = campoFechaFin.getValue();
+		HomeSwitchHome.setFechaInicioBuscada(fechaInicioBuscada);
+		HomeSwitchHome.setFechaFinBuscada(fechaFinBuscada);
 		
 		/* 1º parte: chequea si la fecha de inicio es mayor a la fecha de fin
 		   2º parte: chequea si la fecha de fin es más de 2 meses mayor a la fecha de inicio
 		*/		
-		if ( (!fechaInicio.isAfter(fechaFin)) && (!fechaFin.isAfter(fechaInicio.plusMonths(2))) ) {
+		if ( (!fechaInicioBuscada.isAfter(fechaFinBuscada)) && (!fechaFinBuscada.isAfter(fechaInicioBuscada.plusMonths(2))) ) {
 			
 			ConnectionBD conectar = new ConnectionBD();
 			
 			try {
-				propiedades = conectar.listaResidenciasPorFecha(fechaInicio, fechaFin);
+				propiedades = conectar.listaResidenciasPorFecha(fechaInicioBuscada, fechaFinBuscada);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 			
 			//propiedades = new ArrayList<>();   <-- para chequear cuando no hay residencias cargadas
 			if ( propiedades.isEmpty() ) {			
+				msjAyuda.setVisible(false);
 				tabla.setVisible(false);
 				msjResultado.setVisible(true);
 				msjResultado.setValue("No se encontraron residencias en ese rango de fechas.");
@@ -108,11 +111,14 @@ public class BuscarFechaView extends Composite implements View {  //necesita com
 				msjAyuda.setVisible(true);
 				tabla.setVisible(true);
 				tabla.setItems(propiedades);
-				tabla.setColumns("titulo", "provincia", "localidad", "domicilio");
+				tabla.setColumns("titulo", "localidad", "domicilio");
 				
 				Column<Propiedad, Float> columnaMonto = tabla.addColumn(Propiedad::getMontoBase,
 					      new NumberRenderer(new DecimalFormat("¤#######.##")));
 				columnaMonto.setCaption("Monto base");
+				
+				Column<Propiedad, String> columnaDirecta = tabla.addColumn( p -> parseBoolean(p.isDispDirecta()) );
+				columnaDirecta.setCaption("Res. directa");
 				
 				Column<Propiedad, String> columnaSubasta = tabla.addColumn( p -> parseBoolean(p.isDispSubasta()) );
 				columnaSubasta.setCaption("En subasta");				
@@ -129,6 +135,7 @@ public class BuscarFechaView extends Composite implements View {  //necesita com
 				});
 			}
 		} else {
+			msjAyuda.setVisible(false);
 			tabla.setVisible(false);
 			msjResultado.setVisible(true);
 			msjResultado.setValue("Error: El rango de meses es incorrecto.");

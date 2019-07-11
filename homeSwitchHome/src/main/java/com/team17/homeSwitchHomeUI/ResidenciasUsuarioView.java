@@ -35,7 +35,7 @@ public class ResidenciasUsuarioView extends Composite implements View {
 	private Grid<Propiedad> tabla = new Grid<>(Propiedad.class);
 	
 	private ArrayList<Propiedad> propiedades;
-	private ArrayList<Propiedad> propiedades2 = new ArrayList<>();	
+	private ArrayList<Propiedad> propDisponibles = new ArrayList<>();	
 	private Usuario u;
 	
 		
@@ -64,25 +64,28 @@ public class ResidenciasUsuarioView extends Composite implements View {
 		
 		for (Propiedad p : propiedades) {
 			p.setReservas(conectar.listaReservasPorPropiedad(p.getTitulo(), p.getLocalidad()));
-			if (p.getReservas().size() > 0) {
-				p.actualizarTiposDeReservasDisponibles();
-				propiedades2.add(p);
+			p.actualizarTiposDeReservasDisponibles();
+			if ( (p.isDispDirecta()) || (p.isDispSubasta()) || (p.isDispHotsale()) ) {
+				propDisponibles.add(p);
 			}				
 		}	
 		
-		if ( propiedades.size() == 0 ) {
+		if ( propDisponibles.isEmpty() ) {
 			tabla.setVisible(false);
 			msjResultado.setVisible(true);
 		} else {
 			tabla.setVisible(true);
 			msjAyuda.setVisible(true);
 			msjResultado.setVisible(false);
-			tabla.setItems(propiedades);
-			tabla.setColumns("titulo", "provincia", "localidad", "domicilio");
+			tabla.setItems(propDisponibles);
+			tabla.setColumns("titulo", "localidad");
 			
 			Column<Propiedad, Float> columnaMonto = tabla.addColumn(Propiedad::getMontoBase,
 				      new NumberRenderer(new DecimalFormat("¤#######.##")));
-			columnaMonto.setCaption("Monto base");
+			columnaMonto.setCaption("Precio");
+			
+			Column<Propiedad, String> columnaDirecta = tabla.addColumn( p -> parseBoolean(p.isDispDirecta()) );
+			columnaDirecta.setCaption("Res. directa");
 			
 			Column<Propiedad, String> columnaSubasta = tabla.addColumn( p -> parseBoolean(p.isDispSubasta()) );
 			columnaSubasta.setCaption("En subasta");				

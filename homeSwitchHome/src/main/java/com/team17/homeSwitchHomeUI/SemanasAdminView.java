@@ -72,18 +72,18 @@ public class SemanasAdminView extends Composite implements View {
 		}
 		
 		for (Reserva r : reservasTodas) {
-			if ( ((r.getEstado() == EstadoDeReserva.DISPONIBLE_DIRECTA) || (r.getEstado() == EstadoDeReserva.DISPONIBLE_SUBASTA)
-					|| (r.getEstado() == EstadoDeReserva.DISPONIBLE_HOTSALE) || (r.getEstado() == EstadoDeReserva.EN_ESPERA)) &&
+			if ( ((r.getEstado() == EstadoDeReserva.DISPONIBLE) || (r.getEstado() == EstadoDeReserva.EN_ESPERA)) &&
 					(LocalDate.now().isBefore(r.getFechaFin())) ) {
 				reservas.add(r);
 			}
 		}
 		
 		for (int i=0; i < reservas.size(); i++) {
-			if ( reservas.get(i).getEstado() == EstadoDeReserva.DISPONIBLE_SUBASTA )
+			if ( (reservas.get(i).getEstado() == EstadoDeReserva.DISPONIBLE)
+					&& (reservas.get(i) instanceof ReservaSubasta) ) 
 				try {
 					reservas.set(i, conexion.buscarSubasta(reservas.get(i).getPropiedad(), reservas.get(i).getLocalidad(),
-							reservas.get(i).getFechaInicio(), reservas.get(i).getEstado()) );
+							reservas.get(i).getFechaInicio(), reservas.get(i).getEstado(), reservas.get(i).getMontoOriginal()));
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}		
@@ -158,7 +158,7 @@ public class SemanasAdminView extends Composite implements View {
 		
 		Label localidad = new Label("<span style=\"font-weight: bold;\">Localidad:</span> " + r.getLocalidad(), ContentMode.HTML);	
 				
-		Label estado = new Label("<span style=\"font-weight: bold;\">Estado:</span> " + r.getEstadoComoString(), ContentMode.HTML);		
+		Label estado = new Label("<span style=\"font-weight: bold;\">Estado (Tipo):</span> " + r.getEstadoComoString(), ContentMode.HTML);		
 		
 		String tipo = "";
 		String fecha = "";
@@ -183,7 +183,7 @@ public class SemanasAdminView extends Composite implements View {
 				+ r.getFechaInicio().format(formatter) + " a "+r.getFechaFin().format(formatter), ContentMode.HTML);
 		
 		
-		Label montoBase = new Label("<span style=\"font-weight: bold;\">Monto base:</span> " + String.valueOf(r.getMonto()), ContentMode.HTML);
+		Label montoBase = new Label("<span style=\"font-weight: bold;\">Precio:</span> " + r.getMonto(), ContentMode.HTML);
 		    	
     	/* aca irían los botones que tienen efecto sobre una semana en particular (abrir hotsale, cerrar hotsale, etc)
 		HorizontalLayout botones2Layout = new HorizontalLayout(abrirHotsale, cerrarHotsale);
@@ -199,13 +199,11 @@ public class SemanasAdminView extends Composite implements View {
 			String ofertasString = "<span style=\"font-weight: bold;\">Ofertas en subasta:</span><br/>";
 			ArrayList<Float> montos = ((ReservaSubasta) r).getMontos();
 			ArrayList<String> usuarios = ((ReservaSubasta) r).getUsuarios();
-			int j = 0;
-			
+						
 			if ( (usuarios != null) && (!usuarios.isEmpty()) ) {				
 				for (int i = 0; i < usuarios.size(); i++) {
-					j++;
-					ofertasString += j+". "+usuarios.get(i)+" ($";
-					ofertasString += String.valueOf(montos.get(j)) + ")<br/>";
+					ofertasString += (i+1)+". "+usuarios.get(i)+" ($";
+					ofertasString += String.valueOf(montos.get(i)) + ")<br/>";
 				}
 			} else
 				ofertasString = "No se han realizado ofertas"; 			
@@ -227,7 +225,7 @@ public class SemanasAdminView extends Composite implements View {
 		
 		for (Reserva r : reservas) {
 			
-			if ( (r.getEstado() == EstadoDeReserva.DISPONIBLE_DIRECTA) && 
+			if ( ((r.getEstado() == EstadoDeReserva.DISPONIBLE) && (r instanceof ReservaDirecta)) && 
 					(!r.getFechaInicio().isAfter(hace6meses)) &&
 					(!r.getFechaInicio().isBefore(hace6meses.minusDays(3))) ) {
 				conexion.abrirSubasta(r);
@@ -264,7 +262,7 @@ public class SemanasAdminView extends Composite implements View {
 			if (r instanceof ReservaSubasta) {
 				rs = (ReservaSubasta) r;				
 				
-				if ( (rs.getEstado() == EstadoDeReserva.DISPONIBLE_SUBASTA) && (!hoy.isBefore(rs.getFechaFinSubasta())) ) {					
+				if ( (r.getEstado() == EstadoDeReserva.DISPONIBLE) && (r instanceof ReservaSubasta) && (!hoy.isBefore(rs.getFechaFinSubasta())) ) {					
 					
 					if (this.hayOfertaGanadora(rs)) {
 						this.enviarEmail(rs);
@@ -292,20 +290,24 @@ public class SemanasAdminView extends Composite implements View {
 	private boolean hayOfertaGanadora(ReservaSubasta rs) throws SQLException {
 		
 		//verifica si:
-		// 1) posee créditos disponibles Y
-		// 2) no posee reservas en la misma semana
+		// 1) existen al menos una oferta Y
+		// 2) el ofertante posee créditos disponibles Y
+		// 3) no posee reservas en la misma semana
 		
 		Usuario u;
 		ArrayList<Float> montos = rs.getMontos();
 		ArrayList<String> usuarios = rs.getUsuarios();
 				
-		while (montos.size() > 1) {			
-			u = conexion.buscarUsuario(usuarios.get(0));
-			if ( (u.getCreditos() > 1) && (!poseeReservaEnMismaSemana(u.getMail(), rs.getFechaReserva())) ) {
-				return true;
-			} else
-				rs.eliminarOferta(0);
-		}		
+		if (montos != null) {
+			while (!montos.isEmpty()) {			
+				u = conexion.buscarUsuario(usuarios.get(0));
+				if ( (u.getCreditos() > 0) && (!poseeReservaEnMismaSemana(u.getMail(), rs.getFechaReserva())) ) {
+					return true;
+				} else
+					rs.eliminarOferta(0);
+			}
+		}
+		
 		return false;
 	}
 
@@ -320,6 +322,7 @@ public class SemanasAdminView extends Composite implements View {
 			if ( r.getUsuario().equals(mail) && (r.getFechaReserva().isEqual(fecha)) )
 				return true;
 		}
+		
 		return false;
 	}
 

@@ -160,7 +160,7 @@ public class DetalleResidenciaView extends Composite implements View {
 			} else
 				if (tipo.equals("busqueda")) {
 					cabeceraPrincipal.setValue("Detalle de residencia (búsqueda por fecha)");
-					//	
+					//
 				}
 		
 		titulo = new Label("<p><span style=\"text-align: left; font-weight: bold; font-size: 110%;\">Título:</span> <span style=\"font-size: 110%;\">"
@@ -229,34 +229,37 @@ public class DetalleResidenciaView extends Composite implements View {
 				if ( (r.getEstado() != EstadoDeReserva.FINALIZADA) && (r.getEstado() != EstadoDeReserva.RESERVADA) ) {					
 					//si es una subasta, carga sus datos desde la tabla 'subastas'
 					if (r instanceof ReservaSubasta) {
-						r2 = conexion.buscarSubasta(r.getPropiedad(), r.getLocalidad(), r.getFechaInicio(), r.getEstado());
+						r2 = conexion.buscarSubasta(r.getPropiedad(), r.getLocalidad(), r.getFechaInicio(),
+								r.getEstado(), r.getMontoOriginal());
 						resSinReservar.add(r2);
 					} else
 						resSinReservar.add(r);
 				}
 			}			
-		} else if (tipo.equals("usuario")) {
+		} else
+			if (tipo.equals("usuario")) {
 				for (Reserva r : reservas) {
 					//chequea que la semana esté disponible
-					if ( (r.getEstado() == EstadoDeReserva.DISPONIBLE_DIRECTA) || (r.getEstado() == EstadoDeReserva.DISPONIBLE_SUBASTA)
-							|| (r.getEstado() == EstadoDeReserva.DISPONIBLE_HOTSALE) ) {						
+					if (r.getEstado() == EstadoDeReserva.DISPONIBLE) {						
 						//si es una subasta, carga sus datos desde la tabla 'subastas'
 						if (r instanceof ReservaSubasta) {
-							r2 = conexion.buscarSubasta(r.getPropiedad(), r.getLocalidad(), r.getFechaInicio(), r.getEstado());
+							r2 = conexion.buscarSubasta(r.getPropiedad(), r.getLocalidad(), r.getFechaInicio(),
+									r.getEstado(), r.getMontoOriginal());
 							resSinReservar.add(r2);
 						} else
 							resSinReservar.add(r);
 					}
 				}				
-			} else if (tipo.equals("busqueda")) {
+			} else
+				if (tipo.equals("busqueda")) {
 					for (Reserva r : reservas) {
 						//chequea que la semana esté disponible y se encuentre entre las fechas buscadas
-						if ( ((r.getEstado() == EstadoDeReserva.DISPONIBLE_DIRECTA) || (r.getEstado() == EstadoDeReserva.DISPONIBLE_SUBASTA)
-								|| (r.getEstado() == EstadoDeReserva.DISPONIBLE_HOTSALE)) 
+						if ( (r.getEstado() == EstadoDeReserva.DISPONIBLE) 
 								&& (r.reservadaEntreFechas(HomeSwitchHome.getFechaInicioBuscada(), HomeSwitchHome.getFechaFinBuscada())) ) {
 							//si es una subasta, carga sus datos desde la tabla 'subastas'
 							if (r instanceof ReservaSubasta) {
-								r2 = conexion.buscarSubasta(r.getPropiedad(), r.getLocalidad(), r.getFechaInicio(), r.getEstado());
+								r2 = conexion.buscarSubasta(r.getPropiedad(), r.getLocalidad(), r.getFechaInicio(),
+										r.getEstado(), r.getMontoOriginal());
 								resSinReservar.add(r2);
 							} else
 								resSinReservar.add(r);
@@ -274,7 +277,7 @@ public class DetalleResidenciaView extends Composite implements View {
 			}
 			tablaSemanas.setItems(resSinReservar);
 			tablaSemanas.setVisible(true);
-			tablaSemanas.setColumns("fechaFin", "fechaReserva");
+			tablaSemanas.setColumns("fechaReserva");
 			
 			tablaSemanas.addColumn(Reserva::getEstadoComoString)
 			.setCaption("Estado (Tipo)");
@@ -312,7 +315,7 @@ public class DetalleResidenciaView extends Composite implements View {
 			} else {				
 				tablaReservas.setItems(reservas);
 				tablaReservas.setVisible(true);
-				tablaReservas.setColumns("fechaInicio", "fechaFin", "fechaReserva", "usuario");
+				tablaReservas.setColumns("fechaReserva", "usuario");
 				
 				tablaReservas.addColumn(Reserva::getMonto,
 						new NumberRenderer(new DecimalFormat("¤#######.##")))

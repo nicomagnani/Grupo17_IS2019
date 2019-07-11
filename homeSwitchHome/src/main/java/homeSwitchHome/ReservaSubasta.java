@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class ReservaSubasta extends Reserva {
 	
 	//NOTA: si la subasta no recibio ofertas, ambas listas estarán vacías
-	private ArrayList<Float> montos = new ArrayList<>(); //contiene la historia del monto de la subasta (empezando por el monto actual)
+	private ArrayList<Float> montos = null; //contiene la historia del monto de la subasta (empezando por el monto actual)
 	private ArrayList<String> usuarios = null; //contiene la historia de usuarios con una oferta válida (empezando por el ofertante actual)
 	private LocalDate fechaInicioSubasta;
 	
@@ -21,6 +21,16 @@ public class ReservaSubasta extends Reserva {
 	
 	public ReservaSubasta(String propiedad, String usuario, LocalDate fechaInicio, EstadoDeReserva estado) {
 		super(propiedad, usuario, fechaInicio, estado);
+	}
+	
+	@Override
+	public float getMonto() {
+		if ( (getEstado() == EstadoDeReserva.DISPONIBLE)
+				&& (montos != null) && (!montos.isEmpty())
+				&& (montos.get(0) > super.getMonto()) ) {
+			return montos.get(0);
+		} else
+			return super.getMonto();		
 	}
 	
 	public ArrayList<Float> getMontos() {
@@ -43,11 +53,13 @@ public class ReservaSubasta extends Reserva {
 	public String getMontosString() {
 	
 		String st = "";
-		for (Float m : montos)
+		if ( (usuarios != null) && (!usuarios.isEmpty()) )
+			for (Float m : montos)
 				st += String.valueOf(m)+" ";
 		
 		//elimino espacio al final
-		st = st.substring(0, st.length()-1);
+		if (!st.equals(""))
+			st = st.substring(0, st.length()-1);
 		
 		return st;
 	}
@@ -93,15 +105,7 @@ public class ReservaSubasta extends Reserva {
 		return "Subasta";
 	}
 	
-	@Override
-	public float getMonto() {
-		if (getEstado() == EstadoDeReserva.DISPONIBLE_SUBASTA) {
-			return montos.get(0);
-		} else
-			return super.getMonto();		
-	}
-
-	//debe verificarse previamente que cumpla los requisitos 
+	//debe verificarse previamente que cumpla los requisitos
 	public String getOfertaGanadora() {
 		if (montos.size() > 1) {
 			return usuarios.get(0)+" ($"+montos.get(0)+")";

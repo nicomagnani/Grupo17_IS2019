@@ -44,8 +44,6 @@ public class AgregarResidenciaView extends Composite implements View {  //.neces
 	private FormLayout formulario = new FormLayout();
 	private TextField titulo = new TextField("Título");
 	private TextArea descripcion = new TextArea("Descripción");
-	private TextField pais = new TextField("País");
-	private TextField provincia = new TextField("Provincia");
 	private TextField localidad = new TextField("Localidad");
 	private TextField domicilio = new TextField("Domicilio");
 	private NumberField monto = new NumberField("Monto base");
@@ -84,8 +82,6 @@ public class AgregarResidenciaView extends Composite implements View {  //.neces
 		binder.readBean(propiedad);
 		binder.bind(titulo, Propiedad::getTitulo, Propiedad::setTitulo);
 		binder.bind(descripcion, Propiedad::getDescripcion, Propiedad::setDescripcion);
-		binder.bind(pais, Propiedad::getPais, Propiedad::setPais);
-		binder.bind(provincia, Propiedad::getProvincia, Propiedad::setProvincia);
 		binder.bind(localidad, Propiedad::getLocalidad, Propiedad::setLocalidad);
 		binder.bind(domicilio, Propiedad::getDomicilio, Propiedad::setDomicilio);
 		binder.forField(monto).withConverter(new StringToFloatConverter("")).
@@ -170,8 +166,6 @@ public class AgregarResidenciaView extends Composite implements View {  //.neces
 		//agregando los layouts a la vista
 		formulario.addComponent(titulo);
 		formulario.addComponent(descripcion);
-		formulario.addComponent(pais);
-		formulario.addComponent(provincia);
 		formulario.addComponent(localidad);
 		formulario.addComponent(domicilio);
 		formulario.addComponent(monto);
@@ -312,8 +306,8 @@ public class AgregarResidenciaView extends Composite implements View {  //.neces
     
 
 	private boolean hayCamposVacios() {
-    	return ((titulo.isEmpty()) || (descripcion.isEmpty()) || (pais.isEmpty()) || (provincia.isEmpty()) || (localidad.isEmpty()) || 
-				(domicilio.isEmpty()) || (monto.isEmpty()));
+    	return ((titulo.isEmpty()) || (descripcion.isEmpty()) || (localidad.isEmpty())
+    			|| (domicilio.isEmpty()) || (monto.isEmpty()));
 	}
 	
 

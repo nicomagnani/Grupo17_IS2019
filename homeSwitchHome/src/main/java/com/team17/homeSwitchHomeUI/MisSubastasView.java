@@ -15,6 +15,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import homeSwitchHome.HomeSwitchHome;
 import homeSwitchHome.Oferta;
+import homeSwitchHome.Reserva;
 import homeSwitchHome.ReservaSubasta;
 
 @Title("Mis subastas - HomeSwitchHome")
@@ -27,8 +28,9 @@ public class MisSubastasView extends Composite implements View {
 	private VerticalLayout ofertasLayout = new VerticalLayout();
 	private Panel panel = new Panel();
 	
-	private ArrayList<ReservaSubasta> subastas;
-	private ArrayList<Oferta> ofertas = new ArrayList<Oferta>();
+	private ArrayList<Reserva> reservas;
+	private ArrayList<ReservaSubasta> subastas = new ArrayList<>();
+	private ArrayList<Oferta> ofertas = new ArrayList<>();
 	private String mailActual;
 	
 	private ConnectionBD conexion = new ConnectionBD();
@@ -43,7 +45,11 @@ public class MisSubastasView extends Composite implements View {
 		panel.setVisible(false);
 		msjResultado.setVisible(false);	
 
-		this.cargarSubastas();
+		try {
+			this.cargarSubastas();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		this.cargarTabla();
 		
 		ofertasLayout = new VerticalLayout(tabla);
@@ -65,18 +71,20 @@ public class MisSubastasView extends Composite implements View {
     }
 
 	
-	private void cargarSubastas() {
+	private void cargarSubastas() throws SQLException {
 		
-		try {
-			subastas = conexion.listaSubastas();
-		} catch (SQLException e) {
-			e.printStackTrace();
+		reservas = conexion.listaReservasPorUsuario(mailActual);
+		
+		for (Reserva r : reservas) {
+			if (r instanceof ReservaSubasta)
+				subastas.add( conexion.buscarSubasta(r.getPropiedad(), r.getLocalidad(), r.getFechaInicio(),
+						r.getEstado(), r.getMontoOriginal()) );
 		}
 		
 		for (ReservaSubasta rs : subastas) {
-			if ( (rs.getUsuarios() != null) && (rs.getUsuarios().indexOf(mailActual) != -1) ) {
-				ofertas.add( new Oferta(rs.getPropiedad(), rs.getLocalidad(), rs.getFechasTiempoCompartido()[0],
-						rs.getFechaFinSubastaString(), rs.getMontos().get(0), rs.getMontos().get(rs.getUsuarios().indexOf(mailActual))) );
+			if ( (rs.getUsuarios() != null) && (rs.getUsuarios().indexOf(mailActual) != -1) ) {				
+				ofertas.add( new Oferta(rs.getPropiedad(), rs.getLocalidad(), rs.getFechaReserva(),
+						rs.getFechaFinSubastaString(), rs.getMonto(), rs.getMontos().get(rs.getUsuarios().indexOf(mailActual))) );
 			}
 		}		
 	}
@@ -93,7 +101,7 @@ public class MisSubastasView extends Composite implements View {
 			tabla.setColumns("propiedad", "localidad", "fechaReserva", "fechaFinSubasta");
 						
 			tabla.addColumn(Oferta::getPrecioString)
-			.setCaption("Monto actual");
+			.setCaption("Precio actual");
 			
 			tabla.addColumn(Oferta::getMontoString)
 			.setCaption("Mi oferta");

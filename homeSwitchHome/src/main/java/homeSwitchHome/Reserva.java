@@ -66,6 +66,10 @@ import java.time.LocalDate;
 	public float getMonto() {
 		return monto;
 	}
+	
+	public float getMontoOriginal() {
+		return monto;
+	}
 
 	public void setMonto(float monto) {
 		this.monto = monto;
@@ -80,17 +84,17 @@ import java.time.LocalDate;
 	}
 	
 	public String getEstadoComoString() {
-		return estado.toStringAux();
+		return estado.toStringAux() + " ("+this.getTipo()+")";
 	}	
 	
 	//la fecha en que finaliza la publicacion
 	public LocalDate getFechaFin() {
-		return fechaInicio.plusYears(1);
+		return fechaInicio.plusYears(1).minusDays(1);
 	}
 	
 	//la fecha en que comienza a reservarse la residencia
 	public LocalDate getFechaReserva() {
-		return this.getFechasTiempoCompartido()[0];
+		return fechaInicio.plusYears(1);
 	}
 	
 	//el rango de fechas en que se hace la reserva (de lunes a domingo)
@@ -100,8 +104,8 @@ import java.time.LocalDate;
 		
 		//fechas de inicio y fin del tiempo compartido
 		//agrego 1 semana para que se cumpla al menos 1 año desde la creacion de la reserva
-		fechas[0] = getFechaFin().plusWeeks(1).with(DayOfWeek.MONDAY);
-		fechas[1] = getFechaFin().plusWeeks(1).with(DayOfWeek.SUNDAY);
+		fechas[0] = fechaInicio.plusYears(1).with(DayOfWeek.MONDAY);
+		fechas[1] = fechaInicio.plusYears(1).with(DayOfWeek.SUNDAY);
 		
 		return fechas;
 	}

@@ -27,6 +27,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import homeSwitchHome.HomeSwitchHome;
 import homeSwitchHome.Propiedad;
+import homeSwitchHome.Reserva;
 import homeSwitchHome.ReservaSubasta;
 import homeSwitchHome.Usuario;
 
@@ -47,7 +48,8 @@ public class SubastasUsuarioView extends Composite implements View {
 	private Panel panel = new Panel();
 	private VerticalLayout ventanaLayout = new VerticalLayout();
 
-	private ArrayList<ReservaSubasta> subastas;
+	private ArrayList<Reserva> reservas;
+	private ArrayList<ReservaSubasta> subastas = new ArrayList<>();
 	private Usuario usuario;
 	private ReservaSubasta rsActual;
 	private Button botonActual;
@@ -60,18 +62,25 @@ public class SubastasUsuarioView extends Composite implements View {
 
 		this.interfaz = interfaz;
 
-		this.cargarSubastas();
+		try {
+			this.cargarSubastas();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		this.inicializarComponentes();
 		this.inicializarLayouts();
     }
 
 
-	private void cargarSubastas() {
-
-		try {
-			subastas = conexion.listaSubastas();
-		} catch (SQLException e) {
-			e.printStackTrace();
+	private void cargarSubastas() throws SQLException {
+		
+		reservas = conexion.listaReservas();
+		
+		for (Reserva r : reservas) {
+			if (r instanceof ReservaSubasta)
+				subastas.add( conexion.buscarSubasta(r.getPropiedad(), r.getLocalidad(), r.getFechaInicio(),
+						r.getEstado(), r.getMontoOriginal()) );
 		}
 	}
 
@@ -133,10 +142,10 @@ public class SubastasUsuarioView extends Composite implements View {
 				+ " <span style=\"font-size: 120%;\">"+rs.getPropiedad()+"</span></p>", ContentMode.HTML);
 		Label localidad = new Label("<span style=\"font-weight: bold;\">Localidad:</span> " + rs.getLocalidad(), ContentMode.HTML);
 		Label tiempoRestante = new Label("<span style=\"font-weight: bold;\">Finaliza:</span> " + rs.getFechaFinSubastaString(), ContentMode.HTML);
-		Label monto = new Label("<span style=\"font-weight: bold;\">Monto actual:</span> " + rs.getMontos().get(0), ContentMode.HTML);
+		Label monto = new Label("<span style=\"font-weight: bold;\">Monto actual:</span> " + rs.getMonto(), ContentMode.HTML);
 
 		Button botonOfertar = new Button("Ofertar");
-		botonOfertar.addClickListener( e -> this.abrirVentanaConfirmacion(String.valueOf(rs.getMontos().get(0)), rs, botonOfertar) );
+		botonOfertar.addClickListener( e -> this.abrirVentanaConfirmacion(String.valueOf(rs.getMonto()), rs, botonOfertar) );
 
 		// oculta el botón Ofertar si el usuario ya posee la máxima oferta (CONSULTAR)
 //		if ( HomeSwitchHome.getUsuarioActual().getMail().equals(rs.getUsuario()) )
@@ -202,15 +211,18 @@ public class SubastasUsuarioView extends Composite implements View {
 		if (!montoOferta.isEmpty()) {
 
 			float montoOfertaFloat = Float.parseFloat(montoOferta.getValue());
-			float montoActualFloat = rs.getMontos().get(0);
+			float montoActualFloat = rs.getMonto();
 
 			if (montoOfertaFloat > montoActualFloat) {
 
 				if (usuario.getCreditos() > 0) {
 
 					//modifico oferta y ofertante de la subasta (creo lista de usuarios si no hay ofertas)
+					if (rs.getMontos() == null)
+						rs.setMontos(new ArrayList<Float>());					
+					
 					if (rs.getUsuarios() == null)
-						rs.setUsuarios(new ArrayList<String>());
+						rs.setUsuarios(new ArrayList<String>());					
 
 					rs.getMontos().add(0, Float.valueOf(montoOferta.getValue()));
 					rs.getUsuarios().add(0, usuario.getMail());
@@ -246,7 +258,7 @@ public class SubastasUsuarioView extends Composite implements View {
 
 		notifResultado = new Notification(st, tipo);
 		notifResultado.setHtmlContentAllowed(true);
-    	notifResultado.setDelayMsec(-1);;
+    	notifResultado.setDelayMsec(5000);
     	notifResultado.show(Page.getCurrent());
     }
 

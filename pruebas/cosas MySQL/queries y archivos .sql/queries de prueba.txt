@@ -75,22 +75,19 @@ SELECT * FROM propiedad ORDER BY RAND() LIMIT 5;
 SELECT * FROM table_name WHERE [condition]
 
 Ejemplos:
-SELECT * FROM propiedad WHERE localidad = 'la plata'
-SELECT * FROM usuarios WHERE mail = '2'
-
---------------------------------
-## ##
-
+SELECT * FROM propiedad WHERE titulo = 'prop_1' AND localidad = 'la plata';
+SELECT * FROM usuarios WHERE mail = '2';
+etc
 
 ---------------------------
 ## BORRAR FILA ##
 DELETE FROM `table_name` WHERE [condition]
 
 Ejemplos:
-DELETE FROM propiedad WHERE monto = 3434 limit 1 /* elimina la 1er coincidencia */
-DELETE FROM propiedad WHERE titulo = 'zzz' /* elimina todas las coincidencias */
-DELETE FROM usuarios WHERE mail = '2' limit 1
-DELETE FROM reservas WHERE propiedad = 'prueba1' limit 1
+DELETE FROM propiedad WHERE monto = 3434 limit 1; /* elimina la 1er coincidencia */
+DELETE FROM propiedad WHERE titulo = 'zzz'; /* elimina todas las coincidencias */
+DELETE FROM usuarios WHERE mail = 'prueba' limit 1;
+DELETE FROM reservas WHERE propiedad = 'test' AND localidad = 'La Plata';
 
 ----------------------------
 ## BORRAR TABLA ##
@@ -102,7 +99,7 @@ DROP TABLE tabla; /* elimina tabla */
 DROP TABLE IF EXISTS tabla1, tabla2; /* elimina tabla1 y tabla 2. no falla si alguna tabla no se encuentra  */
 
 ----------------------------
-## BORRAR TODAS LAS FILAS ##
+## VACIAR TABLA (BORRAR TODAS LAS FILAS) ##
 TRUNCATE TABLE tablename
 
 Ejemplos:
@@ -118,28 +115,28 @@ SET
     condition];
 
 Ejemplos:
-l.
 
 UPDATE propiedad
 SET 
-    titulo = 'prueba1' /* nuevo nombre */
-WHERE titulo = 'prueba2' AND localidad = ''; /* buscar fila segun mail indicado */
+    titulo = 'prueba1', /* nuevo nombre y monto */
+    monto = 1400	
+WHERE titulo = 'prueba2' AND localidad = 'Ensenada'; /* buscar fila segun titulo y localidad */
 
 UPDATE reservas
 SET
     fecha_inicio = '2018-08-20'
-WHERE propiedad = 'prueba1' AND estado = 'DISPONIBLE_HOTSALE' /* multiples condiciones */
+WHERE propiedad = 'prueba1' AND localidad = 'Ensenada' AND fecha_inicio = '2019-07-10';
 
 UPDATE subastas
 SET 
     usuarios = 'pedro@asd.com juan@mail.com',
     montos = '700 500 300'
-WHERE propiedad = 'prueba2' AND localidad = 'prueba5';
+WHERE propiedad = 'prueba2' AND localidad = 'prueba5' AND fecha_inicio = '2019-07-10';
 
 UPDATE usuarios
 SET 
     premium = 1
-WHERE mail = 'prueba_1';
+WHERE mail = 'prueba@mail.com';
 
 UPDATE solicitudes
 SET

@@ -82,7 +82,7 @@ public class MisReservasView extends Composite implements View {
 		} else {				
 			tabla.setItems(reservasUsuario);
 			tabla.setVisible(true);
-			tabla.setColumns("propiedad", "localidad", "fechaFin", "fechaReserva");
+			tabla.setColumns("propiedad", "localidad", "fechaReserva");
 			
 			tabla.addColumn(Reserva::getMonto,
 					new NumberRenderer(new DecimalFormat("¤#######.##")))
@@ -92,7 +92,7 @@ public class MisReservasView extends Composite implements View {
 					.setCaption("Tipo");
 			
 			tabla.addColumn(Reserva::getEstadoComoString)
-					.setCaption("Estado");
+					.setCaption("Estado (Tipo)");
 			
 			tabla.setWidth("650");
 		}
