@@ -98,7 +98,7 @@ public class ReservaSubasta extends Reserva {
 		if ( LocalDate.now().isBefore(this.getFechaFinSubasta()) ) {
 			return this.getFechaFinSubasta().atStartOfDay().format(formatter) + " hs.";
 		} else
-			return "Finalizada";
+			return this.getFechaFinSubasta().atStartOfDay().format(formatter) + " hs." + " (Finalizando)";
 	}
 
 	public String getTipo() {

@@ -25,6 +25,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
+import homeSwitchHome.EstadoDeReserva;
 import homeSwitchHome.HomeSwitchHome;
 import homeSwitchHome.Propiedad;
 import homeSwitchHome.Reserva;
@@ -65,7 +66,6 @@ public class SubastasUsuarioView extends Composite implements View {
 		try {
 			this.cargarSubastas();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		this.inicializarComponentes();
@@ -78,7 +78,7 @@ public class SubastasUsuarioView extends Composite implements View {
 		reservas = conexion.listaReservas();
 		
 		for (Reserva r : reservas) {
-			if (r instanceof ReservaSubasta)
+			if ( (r instanceof ReservaSubasta) && (r.getEstado() == EstadoDeReserva.DISPONIBLE) )
 				subastas.add( conexion.buscarSubasta(r.getPropiedad(), r.getLocalidad(), r.getFechaInicio(),
 						r.getEstado(), r.getMontoOriginal()) );
 		}
@@ -94,19 +94,11 @@ public class SubastasUsuarioView extends Composite implements View {
 		panel.setVisible(false);
 		msjResultado.setVisible(false);
 
-		int n = 0;
 		if (!subastas.isEmpty()) {
 			for (ReservaSubasta subasta : subastas) {
-
-				//muestra solo subastas en curso
-				if (!subasta.getFechaFinSubastaString().equals("Finalizada")) {
-					this.añadirSubasta(subasta);
-					n++;
-				}
+				this.añadirSubasta(subasta);
 			}
-		}
-
-		if (n > 0) {
+			
 			panel.setVisible(true);
 		} else
 			msjResultado.setVisible(true);
