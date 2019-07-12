@@ -21,7 +21,7 @@ INSERT INTO propiedad ( titulo, descripcion, pais, provincia, localidad, domicil
    
 INSERT INTO reservas ( propiedad, localidad, usuario, tipo, fecha_inicio, estado, monto )
    VALUES
-   ( 'casa_1', 'La Plata', NULL , 'hotsale', '2019-12-25', 'DISPONIBLE_HOTSALE', 100.5);  
+   ( 'casa_1', 'La Plata', NULL , 'hotsale', '2019-12-25', 'DISPONIBLE', 100.5);  
    
 INSERT INTO solicitudes ( usuario, tipo, motivo )
    VALUES

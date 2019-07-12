@@ -1,0 +1,26 @@
+asumiendo que la fecha actual es 12 de Julio de 2019:
+	
+//puede cerrar
+INSERT INTO reservas ( propiedad, localidad, usuario, tipo, fecha_inicio, estado, monto )
+   VALUES
+   ( 'prop_11', 'Ensenada', NULL , 'hotsale', '2018-12-24', 'DISPONIBLE', 750.5);  
+   
+//no puede abrir   
+INSERT INTO reservas ( propiedad, localidad, usuario, tipo, fecha_inicio, estado, monto )
+   VALUES
+   ( 'prop_11', 'Ensenada', NULL , 'hotsale', '2019-01-06', 'EN_ESPERA', 700.3);
+
+//puede abrir   
+INSERT INTO reservas ( propiedad, localidad, usuario, tipo, fecha_inicio, estado, monto )
+   VALUES
+   ( 'prop_11', 'Ensenada', NULL , 'hotsale', '2018-12-24', 'EN_ESPERA', 400.1);  
+
+//puede abrir   
+INSERT INTO reservas ( propiedad, localidad, usuario, tipo, fecha_inicio, estado, monto )
+   VALUES
+   ( 'prop_21', 'Mar Del Plata', NULL , 'hotsale', '2018-12-24', 'EN_ESPERA', 600);  
+
+//no puede abrir   
+INSERT INTO reservas ( propiedad, localidad, usuario, tipo, fecha_inicio, estado, monto )
+   VALUES
+   ( 'prop_21', 'Mar Del Plata', NULL , 'hotsale', '2018-07-08', 'EN_ESPERA', 800.99);  
