@@ -1083,14 +1083,15 @@ public class ConnectionBD {
 	}
 
 
-	public void modificarUsuarioContraseña(String mail, String value) throws SQLException {
+	public void modificarUsuarioContraseña(String mail, String contraseña) throws SQLException {
 
-		String query ="UPDATE usuarios "
-				+ "SET contraseña = ? "
-				+ "WHERE mail = '"+mail+"'";
+		String query ="UPDATE usuarios"
+				+ " SET contraseña = ?"
+				+ " WHERE mail = ?";
 		ps = (PreparedStatement) con.prepareStatement(query);
 
-		ps.setString(1, value);
+		ps.setString(1, contraseña);
+		ps.setString(2, mail);
 
 		ps.executeUpdate();
 		ps.close();
@@ -1099,7 +1100,7 @@ public class ConnectionBD {
 
 	public void modificarUsuarioCreditos(String mail, String operacion, int cantidad) throws SQLException {
 
-		String modificador = operacion +" "+cantidad;
+		String modificador = operacion+" "+cantidad;
 
 
 		String query ="UPDATE usuarios"

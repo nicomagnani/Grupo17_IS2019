@@ -80,7 +80,7 @@ public class ReservasAdminView extends Composite implements View {
 			tabla.addColumn(Reserva::getTipo)
 					.setCaption("Tipo");
 			
-			tabla.setWidth("650");
+			tabla.setWidth("700");
 		}
 	}
 

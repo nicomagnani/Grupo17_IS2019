@@ -58,8 +58,8 @@ public class MisSubastasView extends Composite implements View {
 		//coloco el layout con la tabla dentro del panel para poder scrollear
 		panel.setContent(ofertasLayout);
 		panel.setHeight("500");
-		panel.setWidth("700");
-		panel.addStyleName("scrollable");		
+		panel.setWidth("750");
+		panel.addStyleName("scrollable");
 
 		VerticalLayout mainLayout = new VerticalLayout(cabecera, panel, msjResultado);
 		mainLayout.setComponentAlignment(cabecera, Alignment.MIDDLE_CENTER);
@@ -73,7 +73,7 @@ public class MisSubastasView extends Composite implements View {
 	
 	private void cargarSubastas() throws SQLException {
 		
-		reservas = conexion.listaReservasPorUsuario(mailActual);
+		reservas = conexion.listaReservas();
 		
 		for (Reserva r : reservas) {
 			if (r instanceof ReservaSubasta)
