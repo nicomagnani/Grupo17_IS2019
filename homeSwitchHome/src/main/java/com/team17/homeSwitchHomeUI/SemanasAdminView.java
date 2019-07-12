@@ -7,8 +7,12 @@ import java.util.ArrayList;
 
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
+import org.vaadin.ui.NumberField;
 
 import com.vaadin.annotations.Title;
+import com.vaadin.data.Binder;
+import com.vaadin.data.converter.StringToFloatConverter;
+import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.navigator.View;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.ContentMode;
@@ -20,17 +24,20 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import homeSwitchHome.EstadoDeReserva;
+import homeSwitchHome.Propiedad;
 import homeSwitchHome.Reserva;
 import homeSwitchHome.ReservaDirecta;
 import homeSwitchHome.ReservaHotsale;
 import homeSwitchHome.ReservaSubasta;
 import homeSwitchHome.Usuario;
 
-@Title("Residencias - HomeSwitchHome")
+@Title("Semanas - HomeSwitchHome")
 public class SemanasAdminView extends Composite implements View {
 	
 	private Label cabecera = new Label("Lista de semanas disponibles / en espera");
@@ -43,9 +50,17 @@ public class SemanasAdminView extends Composite implements View {
 	private Button botonCerrarSubasta = new Button("Cerrar Subastas");
 	private Notification notifResultado = new Notification("");
 	
+	private Window ventanaConfirmacion = new Window("Confirmar monto");
+	private Label info = new Label("Indique un monto:");
+	private NumberField monto = new NumberField();
+	private Button botonConfirmar = new Button("Enviar");
+	private Button botonCancelar = new Button("Cancelar");
+	private VerticalLayout ventanaLayout = new VerticalLayout();
+	
 	private HtmlEmail email = new HtmlEmail();
 	private ArrayList<Reserva> reservas = new ArrayList<>();	
 	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+	private ReservaHotsale rhActual;
 
 	private ConnectionBD conexion = new ConnectionBD();
 	private MyUI interfaz;
@@ -103,7 +118,7 @@ public class SemanasAdminView extends Composite implements View {
 			panel.setVisible(true);
 			botonesLayout.setVisible(true);
 			for (Reserva r : reservas)
-				this.añadirSemana(r);			
+				this.añadirSemana(r);
 		} else
 			msjResultado.setVisible(true);
 		
@@ -122,10 +137,38 @@ public class SemanasAdminView extends Composite implements View {
 				e1.printStackTrace();
 			}
 		});
+		
+		monto.setDecimalPrecision(2);
+		monto.setDecimalSeparator('.');
+		monto.setGroupingUsed(false);
+
+		new Binder<Propiedad>().forField(monto)
+			    .withValidator(new RegexpValidator("", "[-+]?[0-9]*\\.?[0-9]+"))
+			    .withConverter(new StringToFloatConverter(""))
+			    .bind(Propiedad::getMontoBase, Propiedad::setMontoBase);
+
+		ventanaConfirmacion.center();
+		ventanaConfirmacion.setWidth("500");
+		ventanaConfirmacion.setResizable(true);
+		ventanaConfirmacion.setModal(true);
+
+		botonConfirmar.addClickListener(e -> {
+			this.abrirHotsale(rhActual);
+		} );
+		botonCancelar.addClickListener(e -> ventanaConfirmacion.close() );
 	}
 
 
-	private void inicializarLayouts() {
+	private void inicializarLayouts() {		
+		
+		HorizontalLayout botones3Layout = new HorizontalLayout(botonConfirmar,botonCancelar);
+		
+		ventanaLayout = new VerticalLayout(info, monto, botones3Layout);
+		ventanaLayout.setComponentAlignment(info, Alignment.MIDDLE_CENTER);
+		ventanaLayout.setComponentAlignment(monto, Alignment.MIDDLE_CENTER);
+		ventanaLayout.setComponentAlignment(botones3Layout, Alignment.MIDDLE_CENTER);
+
+		ventanaConfirmacion.setContent(ventanaLayout);
 		
 		semanasLayout.setSizeUndefined();
 		semanasLayout.setWidth("650");
@@ -182,19 +225,16 @@ public class SemanasAdminView extends Composite implements View {
 		Label fechasInicioFin = new Label("<span style=\"font-weight: bold;\">Período de publicación [1 año]:</span> "
 				+ r.getFechaInicio().format(formatter) + " a "+r.getFechaFin().format(formatter), ContentMode.HTML);
 		
-		
 		Label montoBase = new Label("<span style=\"font-weight: bold;\">Precio:</span> " + r.getMonto(), ContentMode.HTML);
-		    	
-    	/* aca irían los botones que tienen efecto sobre una semana en particular (abrir hotsale, cerrar hotsale, etc)
-		HorizontalLayout botones2Layout = new HorizontalLayout(abrirHotsale, cerrarHotsale);
-		 */
+		
     	
     	FormLayout semanaLayout = new FormLayout(propiedad,localidad,estado,fechaFinParcial,fechasInicioFin,montoBase);
 		semanaLayout.setWidth("500");
 		semanaLayout.setSizeFull();
 		semanaLayout.addStyleName("layout-with-border");
 		
-		if (r instanceof ReservaSubasta) {
+		
+		if (r instanceof ReservaSubasta) {			
 			
 			String ofertasString = "<span style=\"font-weight: bold;\">Ofertas en subasta:</span><br/>";
 			ArrayList<Float> montos = ((ReservaSubasta) r).getMontos();
@@ -210,7 +250,29 @@ public class SemanasAdminView extends Composite implements View {
 			
 			Label ofertas = new Label("" + ofertasString, ContentMode.HTML);
 			semanaLayout.addComponent(ofertas);
-		}
+		} else 
+			if (r instanceof ReservaHotsale ) {
+				
+				Button botonAbrirHotsale = new Button("Abrir Hotsale");
+				Button botonCerrarHotsale = new Button("Cerrar Hotsale");
+				botonAbrirHotsale.setVisible(false);
+				botonCerrarHotsale.setVisible(false);				
+				
+				if (r.getEstado() == EstadoDeReserva.EN_ESPERA) {
+					if ( ((ReservaHotsale) r).puedeAbrirHotsale() )
+						botonAbrirHotsale.setVisible(true);
+				} else
+					if (r.getEstado() == EstadoDeReserva.DISPONIBLE) {
+						botonCerrarHotsale.setVisible(true);
+					}					
+
+				botonAbrirHotsale.addClickListener( e -> this.abrirVentanaConfirmacion((ReservaHotsale) r) );
+				botonCerrarHotsale.addClickListener( e -> this.cerrarHotsale((ReservaHotsale) r) );
+				    	
+				HorizontalLayout botones2Layout = new HorizontalLayout(botonAbrirHotsale, botonCerrarHotsale);
+				
+				semanaLayout.addComponent(botones2Layout);
+			}				
 		
 		semanasLayout.addComponent(semanaLayout);
 		semanasLayout.setComponentAlignment(semanaLayout, Alignment.MIDDLE_CENTER);		
@@ -352,7 +414,63 @@ public class SemanasAdminView extends Composite implements View {
 					+ "<p>Atte. Staff de <span style=\"text-decoration: underline;\">HomeSwitchHome</span></p>";
 		
 		email.setHtmlMsg(mensaje);
-	}	
+	}
+	
+	
+	private void abrirVentanaConfirmacion(ReservaHotsale rh) {
+
+		rhActual = rh;
+
+		// completa el campo doferta automáticamente con la oferta actual; deshabilitado ya que no se indica en la historia
+//		montoOferta.setValue(montoString);
+		
+		UI.getCurrent().addWindow(ventanaConfirmacion);
+	}
+
+
+	private void abrirHotsale(ReservaHotsale rh) {
+
+		if (!monto.isEmpty()) {
+			
+			Float montoFinal = Float.valueOf(monto.getValue());
+			
+			if (montoFinal > 0) {
+				
+				//actualizo hotsale en la base de datos
+				try {
+					conexion.abrirHotsale(rh, montoFinal);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+
+				//cierro ventana de confirmacion e indico éxito
+				ventanaConfirmacion.close();
+				this.mostrarNotificacion("Hotsale iniciado exitosamente.", Notification.Type.HUMANIZED_MESSAGE);
+
+				//actualizo sesión
+				interfaz.vistaAdmin("semanasAdmin");
+
+			} else
+				this.mostrarNotificacion("Error: El monto debe ser mayor a 0.", Notification.Type.ERROR_MESSAGE);				
+		} else
+			this.mostrarNotificacion("Error: Ingrese un monto.", Notification.Type.ERROR_MESSAGE);
+	}
+	
+	private void cerrarHotsale(ReservaHotsale rh) {
+
+		//actualizo hotsale en la base de datos
+		try {
+			conexion.cerrarHotsale(rh);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		this.mostrarNotificacion("Hotsale cerrado exitosamente.", Notification.Type.HUMANIZED_MESSAGE);
+
+		//actualizo sesión
+		interfaz.vistaAdmin("semanasAdmin");
+	}
+	
 	
 
 	private void mostrarNotificacion(String st, Notification.Type tipo) {

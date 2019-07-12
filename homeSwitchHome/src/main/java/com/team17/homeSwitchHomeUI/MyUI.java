@@ -112,7 +112,15 @@ public class MyUI extends UI {
             	if (vista.equals("reservarDirecta")) {
             		navigator.addView("reservarDirecta", new ReservarDirectaView(this));
                 	navigator.navigateTo("reservarDirecta");
-                }
+                } else
+                	if (vista.equals("reservarSubasta")) {
+                		navigator.addView("reservarSubasta", new ReservarSubastaView(this));
+                    	navigator.navigateTo("reservarSubasta");
+                    } else
+		            	if (vista.equals("reservarHotsale")) {
+		            		navigator.addView("reservarHotsale", new ReservarHotsaleView(this));
+		                	navigator.navigateTo("reservarHotsale");
+		                }
     }
     
     public void vistaAdmin(String unaVista) {

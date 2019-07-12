@@ -28,6 +28,7 @@ import homeSwitchHome.HomeSwitchHome;
 import homeSwitchHome.Propiedad;
 import homeSwitchHome.Reserva;
 import homeSwitchHome.ReservaDirecta;
+import homeSwitchHome.ReservaHotsale;
 import homeSwitchHome.ReservaSubasta;
 import homeSwitchHome.Usuario;
 import homeSwitchHome.UsuarioPremium;
@@ -40,8 +41,11 @@ public class DetalleResidenciaView extends Composite implements View {
 	private Label cabeceraSemanas = new Label("Semanas");
 	private Label cabeceraReservas = new Label("Reservas");
 	
-	private Label ayuda1 = new Label("Para realizar una reserva directa, haga click sobre la semana deseada.");
-	private Label ayuda2 = new Label("Nota: Las reserva directas requieren estado de usuario premium.");
+	private Label ayuda1 = new Label("Para realizar una reserva u ofertar en una subasta, haga click sobre la semana deseada.");
+	private Label ayuda2 = new Label("Nota 1: Las reservas directas requieren ser usuario premium y consumen 1 crédito.");
+	private Label ayuda3 = new Label("Nota 2: Una subasta es accesible a cualquier tipo de usuario, pero requiere<br/>"
+			+ "de 1 crédito para ofertar en la misma.", ContentMode.HTML);
+	private Label ayuda4 = new Label("Nota 3: Las reservas Hotsale no requieren premium ni consumen créditos.");
 	private Label msjSemanas = new Label("Esta residencia no posee semanas disponibles.");
 	private Label msjReservas = new Label("Esta residencia no posee reservas realizadas.");
 	private Grid<Reserva> tablaSemanas = new Grid<>(Reserva.class);
@@ -90,6 +94,8 @@ public class DetalleResidenciaView extends Composite implements View {
 
 		ayuda1.setVisible(false);
 		ayuda2.setVisible(false);
+		ayuda3.setVisible(false);
+		ayuda4.setVisible(false);
 		msjSemanas.setVisible(false);
 		msjReservas.setVisible(false);
 		tablaSemanas.setVisible(false);
@@ -106,10 +112,12 @@ public class DetalleResidenciaView extends Composite implements View {
 		propiedadLayout.setComponentAlignment(fotosLayout, Alignment.MIDDLE_CENTER);
 		propiedadLayout.addStyleName("layout-with-border");
 		
-		VerticalLayout semanasLayout = new VerticalLayout (cabeceraSemanas, ayuda1, ayuda2, tablaSemanas, msjSemanas);
+		VerticalLayout semanasLayout = new VerticalLayout (cabeceraSemanas, ayuda1, ayuda2, ayuda3, ayuda4, tablaSemanas, msjSemanas);
 		semanasLayout.setComponentAlignment(cabeceraSemanas, Alignment.MIDDLE_CENTER);
 		semanasLayout.setComponentAlignment(ayuda1, Alignment.MIDDLE_CENTER);
 		semanasLayout.setComponentAlignment(ayuda2, Alignment.MIDDLE_CENTER);
+		semanasLayout.setComponentAlignment(ayuda3, Alignment.MIDDLE_CENTER);
+		semanasLayout.setComponentAlignment(ayuda4, Alignment.MIDDLE_CENTER);
 		semanasLayout.setComponentAlignment(tablaSemanas, Alignment.MIDDLE_CENTER);
 		semanasLayout.setComponentAlignment(msjSemanas, Alignment.MIDDLE_CENTER);
 		semanasLayout.addStyleName("layout-with-border");		
@@ -274,6 +282,8 @@ public class DetalleResidenciaView extends Composite implements View {
 			if (!tipo.equals("admin")) {
 				ayuda1.setVisible(true);
 				ayuda2.setVisible(true);
+				ayuda3.setVisible(true);
+				ayuda4.setVisible(true);
 			}
 			tablaSemanas.setItems(resSinReservar);
 			tablaSemanas.setVisible(true);
@@ -288,9 +298,17 @@ public class DetalleResidenciaView extends Composite implements View {
 
 			tablaSemanas.addItemClickListener( event -> {
 				if ( (event.getItem() instanceof ReservaDirecta) && (usuario instanceof UsuarioPremium) ) {
+					HomeSwitchHome.setReservaActual(event.getItem());
+					interfaz.vistaUsuarioConNuevaVista("reservarDirecta");
+				} else
+					if (event.getItem() instanceof ReservaSubasta) {
 						HomeSwitchHome.setReservaActual(event.getItem());
-						interfaz.vistaUsuarioConNuevaVista("reservarDirecta");
-				}
+						interfaz.vistaUsuarioConNuevaVista("reservarSubasta");
+					} else
+						if (event.getItem() instanceof ReservaHotsale) {
+							HomeSwitchHome.setReservaActual(event.getItem());
+							interfaz.vistaUsuarioConNuevaVista("reservarHotsale");
+						}
 			});
 			
 			
@@ -319,7 +337,7 @@ public class DetalleResidenciaView extends Composite implements View {
 				
 				tablaReservas.addColumn(Reserva::getMonto,
 						new NumberRenderer(new DecimalFormat("¤#######.##")))
-						.setCaption("Monto");
+						.setCaption("Precio");
 				
 				tablaReservas.addColumn(Reserva::getTipo)
 						.setCaption("Tipo");

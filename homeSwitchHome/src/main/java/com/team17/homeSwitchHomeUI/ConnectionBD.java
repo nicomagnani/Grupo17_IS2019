@@ -485,6 +485,27 @@ public class ConnectionBD {
 		ps.executeUpdate();
 		ps.close();
 	}
+	
+
+	public void realizarReservaHotsale(ReservaHotsale rh) throws SQLException {
+		
+		//parte 1, se actualiza tipo de reserva
+		String query = "UPDATE reservas"
+				+" SET usuario = ?, tipo = ?, estado = ?"
+				+" WHERE propiedad = ? AND localidad = ? AND fecha_inicio = ?";
+
+		ps = (PreparedStatement) con.prepareStatement(query);
+
+		ps.setString(1,rh.getUsuario());
+		ps.setString(2,"hotsale");
+		ps.setString(3,"RESERVADA");
+		ps.setString(4,rh.getPropiedad());
+		ps.setString(5,rh.getLocalidad());
+		ps.setDate(6, Date.valueOf(rh.getFechaInicio()));
+
+		ps.executeUpdate();
+		ps.close();		
+	}
 
 
 	public ArrayList<Reserva> listaReservas() throws SQLException {
@@ -659,20 +680,53 @@ public class ConnectionBD {
 	}
 
 
-	public void abrirSubasta(Reserva r) throws SQLException {
-
-		//parte 1, se actualiza tabla reserva
+	public void abrirHotsale(ReservaHotsale rh, Float montoFinal) throws SQLException {
+		
 		String query = "UPDATE reservas"
-				+ " SET tipo = ?, estado = ?"
+				+" SET estado = 'DISPONIBLE', monto = ?"
 				+" WHERE propiedad = ? AND localidad = ? AND fecha_inicio = ?";
 
 		ps = (PreparedStatement) con.prepareStatement(query);
 
-		ps.setString(1,"subasta");
-		ps.setString(2,"DISPONIBLE");
-		ps.setString(3,r.getPropiedad());
-		ps.setString(4,r.getLocalidad());
-		ps.setDate(5, Date.valueOf(r.getFechaInicio()));
+		ps.setFloat(1,montoFinal);
+		ps.setString(2,rh.getPropiedad());
+		ps.setString(3,rh.getLocalidad());
+		ps.setDate(4, Date.valueOf(rh.getFechaInicio()));
+
+		ps.executeUpdate();
+		ps.close();		
+	}
+	
+
+	public void cerrarHotsale(ReservaHotsale rh) throws SQLException {
+		
+		String query = "UPDATE reservas"
+				+" SET estado = 'EN_ESPERA'"
+				+" WHERE propiedad = ? AND localidad = ? AND fecha_inicio = ?";
+
+		ps = (PreparedStatement) con.prepareStatement(query);
+
+		ps.setString(1,rh.getPropiedad());
+		ps.setString(2,rh.getLocalidad());
+		ps.setDate(3, Date.valueOf(rh.getFechaInicio()));
+		
+		ps.executeUpdate();
+		ps.close();		
+	}
+	
+
+	public void abrirSubasta(Reserva r) throws SQLException {
+
+		//parte 1, se actualiza tabla reserva
+		String query = "UPDATE reservas"
+				+ " SET tipo = 'subasta', estado = 'DISPONIBLE'"
+				+" WHERE propiedad = ? AND localidad = ? AND fecha_inicio = ?";
+
+		ps = (PreparedStatement) con.prepareStatement(query);
+
+		ps.setString(1,r.getPropiedad());
+		ps.setString(2,r.getLocalidad());
+		ps.setDate(3, Date.valueOf(r.getFechaInicio()));
 
 		ps.executeUpdate();
 		ps.close();
@@ -1200,6 +1254,8 @@ public class ConnectionBD {
 
 		return solicitudes;
 	}
+
+
 
 }
 

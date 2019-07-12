@@ -195,7 +195,7 @@ public class ReservarDirectaView extends Composite implements View {
 		email.setFrom("homeswitchhome@outlook.com.ar");
 		email.setSubject("Reserva realizada");
 		
-		String mensaje = "<p>Estimado usuario, su reserva ha sido realizada con éxito. Detalle:</p>"
+		String mensaje = "<p>Estimado usuario, su reserva directa ha sido realizada con éxito. Detalle:</p>"
 				
 				+"<p><span style=\"text-align: left; font-weight: bold;\">Título:</span> "
 				+propiedad.getTitulo()+"</p>"
