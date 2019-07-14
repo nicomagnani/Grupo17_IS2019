@@ -93,12 +93,15 @@ public class ReservaSubasta extends Reserva {
 	
 	public String getFechaFinSubastaString() {
 		
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+		if (this.getEstado() == EstadoDeReserva.DISPONIBLE) {
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 		
-		if ( LocalDate.now().isBefore(this.getFechaFinSubasta()) ) {
-			return this.getFechaFinSubasta().atStartOfDay().format(formatter) + " hs.";
+			if ( LocalDate.now().isBefore(this.getFechaFinSubasta()) ) {
+				return this.getFechaFinSubasta().atStartOfDay().format(formatter) + " hs.";
+			} else
+				return this.getFechaFinSubasta().atStartOfDay().format(formatter) + " hs." + " (Finalizando)";
 		} else
-			return this.getFechaFinSubasta().atStartOfDay().format(formatter) + " hs." + " (Finalizando)";
+			return "Finalizada";
 	}
 
 	public String getTipo() {
@@ -107,10 +110,10 @@ public class ReservaSubasta extends Reserva {
 	
 	//debe verificarse previamente que cumpla los requisitos
 	public String getOfertaGanadora() {
-		if (montos.size() > 1) {
+		if ( (montos != null) && (montos.size() > 1) ) {
 			return usuarios.get(0)+" ($"+montos.get(0)+")";
 		} else
-			return "Sin ofertas";
+			return "Sin ganador";
 	}
 	
 	//elimina una oferta de la subasta (por ejemplo, si fue cancelada por el usuario o porque no es válida)

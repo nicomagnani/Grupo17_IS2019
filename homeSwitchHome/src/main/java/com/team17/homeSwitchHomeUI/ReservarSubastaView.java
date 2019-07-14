@@ -193,11 +193,10 @@ public class ReservarSubastaView extends Composite implements View {
 		
 		botonesLayout = new HorizontalLayout(botonConfirmar, botonCancelar);
 		
-		ventanaLayout = new VerticalLayout(info, montoOferta, botonConfirmar, botonCancelar);
+		ventanaLayout = new VerticalLayout(info, montoOferta, botonesLayout);
 		ventanaLayout.setComponentAlignment(info, Alignment.MIDDLE_CENTER);
 		ventanaLayout.setComponentAlignment(montoOferta, Alignment.MIDDLE_CENTER);
-		ventanaLayout.setComponentAlignment(botonConfirmar, Alignment.MIDDLE_CENTER);
-		ventanaLayout.setComponentAlignment(botonCancelar, Alignment.MIDDLE_CENTER);
+		ventanaLayout.setComponentAlignment(botonesLayout, Alignment.MIDDLE_CENTER);
 		
 		ventanaConfirmacion.setContent(ventanaLayout);
 		

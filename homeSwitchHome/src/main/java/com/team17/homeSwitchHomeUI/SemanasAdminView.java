@@ -60,7 +60,7 @@ public class SemanasAdminView extends Composite implements View {
 	private HtmlEmail email = new HtmlEmail();
 	private ArrayList<Reserva> reservas = new ArrayList<>();	
 	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-	private ReservaHotsale rhActual;
+	private Reserva rActual;
 
 	private ConnectionBD conexion = new ConnectionBD();
 	private MyUI interfaz;
@@ -153,7 +153,7 @@ public class SemanasAdminView extends Composite implements View {
 		ventanaConfirmacion.setModal(true);
 
 		botonConfirmar.addClickListener(e -> {
-			this.abrirHotsale(rhActual);
+			this.abrirHotsale(rActual);
 		} );
 		botonCancelar.addClickListener(e -> ventanaConfirmacion.close() );
 	}
@@ -250,23 +250,23 @@ public class SemanasAdminView extends Composite implements View {
 			
 			Label ofertas = new Label("" + ofertasString, ContentMode.HTML);
 			semanaLayout.addComponent(ofertas);
-		} else 
-			if (r instanceof ReservaHotsale ) {
-				
+		} else {
+			
 				Button botonAbrirHotsale = new Button("Abrir Hotsale");
 				Button botonCerrarHotsale = new Button("Cerrar Hotsale");
 				botonAbrirHotsale.setVisible(false);
 				botonCerrarHotsale.setVisible(false);				
 				
-				if (r.getEstado() == EstadoDeReserva.EN_ESPERA) {
-					if ( ((ReservaHotsale) r).puedeAbrirHotsale() )
+				if ( ((r instanceof ReservaDirecta) && (r.getEstado() == EstadoDeReserva.DISPONIBLE)) ||
+						(r.getEstado() == EstadoDeReserva.EN_ESPERA) ) {
+					if ( r.puedeAbrirHotsale() )
 						botonAbrirHotsale.setVisible(true);
 				} else
-					if (r.getEstado() == EstadoDeReserva.DISPONIBLE) {
+					if ( (r instanceof ReservaHotsale) && (r.getEstado() == EstadoDeReserva.DISPONIBLE) ) {
 						botonCerrarHotsale.setVisible(true);
 					}					
 
-				botonAbrirHotsale.addClickListener( e -> this.abrirVentanaConfirmacion((ReservaHotsale) r) );
+				botonAbrirHotsale.addClickListener( e -> this.abrirVentanaConfirmacion(r) );
 				botonCerrarHotsale.addClickListener( e -> this.cerrarHotsale((ReservaHotsale) r) );
 				    	
 				HorizontalLayout botones2Layout = new HorizontalLayout(botonAbrirHotsale, botonCerrarHotsale);
@@ -351,22 +351,27 @@ public class SemanasAdminView extends Composite implements View {
 	
 	private boolean hayOfertaGanadora(ReservaSubasta rs) throws SQLException {
 		
-		//verifica si:
-		// 1) existen al menos una oferta Y
-		// 2) el ofertante posee créditos disponibles Y
-		// 3) no posee reservas en la misma semana
+		// verifica si:
+		// 1) existe al menos una oferta Y
+		// 2) la mejor oferta supera el monto base (por si se editó el monto base luego de que haya ofertas)
+		// luego, para cada oferta, si:
+		// 3) el ofertante posee créditos disponibles Y
+		// 4) no posee reservas en la misma semana
 		
 		Usuario u;
 		ArrayList<Float> montos = rs.getMontos();
 		ArrayList<String> usuarios = rs.getUsuarios();
 				
-		if (montos != null) {
-			while (!montos.isEmpty()) {			
+		if (montos != null) {			
+			while (!montos.isEmpty()) {
 				u = conexion.buscarUsuario(usuarios.get(0));
-				if ( (u.getCreditos() > 0) && (!poseeReservaEnMismaSemana(u.getMail(), rs.getFechaReserva())) ) {
-					return true;
+				if (montos.get(0) < rs.getMontoOriginal()) {
+					return false;
 				} else
-					rs.eliminarOferta(0);
+					if ( (u.getCreditos() > 0) && (!poseeReservaEnMismaSemana(u.getMail(), rs.getFechaReserva())) ) {
+						return true;
+					} else
+						rs.eliminarOferta(0);
 			}
 		}
 		
@@ -417,9 +422,9 @@ public class SemanasAdminView extends Composite implements View {
 	}
 	
 	
-	private void abrirVentanaConfirmacion(ReservaHotsale rh) {
+	private void abrirVentanaConfirmacion(Reserva r) {
 
-		rhActual = rh;
+		rActual = r;
 
 		// completa el campo doferta automáticamente con la oferta actual; deshabilitado ya que no se indica en la historia
 //		montoOferta.setValue(montoString);
@@ -428,7 +433,7 @@ public class SemanasAdminView extends Composite implements View {
 	}
 
 
-	private void abrirHotsale(ReservaHotsale rh) {
+	private void abrirHotsale(Reserva r) {
 
 		if (!monto.isEmpty()) {
 			
@@ -438,7 +443,7 @@ public class SemanasAdminView extends Composite implements View {
 				
 				//actualizo hotsale en la base de datos
 				try {
-					conexion.abrirHotsale(rh, montoFinal);
+					conexion.abrirHotsale(r, montoFinal);
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
@@ -476,7 +481,7 @@ public class SemanasAdminView extends Composite implements View {
 	private void mostrarNotificacion(String st, Notification.Type tipo) {
     	
 		notifResultado = new Notification(st, tipo);
-    	notifResultado.setDelayMsec(5000);
+    	notifResultado.setDelayMsec(-1);
     	notifResultado.setHtmlContentAllowed(true);
     	notifResultado.show(Page.getCurrent());
     }

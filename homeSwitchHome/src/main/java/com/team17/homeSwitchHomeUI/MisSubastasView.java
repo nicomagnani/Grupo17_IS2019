@@ -15,7 +15,6 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import homeSwitchHome.HomeSwitchHome;
 import homeSwitchHome.Oferta;
-import homeSwitchHome.Reserva;
 import homeSwitchHome.ReservaSubasta;
 
 @Title("Mis subastas - HomeSwitchHome")
@@ -28,12 +27,10 @@ public class MisSubastasView extends Composite implements View {
 	private VerticalLayout ofertasLayout = new VerticalLayout();
 	private Panel panel = new Panel();
 	
-	private ArrayList<Reserva> reservas;
 	private ArrayList<ReservaSubasta> subastas = new ArrayList<>();
 	private ArrayList<Oferta> ofertas = new ArrayList<>();
 	private String mailActual;
-	
-	private ConnectionBD conexion = new ConnectionBD();
+	private ConnectionBD conexion = new ConnectionBD();	
 	
 	
 	public MisSubastasView() {
@@ -71,18 +68,13 @@ public class MisSubastasView extends Composite implements View {
     }
 
 	
-	private void cargarSubastas() throws SQLException {
+	private void cargarSubastas() throws SQLException {		
 		
-		reservas = conexion.listaReservas();
-		
-		for (Reserva r : reservas) {
-			if (r instanceof ReservaSubasta)
-				subastas.add( conexion.buscarSubasta(r.getPropiedad(), r.getLocalidad(), r.getFechaInicio(),
-						r.getEstado(), r.getMontoOriginal()) );
-		}
+		subastas = conexion.listaSubastas();
 		
 		for (ReservaSubasta rs : subastas) {
-			if ( (rs.getUsuarios() != null) && (rs.getUsuarios().indexOf(mailActual) != -1) ) {				
+			if ( (rs.getUsuarios() != null) && (rs.getUsuarios().indexOf(mailActual) != -1) ) {			
+				rs = conexion.buscarReservaDeSubasta(rs);
 				ofertas.add( new Oferta(rs.getPropiedad(), rs.getLocalidad(), rs.getFechaReserva(),
 						rs.getFechaFinSubastaString(), rs.getMonto(), rs.getMontos().get(rs.getUsuarios().indexOf(mailActual))) );
 			}

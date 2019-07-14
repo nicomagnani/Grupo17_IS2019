@@ -9,6 +9,7 @@ public class Oferta {
 	private String localidad;
 	private LocalDate fechaReserva;
 	private String fechaFinSubasta;
+	private String estado;
 	
 	//precio actual
 	private Float precio;
@@ -62,6 +63,14 @@ public class Oferta {
 
 	public void setFechaFinSubasta(String fechaFinSubasta) {
 		this.fechaFinSubasta = fechaFinSubasta;
+	}
+
+	public String getEstado() {
+		return estado;
+	}
+
+	public void setEstado(String estado) {
+		this.estado = estado;
 	}
 
 	public Float getPrecio() {

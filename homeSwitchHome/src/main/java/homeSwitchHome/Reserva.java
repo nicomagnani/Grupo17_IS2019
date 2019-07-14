@@ -118,15 +118,10 @@ import java.time.LocalDate;
 	
 	abstract public String getTipo();
 	
-	/*abstract public void setMontos(String[] montos);
 
-	abstract public void setMontos(ArrayList<Float> montos);
-	
-	abstract public void setUsuarios(ArrayList<String> usuarios);
-
-	abstract public void setUsuarios(String[] usuarios);
-	
-	abstract public void setFechaSubasta(LocalDate unaFecha);*/
-
+	public boolean puedeAbrirHotsale() {
+		return ( (!LocalDate.now().isBefore(getFechaInicio().plusMonths(6).plusWeeks(1)))
+				&& (LocalDate.now().isBefore(getFechaInicio().plusMonths(11).plusWeeks(3))) );
+	}
 	
 }

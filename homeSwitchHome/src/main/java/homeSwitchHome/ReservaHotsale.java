@@ -18,11 +18,6 @@ public class ReservaHotsale extends Reserva {
 	
 	public String getTipo() {
 		return "Hotsale";
-	}
-	
-	public boolean puedeAbrirHotsale() {
-		return ( (!LocalDate.now().isBefore(getFechaInicio().plusMonths(6).plusWeeks(1)))
-				&& (LocalDate.now().isBefore(getFechaInicio().plusMonths(11).plusWeeks(3))) );
-	}
+	}	
 
 }

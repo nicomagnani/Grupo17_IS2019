@@ -506,6 +506,24 @@ public class ConnectionBD {
 		ps.executeUpdate();
 		ps.close();		
 	}
+	
+	
+	public ReservaSubasta buscarReservaDeSubasta(ReservaSubasta r) throws SQLException {
+
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		String fechaComoString = r.getFechaInicio().format(formatter);
+
+		String query = "SELECT * FROM reservas WHERE propiedad = '"+r.getPropiedad()+"' AND localidad = '"
+				+r.getLocalidad()+"' AND fecha_inicio = '"+fechaComoString+"'";
+		ResultSet rs = stmt.executeQuery(query);
+
+		if (rs.next()) {
+			r.setMonto(rs.getFloat("monto"));
+			r.setEstado(EstadoDeReserva.valueOf(rs.getString("estado")));
+		}
+			
+		return r;
+	}
 
 
 	public ArrayList<Reserva> listaReservas() throws SQLException {
@@ -680,18 +698,18 @@ public class ConnectionBD {
 	}
 
 
-	public void abrirHotsale(ReservaHotsale rh, Float montoFinal) throws SQLException {
+	public void abrirHotsale(Reserva r, Float montoFinal) throws SQLException {
 		
 		String query = "UPDATE reservas"
-				+" SET estado = 'DISPONIBLE', monto = ?"
+				+" SET tipo = 'hotsale', estado = 'DISPONIBLE', monto = ?"
 				+" WHERE propiedad = ? AND localidad = ? AND fecha_inicio = ?";
 
 		ps = (PreparedStatement) con.prepareStatement(query);
 
 		ps.setFloat(1,montoFinal);
-		ps.setString(2,rh.getPropiedad());
-		ps.setString(3,rh.getLocalidad());
-		ps.setDate(4, Date.valueOf(rh.getFechaInicio()));
+		ps.setString(2,r.getPropiedad());
+		ps.setString(3,r.getLocalidad());
+		ps.setDate(4, Date.valueOf(r.getFechaInicio()));
 
 		ps.executeUpdate();
 		ps.close();		
@@ -733,7 +751,7 @@ public class ConnectionBD {
 
 		//parte 2, se agrega subasta a la tabla subastas
 		query = "INSERT INTO subastas (propiedad, localidad, fecha_inicio, fecha_subasta)"
-				+" VALUES (?,?,?,?,?)";
+				+" VALUES (?,?,?,?)";
 
 		ps = (PreparedStatement) con.prepareStatement(query);
 
@@ -741,7 +759,6 @@ public class ConnectionBD {
 		ps.setString(2,r.getLocalidad());
 		ps.setDate(3, Date.valueOf(r.getFechaInicio()));
 		ps.setDate(4, Date.valueOf(LocalDate.now()));
-		ps.setString(5,String.valueOf(r.getMonto()));
 
 		ps.executeUpdate();
 		ps.close();
@@ -804,14 +821,16 @@ public class ConnectionBD {
 
 		//parte 2, se actualiza subasta (en caso de que se hayan eliminado ofertas inválidas)
 		query = "UPDATE subastas"
-				+" SET montos = NULL, usuarios = NULL"
+				+" SET montos = ?, usuarios = ?"
 				+" WHERE propiedad = ? AND localidad = ? AND fecha_inicio = ?";
 
 		ps = (PreparedStatement) con.prepareStatement(query);
 
-		ps.setString(1,res.getPropiedad());
-		ps.setString(2,res.getLocalidad());
-		ps.setDate(3, Date.valueOf(res.getFechaInicio()));
+		ps.setString(1,res.getMontosString());
+		ps.setString(2,res.getUsuariosString());		
+		ps.setString(3,res.getPropiedad());
+		ps.setString(4,res.getLocalidad());
+		ps.setDate(5, Date.valueOf(res.getFechaInicio()));
 
 		ps.executeUpdate();
 		ps.close();

@@ -58,7 +58,6 @@ public final class HomeSwitchHome {
 		return reservaActual;
 	}
 
-
 	public static void setReservaActual(Reserva reservaActual) {
 		HomeSwitchHome.reservaActual = reservaActual;
 	}
