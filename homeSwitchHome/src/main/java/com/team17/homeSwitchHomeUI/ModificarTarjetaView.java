@@ -111,7 +111,6 @@ public class ModificarTarjetaView extends Composite implements View {
 				this.mostrarNotificacion("Modificación exitosa", Notification.Type.HUMANIZED_MESSAGE);
 				interfaz.vistaUsuario("miPerfil");
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

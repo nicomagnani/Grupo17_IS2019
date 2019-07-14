@@ -43,7 +43,6 @@ public class ReservasAdminView extends Composite implements View {
 		try {
 			reservas = conexion.listaReservas();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

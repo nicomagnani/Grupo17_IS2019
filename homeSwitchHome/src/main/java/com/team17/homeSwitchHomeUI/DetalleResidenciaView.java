@@ -280,6 +280,21 @@ public class DetalleResidenciaView extends Composite implements View {
 			if (!tipo.equals("admin")) {
 				ayuda1.setVisible(true);
 				ayuda2.setVisible(true);
+				
+				tablaSemanas.addItemClickListener( event -> {
+					if ( (event.getItem() instanceof ReservaDirecta) && (usuario instanceof UsuarioPremium) ) {
+						HomeSwitchHome.setReservaActual(event.getItem());
+						interfaz.vistaUsuarioConNuevaVista("reservarDirecta");
+					} else
+						if (event.getItem() instanceof ReservaSubasta) {
+							HomeSwitchHome.setReservaActual(event.getItem());
+							interfaz.vistaUsuarioConNuevaVista("reservarSubasta");
+						} else
+							if (event.getItem() instanceof ReservaHotsale) {
+								HomeSwitchHome.setReservaActual(event.getItem());
+								interfaz.vistaUsuarioConNuevaVista("reservarHotsale");
+							}
+				});
 			}
 			tablaSemanas.setItems(resSinReservar);
 			tablaSemanas.setVisible(true);
@@ -290,24 +305,7 @@ public class DetalleResidenciaView extends Composite implements View {
 			
 			tablaSemanas.addColumn(Reserva::getMonto,
 					new NumberRenderer(new DecimalFormat("¤#######.##")))
-					.setCaption("Precio actual");
-
-			tablaSemanas.addItemClickListener( event -> {
-				if ( (event.getItem() instanceof ReservaDirecta) && (usuario instanceof UsuarioPremium) ) {
-					HomeSwitchHome.setReservaActual(event.getItem());
-					interfaz.vistaUsuarioConNuevaVista("reservarDirecta");
-				} else
-					if (event.getItem() instanceof ReservaSubasta) {
-						HomeSwitchHome.setReservaActual(event.getItem());
-						interfaz.vistaUsuarioConNuevaVista("reservarSubasta");
-					} else
-						if (event.getItem() instanceof ReservaHotsale) {
-							HomeSwitchHome.setReservaActual(event.getItem());
-							interfaz.vistaUsuarioConNuevaVista("reservarHotsale");
-						}
-			});
-			
-			
+					.setCaption("Precio actual");			
 		}
 		
 		if (tipo.equals("admin")) {
@@ -327,7 +325,7 @@ public class DetalleResidenciaView extends Composite implements View {
 			if (resReservadas.isEmpty()) {			
 				msjReservas.setVisible(true);
 			} else {				
-				tablaReservas.setItems(reservas);
+				tablaReservas.setItems(resReservadas);
 				tablaReservas.setVisible(true);
 				tablaReservas.setColumns("fechaReserva", "usuario");
 				

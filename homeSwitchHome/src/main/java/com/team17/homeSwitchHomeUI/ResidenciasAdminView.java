@@ -46,7 +46,7 @@ public class ResidenciasAdminView extends Composite implements View {
 	private Label info = new Label("¿Está seguro que desea eliminar la residencia?");
 	private Button botonConfirmar = new Button("Confirmar");
 	private Button botonCancelar = new Button("Cancelar");
-	private HtmlEmail email = new HtmlEmail();
+	private HtmlEmail email;
 	
 	private VerticalLayout propiedadesLayout = new VerticalLayout();
 	private Panel panel = new Panel();
@@ -265,8 +265,8 @@ public class ResidenciasAdminView extends Composite implements View {
 		5) actualizar sesion de admin
 		*/
 		
-		int n = 0; //cantidad de ofertantes informados
-		int m = propiedad.getReservas().size(); //cantidad de reservas eliminadas		
+		int n = 0; //cantidad de ofertantes informados / cantidad de reservas eliminadas (parcial)
+		int m = 0; //cantidad de reservas eliminadas (total)
 		String msjNotificacion = "Residencia borrada con éxito.<br/>";
 		propiedad.setReservas( conexion.listaReservasPorPropiedad(propiedad.getTitulo(), propiedad.getLocalidad()) );
 		
@@ -290,8 +290,9 @@ public class ResidenciasAdminView extends Composite implements View {
 				email.send();
 				msjNotificacion += "Se encontraba en subasta y "+n+" ofertantes fueron informados vía email.<br/>";
 			} else
-				msjNotificacion += "No se encontraba en subastaResidencia en subasta y sin ofertas borrada con éxito.<br/>";
-		}	
+				msjNotificacion += "Se se encontraba en en subasta y sin ofertas.<br/>";
+		} else
+			msjNotificacion += "No se encontraba en subasta.<br/>";
 
 		if (propiedad.hayReservasRealizadas()) {
 			
@@ -302,16 +303,18 @@ public class ResidenciasAdminView extends Composite implements View {
 			//por lo tanto recorre un vez por cada tipo
 			for (Reserva r : propiedad.getReservas())
 				if ( (r.getEstado() == EstadoDeReserva.RESERVADA)
-						&& ((r instanceof ReservaDirecta) || (r instanceof ReservaDirecta)) ) {
+						&& ((r instanceof ReservaDirecta) || (r instanceof ReservaSubasta)) ) {
 					n++;					
 					conexion.modificarUsuarioCreditos(r.getUsuario(), "+", 1);
 					this.agregarReceptorDeEmailReservaDirectaSubasta(r.getUsuario());
 				}
 			
-			if (n > 0)
-				email.send();
-				
-			n = 0;
+			if (n > 0) {
+				email.send();				
+				m += n;
+				n = 0;
+			}
+			
 			this.inicializarEmailReservaHotsale(propiedad.getTitulo(), propiedad.getLocalidad());
 			
 			for (Reserva r : propiedad.getReservas())
@@ -320,13 +323,21 @@ public class ResidenciasAdminView extends Composite implements View {
 					this.agregarReceptorDeEmailReservaHotsale(r.getUsuario());
 				}
 			
-			if (n > 0)
-				email.send();
 			
-			msjNotificacion += "Tenía "+m+" reservas hechas, por lo que sus usuarios fueron informados vía email.";			
+			if (n > 0) {
+				email.send();
+				m += n;
+			}
+			
+			if (m > 1) {
+				msjNotificacion += "Tenía "+m+" reservas hechas, por lo que sus usuarios fueron informados vía email.";
+			} else
+				msjNotificacion += "Tenía "+m+" reserva hecha, por lo que su usuario fue informado vía email.";
+			
 		} else
 			msjNotificacion += "No tenía reservas hechas.";
 		
+		ventanaConfirmacion.close();
 		mostrarNotificacion(msjNotificacion, Notification.Type.HUMANIZED_MESSAGE);
 		conexion.eliminarResidencia(propiedad);
 		interfaz.vistaAdmin("residenciasAdmin");
@@ -335,6 +346,7 @@ public class ResidenciasAdminView extends Composite implements View {
 
 	private void inicializarEmailSubasta(String titulo, String localidad) throws EmailException {
 
+		email = new HtmlEmail();
 		email.setHostName("localhost");
 		email.setSmtpPort(9090);
 		email.setAuthentication("homeswitchhome@outlook.com.ar", "1234");		
@@ -342,7 +354,7 @@ public class ResidenciasAdminView extends Composite implements View {
 		email.setSubject("Propiedad en subasta eliminada");
 		
 		String mensaje = "<p>Estimado usuario:<br/><br/> La propiedad de título "+titulo+" ubicada en"
-				+ " la localidad de "+localidad+", y que poseía una subasta en que usted se encontraba"
+				+ " la localidad de "+localidad+", con una subasta en la que usted se encontraba"
 				+ " participando, ha sido eliminada. Sepa disculpar las molestias.</p><p>Atte. Staff"
 				+ " de <span style=\"text-decoration: underline;\">HomeSwitchHome</span></p>";
 		email.setHtmlMsg(mensaje);
@@ -350,7 +362,8 @@ public class ResidenciasAdminView extends Composite implements View {
 	
 	
 	private void inicializarEmailReservaDirectaSubasta(String titulo, String localidad) throws EmailException {
-
+		
+		email = new HtmlEmail();
 		email.setHostName("localhost");
 		email.setSmtpPort(9090);
 		email.setAuthentication("homeswitchhome@outlook.com.ar", "1234");		
@@ -367,6 +380,7 @@ public class ResidenciasAdminView extends Composite implements View {
 	
 	private void inicializarEmailReservaHotsale(String titulo, String localidad) throws EmailException {
 
+		email = new HtmlEmail();
 		email.setHostName("localhost");
 		email.setSmtpPort(9090);
 		email.setAuthentication("homeswitchhome@outlook.com.ar", "1234");		

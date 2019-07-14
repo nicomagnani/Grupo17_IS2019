@@ -752,17 +752,16 @@ public class ConnectionBD {
 
 		//parte 1, se actualiza tabla reserva
 		String query = "UPDATE reservas"
-				+" SET usuario = ?, estado = ?, monto = ?"
+				+" SET usuario = ?, estado = 'RESERVADA', monto = ?"
 				+" WHERE propiedad = ? AND localidad = ? AND fecha_inicio = ?";
 
 		ps = (PreparedStatement) con.prepareStatement(query);
 
 		ps.setString(1,res.getUsuarios().get(0));
-		ps.setString(2,"RESERVADA");
-		ps.setFloat(3,res.getMontos().get(0));
-		ps.setString(4,res.getPropiedad());
-		ps.setString(5,res.getLocalidad());
-		ps.setDate(6,Date.valueOf(res.getFechaInicio()));
+		ps.setFloat(2,res.getMontos().get(0));
+		ps.setString(3,res.getPropiedad());
+		ps.setString(4,res.getLocalidad());
+		ps.setDate(5,Date.valueOf(res.getFechaInicio()));
 
 		ps.executeUpdate();
 		ps.close();
@@ -790,16 +789,14 @@ public class ConnectionBD {
 
 		//parte 1, se actualiza tabla reserva
 		String query = "UPDATE reservas"
-				+" SET tipo = ?, estado = ?"
+				+" SET tipo = 'hotsale', estado = 'EN_ESPERA'"
 				+" WHERE propiedad = ? AND localidad = ? AND fecha_inicio = ?";
 
 		ps = (PreparedStatement) con.prepareStatement(query);
 
-		ps.setString(1,"hotsale");
-		ps.setString(2,"EN_ESPERA");
-		ps.setString(3,res.getPropiedad());
-		ps.setString(4,res.getLocalidad());
-		ps.setDate(5, Date.valueOf(res.getFechaInicio()));
+		ps.setString(1,res.getPropiedad());
+		ps.setString(2,res.getLocalidad());
+		ps.setDate(3, Date.valueOf(res.getFechaInicio()));
 
 		ps.executeUpdate();
 		ps.close();

@@ -50,7 +50,6 @@ public class MisReservasView extends Composite implements View {
 			reservas = conexion.listaReservasPorUsuario(usuario.getMail());
 			canceladas = conexion.listaCanceladasPorUsuario(usuario.getMail());
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
