@@ -310,7 +310,8 @@ public class SemanasAdminView extends Composite implements View {
 		int n = 0; //subastas cerradas
 		LocalDate hoy = LocalDate.now();
 		ReservaSubasta rs;
-		String subastasCerradas = "<strong>Propiedad - Localidad - Fecha de inicio - Ganador</strong><br/>";		
+		String subastasCerradas = "<strong>Propiedad - Localidad - Fecha de inicio - Ganador</strong><br/>";
+		String ofertaGanadora = "";
 		
 		// para cada reserva:
 		// > si es una subasta -> si está disponible y se alcanzó la fecha del cierre ->
@@ -328,13 +329,17 @@ public class SemanasAdminView extends Composite implements View {
 					
 					if (this.hayOfertaGanadora(rs)) {
 						this.enviarEmail(rs);
+						ofertaGanadora = rs.getOfertaGanadora();
 						conexion.modificarUsuarioCreditos(rs.getUsuarios().get(0), "-", 1);
 						conexion.cerrarSubastaConGanador(rs);
-					} else
+						
+					} else {
 						conexion.cerrarSubastaSinGanador(rs);
+						ofertaGanadora = rs.getOfertaGanadora();
+					}
 					
 					n++;
-					subastasCerradas += rs.getPropiedad()+" - "+rs.getLocalidad()+" - "+rs.getFechaInicio().format(formatter)+" - "+rs.getOfertaGanadora()+"<br/>";
+					subastasCerradas += rs.getPropiedad()+" - "+rs.getLocalidad()+" - "+rs.getFechaInicio().format(formatter)+" - "+ofertaGanadora+"<br/>";
 				}
 			}
 		}

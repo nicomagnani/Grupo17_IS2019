@@ -36,6 +36,7 @@ public class BuscarFechaView extends Composite implements View {  //necesita com
 	private Label msjResultado = new Label();
 	private Button botonBuscar = new Button("Buscar");	
 	private Grid<Propiedad> tabla = new Grid<>(Propiedad.class);
+	private ConnectionBD conectar = new ConnectionBD();
 	
 	ArrayList<Propiedad> propiedades = new ArrayList<>();
 
@@ -92,7 +93,7 @@ public class BuscarFechaView extends Composite implements View {  //necesita com
 		*/		
 		if ( (!fechaInicioBuscada.isAfter(fechaFinBuscada)) && (!fechaFinBuscada.isAfter(fechaInicioBuscada.plusMonths(2))) ) {
 			
-			ConnectionBD conectar = new ConnectionBD();
+			
 			
 			try {
 				propiedades = conectar.listaResidenciasPorFecha(fechaInicioBuscada, fechaFinBuscada);

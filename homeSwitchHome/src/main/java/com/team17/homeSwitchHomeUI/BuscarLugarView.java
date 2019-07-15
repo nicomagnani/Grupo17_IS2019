@@ -32,6 +32,7 @@ public class BuscarLugarView extends Composite implements View {  //.necesita co
 	Label msjAyuda = new Label("Seleccione una residencia para ver sus semanas disponibles.");
 	Label msjResultado = new Label();
 	Grid<Propiedad> tabla = new Grid<>(Propiedad.class);
+	ConnectionBD conectar = new ConnectionBD();
 
 	ArrayList<Propiedad> propiedades;
 
@@ -68,7 +69,6 @@ public class BuscarLugarView extends Composite implements View {  //.necesita co
 		
 		if (!textoBuscar.isEmpty()) {
 			
-			ConnectionBD conectar = new ConnectionBD();
 			propiedades = new ArrayList<Propiedad>();
 			
 			try {

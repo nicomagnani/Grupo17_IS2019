@@ -826,8 +826,14 @@ public class ConnectionBD {
 
 		ps = (PreparedStatement) con.prepareStatement(query);
 
-		ps.setString(1,res.getMontosString());
-		ps.setString(2,res.getUsuariosString());		
+		if (res.getMontosString().equals("")) {
+			ps.setString(1, null);
+		} else ps.setString(1,res.getMontosString());
+		
+		if (res.getUsuariosString().equals("")) {
+			ps.setString(1, null);
+		} else ps.setString(2,res.getUsuariosString());			
+			
 		ps.setString(3,res.getPropiedad());
 		ps.setString(4,res.getLocalidad());
 		ps.setDate(5, Date.valueOf(res.getFechaInicio()));
@@ -1186,6 +1192,8 @@ public class ConnectionBD {
 		Tarjeta tarjeta = new Tarjeta();
 
 		while (rs.next()) {
+			tarjeta = new Tarjeta();
+			
 			if (!rs.getBoolean("premium")) {
 				usuario = new UsuarioComun();
 			} else {

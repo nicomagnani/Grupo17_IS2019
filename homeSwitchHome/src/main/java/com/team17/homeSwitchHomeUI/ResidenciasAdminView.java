@@ -286,11 +286,15 @@ public class ResidenciasAdminView extends Composite implements View {
 				}
 			}
 			
-			if (n > 0) {
+			if (n > 1) {
 				email.send();
 				msjNotificacion += "Se encontraba en subasta y "+n+" ofertantes fueron informados vía email.<br/>";
 			} else
-				msjNotificacion += "Se se encontraba en en subasta y sin ofertas.<br/>";
+				if (n > 0) {
+					email.send();
+					msjNotificacion += "Se encontraba en subasta y "+n+" ofertante fue informado vía email.<br/>";
+				} else
+					msjNotificacion += "Se se encontraba en en subasta y sin ofertas.<br/>";
 		} else
 			msjNotificacion += "No se encontraba en subasta.<br/>";
 
