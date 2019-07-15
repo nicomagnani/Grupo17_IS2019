@@ -1,0 +1,62 @@
+ -- Admin
+INSERT INTO administradores ( mail, contraseña )
+   VALUES
+   ('admin', '123');
+
+
+ -- Usuarios
+INSERT INTO usuarios ( mail, contraseña, nombre, apellido, f_nac, creditos, nro_tarj, marca_tarj, titu_tarj, venc_tarj, cod_tarj, premium )
+   VALUES
+   ('prem1@asd.com', 123, 'Pedro', 'Pérez', '1990-01-01', 15, 888888888, 'VISA', 'PEDRO PEREZ', '2020-05-01', 1234, 1),
+   ('prem2@asd.com', 123, 'Juan', 'Garcia', '1985-02-02', 1, 888888888, 'MasterCard', 'JUAN GARCIA', '2020-05-01', 1234, 1),
+   ('com1@asd.com', 123, 'Carlos', 'Rodriguez', '1987-03-03', 1, 888888888, 'VISA', 'CARELOS RODRIG', '2020-05-01', 1234, 0),
+   ('com2@asd.com', 123, 'Javier', 'Hernandez', '1988-06-01', 0, 888888888, 'VISA', 'JAVIER H', '2020-05-01', 1234, 0),
+   ('com3@asd.com', 123, 'Lucas', 'Fernandez', '1999-05-05', 2, 888888888, 'VISA', 'LUCAS F', '2020-05-01', 1234, 0),
+   ('prem3@asd.com', 123, 'Santiago', 'Romero', '1970-06-06', 1, 888888888, 'MasterCard', 'SANTIAGO R', '2020-05-01', 1234, 1);
+
+
+
+ -- Propiedades
+INSERT INTO `propiedad` (`titulo`, `descripcion`, `pais`, `provincia`, `localidad`, `domicilio`, `monto`) VALUES
+('prop_01', 'con reservas directa y hotsale + subasta', 'Argentina', 'Buenos Aires', 'Luján', '78/90', 111),
+('prop_02', 'con directa y hotsale disponible', 'Argentina', 'Buenos Aires', 'La Plata', '78/90', 222),
+('prop_03', 'con subasta activa (con ganador, cierra)', 'Argentina', 'Buenos Aires', 'La Plata', '78/90', 333),
+('prop_04', 'con futura subasta (abre, no cierra)', 'Argentina', 'Buenos Aires', 'Ensenada', '78/90', 333),
+('prop_05', 'con subasta activa (ofertas inválidas, con ganador, cierra)', 'Argentina', 'Buenos Aires', 'Ensenada', '78/90', 333),
+('prop_06', 'con subasta activa (sin ofertas, cierra)', 'Argentina', 'Buenos Aires', 'Ensenada', '78/90', 333),
+('prop_20', 'para verificar hotsales y abrir otro', 'Argentina', 'Buenos Aires', 'Berisso', '78/90', 333);
+
+
+ -- Semanas
+INSERT INTO `reservas` (`propiedad`, `localidad`, `usuario`, `tipo`, `fecha_inicio`, `estado`, `monto`) VALUES
+('prop_01', 'Luján', 'prem1@asd.com', 'directa', '2019-03-02', 'RESERVADA', 111),
+('prop_01', 'Luján', 'prem1@asd.com', 'hotsale', '2018-09-09', 'RESERVADA', 500),
+('prop_01', 'Luján', NULL, 'subasta', '2019-01-13', 'DISPONIBLE', 350),
+('prop_02', 'La Plata', NULL, 'directa', '2019-03-02', 'DISPONIBLE', 222),
+('prop_02', 'La Plata', NULL, 'hotsale', '2018-09-09', 'DISPONIBLE', 400),
+('prop_02', 'La Plata', NULL, 'directa', '2019-02-10', 'DISPONIBLE', 700),
+('prop_02', 'La Plata', NULL, 'directa', '2019-01-27', 'DISPONIBLE', 701),
+('prop_02', 'La Plata', 'com3@asd.com', 'directa', '2019-01-06', 'RESERVADA', 222),
+('prop_03', 'La Plata', NULL, 'subasta', '2019-01-06', 'DISPONIBLE', 100),
+('prop_04', 'Ensenada', NULL, 'directa', '2019-01-13', 'DISPONIBLE', 1000),
+('prop_05', 'Ensenada', NULL, 'subasta', '2019-01-06', 'DISPONIBLE', 50),
+('prop_06', 'Ensenada', NULL, 'subasta', '2019-01-06', 'DISPONIBLE', 3500),
+('prop_20', 'Berisso', NULL, 'hotsale', '2019-01-10', 'EN_ESPERA', 250),
+('prop_20', 'Berisso', NULL, 'hotsale', '2018-07-18', 'EN_ESPERA', 250),
+('prop_20', 'Berisso', NULL, 'directa', '2019-01-06', 'DISPONIBLE', 5);
+
+
+ -- Subastas
+INSERT INTO `subastas` (`propiedad`, `localidad`, `fecha_inicio`, `fecha_subasta`, `montos`, `usuarios`) VALUES
+('prop_03', 'La Plata', '2019-01-06', '2019-07-07', NULL, NULL),
+('prop_05', 'Ensenada', '2019-01-06', '2019-07-08', '700 600 600', 'com2@asd.com com3@asd.com prem3@asd.com'),
+('prop_06', 'Ensenada', '2019-01-06', '2019-07-09', NULL, NULL),
+('prop_01', 'Luján', '2019-01-13', '2019-07-14', '350', 'prem3@asd.com');
+
+
+
+ -- Solicitudes
+INSERT INTO solicitudes ( usuario, tipo, motivo )
+   VALUES
+   ( 'prem2@asd.com', 'baja', 'Ya no quiero pagar la cuota'),
+   ( 'com2@asd.com', 'alta', 'Quiero poder realizar reservas directas');

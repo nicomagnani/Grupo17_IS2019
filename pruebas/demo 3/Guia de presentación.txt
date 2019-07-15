@@ -1,0 +1,17 @@
+#Admin:
+admin
+
+#Usuarios:
+prem1@asd.com: posee 2 reservas existentes (directa y hotsale)
+prem2@asd.com: realiza 2 reservas (directa y hotsale)
+com1@asd.com: realiza 1 oferta en subasta
+com2@asd.com:
+
+#Subastas:
+prop_03: subasta normal con ganador, cierra
+prop_04: subasta que debo abrir, no cierra
+prop_05: subasta con 1 oferta inválida por falta de créditos, 1 oferta inválida por reserva en misma fecha y 1 oferta válida
+prop_06: subasta sin ofertas, cierra
+prop_01: subasta con 1 oferta, no cierra (se usa para el caso de borrar)
+
+#Hotsales (en espera):
